@@ -1,0 +1,7 @@
+{
+  "name": "magnolia",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
