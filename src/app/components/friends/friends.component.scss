@@ -1,0 +1,213 @@
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    .section-title-with-icon {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        ion-icon {
+            font-size: 1.3rem;
+            color: #5a7a6a;
+        }
+
+        h3 {
+            color: #2d4a3e;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+    }
+
+    h3 {
+        color: #2d4a3e;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .badge-count {
+        background: #5a7a6a;
+        color: white;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 12px;
+    }
+
+    .see-all {
+        color: #7a9d8a;
+        font-size: 0.9rem;
+        text-decoration: none;
+        cursor: pointer;
+    }
+}
+
+.friend-requests {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 32px;
+
+    .friend-request-item {
+        background: white;
+        border: 2px solid #e0e0d8;
+        border-radius: 16px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .friend-avatar {
+            width: 48px;
+            height: 48px;
+            background: #e0e8e0;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #5a7a6a;
+            flex-shrink: 0;
+        }
+
+        .friend-info {
+            flex: 1;
+
+            .friend-name {
+                color: #2d4a3e;
+                font-size: 0.95rem;
+                font-weight: 600;
+                margin: 0 0 4px 0;
+            }
+
+            .friend-mutual {
+                color: #7a7a7a;
+                font-size: 0.85rem;
+                margin: 0;
+            }
+        }
+
+        .friend-actions {
+            display: flex;
+            gap: 8px;
+
+            button {
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                border: none;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .accept-btn {
+                background: #5a7a6a;
+                color: white;
+
+                ion-icon {
+                    font-size: 1.2rem;
+                }
+            }
+
+            .decline-btn {
+                background: #f0f0e8;
+                color: #7a7a7a;
+                font-size: 1.5rem;
+            }
+        }
+    }
+}
+
+.friends-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .friend-item {
+        background: white;
+        border: 2px solid #e0e0d8;
+        border-radius: 16px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:active {
+            background: #f8faf8;
+        }
+
+        .friend-avatar-wrapper {
+            position: relative;
+            flex-shrink: 0;
+
+            .friend-avatar {
+                width: 48px;
+                height: 48px;
+                background: #e0e8e0;
+                border-radius: 12px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 1.5rem;
+                font-weight: 600;
+                color: #5a7a6a;
+            }
+
+            .online-indicator {
+                position: absolute;
+                bottom: 2px;
+                right: 2px;
+                width: 12px;
+                height: 12px;
+                background: #5a7a6a;
+                border: 2px solid white;
+                border-radius: 50%;
+            }
+        }
+
+        .friend-info {
+            flex: 1;
+
+            .friend-name {
+                color: #2d4a3e;
+                font-size: 0.95rem;
+                font-weight: 600;
+                margin: 0 0 6px 0;
+            }
+
+            .friend-stats {
+                display: flex;
+                gap: 8px;
+
+                .level-badge {
+                    background: #e8f0e6;
+                    color: #5a7a6a;
+                    font-size: 0.75rem;
+                    font-weight: 600;
+                    padding: 3px 8px;
+                    border-radius: 8px;
+                }
+
+                .stat-value {
+                    color: #7a7a7a;
+                    font-size: 0.85rem;
+                }
+            }
+        }
+
+        .chevron {
+            color: #a8c5a0;
+            font-size: 1.2rem;
+        }
+    }
+}

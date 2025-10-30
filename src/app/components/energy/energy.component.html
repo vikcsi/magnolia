@@ -1,0 +1,61 @@
+<div class="activity-section">
+  <div class="section-header">
+    <div class="section-icon">
+      <ion-icon name="flash-outline"></ion-icon>
+    </div>
+    <div>
+      <h3>Energia</h3>
+      <p>Rögzítsd a fogyasztásod</p>
+    </div>
+  </div>
+
+  <div class="energy-form">
+    <div class="form-group">
+      <ion-label>Fogyasztás típusa</ion-label>
+      <ion-select placeholder="Válassz" interface="popover">
+        <ion-select-option value="electricity">Villany</ion-select-option>
+        <ion-select-option value="gas">Gáz</ion-select-option>
+        <ion-select-option value="water">Víz</ion-select-option>
+      </ion-select>
+    </div>
+
+    <div class="form-group">
+      <ion-label>Mennyiség</ion-label>
+      <div class="input-with-unit">
+        <ion-input type="number" placeholder="0"></ion-input>
+        <span class="unit">kWh</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <ion-label>Időszak</ion-label>
+      <ion-select placeholder="Válassz" interface="popover">
+        <ion-select-option value="today">Mai nap</ion-select-option>
+        <ion-select-option value="week">Heti</ion-select-option>
+        <ion-select-option value="month">Havi</ion-select-option>
+      </ion-select>
+    </div>
+  </div>
+
+  <p class="subsection-title">Korábbi bejegyzések</p>
+
+  <div class="energy-list">
+    <div class="energy-item">
+      <div class="energy-info">
+        <h4>Villany fogyasztás</h4>
+        <p>150 kWh <span class="separator">•</span> Ez a hét</p>
+      </div>
+      <div class="energy-impact">+42 kg</div>
+    </div>
+
+    <div class="energy-item">
+      <div class="energy-info">
+        <h4>Gáz fogyasztás</h4>
+        <p>80 m³ <span class="separator">•</span> Ez a hét</p>
+      </div>
+      <div class="energy-impact">+160 kg</div>
+    </div>
+  </div>
+
+  <ion-button expand="block" class="save-button">Mentés</ion-button>
+</div>

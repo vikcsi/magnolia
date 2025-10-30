@@ -1,0 +1,55 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar mode="md">
+    <ion-title>Tevékenység</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="ion-padding">
+    <h2 class="section-title">Kategóriák</h2>
+
+    <div class="categories-container">
+      <div class="category-card" [class.active]="selectedCategory === 'transport'"
+        (click)="selectCategory('transport')">
+        <div class="category-icon">
+          <ion-icon name="location-outline"></ion-icon>
+        </div>
+        <ion-label>Közlekedés</ion-label>
+      </div>
+
+      <div class="category-card" [class.active]="selectedCategory === 'shopping'" (click)="selectCategory('shopping')">
+        <div class="category-icon">
+          <ion-icon name="cart-outline"></ion-icon>
+        </div>
+        <ion-label>Vásárlás</ion-label>
+      </div>
+
+      <div class="category-card" [class.active]="selectedCategory === 'energy'" (click)="selectCategory('energy')">
+        <div class="category-icon">
+          <ion-icon name="flash-outline"></ion-icon>
+        </div>
+        <ion-label>Energia</ion-label>
+      </div>
+    </div>
+
+
+    @switch (selectedCategory) {
+    @case ('transport') {
+    <app-transport></app-transport>
+    }
+    @case ('shopping') {
+    <app-shopping></app-shopping>
+    }
+    @case ('energy') {
+    <app-energy></app-energy>
+    }
+    @default {
+    <div>Nincs találat</div>
+    }
+    }
+  </div>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <app-navigation></app-navigation>
+</ion-footer>

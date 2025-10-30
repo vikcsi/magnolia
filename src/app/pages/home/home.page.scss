@@ -1,0 +1,204 @@
+ion-header {
+  ion-toolbar {
+    --background: #f5f5f0;
+    --color: #2d4a3e;
+
+    ion-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+  }
+}
+
+ion-content {
+  --background: #f5f5f0;
+
+  .ion-padding {
+    padding: 16px;
+  }
+}
+
+.main-card {
+  background: linear-gradient(135deg, #5a7a6a 0%, #3d5a52 100%);
+  border-radius: 24px;
+  margin: 0 0 16px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  ion-card-content {
+    padding: 24px;
+
+    p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.9rem;
+      margin: 0 0 8px 0;
+    }
+
+    .footprint-value {
+      margin-bottom: 20px;
+
+      h1 {
+        color: white;
+        font-size: 3rem;
+        font-weight: 700;
+        margin: 0;
+        line-height: 1;
+      }
+
+      span {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.95rem;
+      }
+    }
+
+    .limit-progress {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+
+      span {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.85rem;
+      }
+    }
+
+    ion-progress-bar {
+      --background: rgba(255, 255, 255, 0.3);
+      --progress-background: #a8c5a0;
+      height: 8px;
+      border-radius: 4px;
+    }
+  }
+}
+
+ion-grid {
+  padding: 0;
+  margin-bottom: 24px;
+
+  ion-row {
+    gap: 12px;
+  }
+
+  ion-col {
+    padding: 0;
+  }
+}
+
+.summary-card {
+  background: white;
+  border-radius: 16px;
+  margin: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 16px;
+
+  ion-icon {
+    font-size: 2rem;
+    color: #5a7a6a;
+  }
+
+  p {
+    color: #7a7a7a;
+    font-size: 0.85rem;
+  }
+
+  h2 {
+    color: #2d4a3e;
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+
+}
+
+.section-title {
+  color: #2d4a3e;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 24px 0 16px 0;
+}
+
+.tools-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+
+  .tool-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+
+    .tool-button {
+      --background: white;
+      --border-radius: 16px;
+      --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      --padding-start: 0;
+      --padding-end: 0;
+      width: 100%;
+      height: 80px;
+      margin: 0;
+
+      ion-icon {
+        font-size: 1.8rem;
+        color: #5a7a6a;
+      }
+    }
+
+    ion-label {
+      color: #2d4a3e;
+      font-size: 0.8rem;
+      text-align: center;
+      line-height: 1.2;
+    }
+  }
+}
+
+ion-list {
+  background: transparent;
+  padding: 0;
+  margin-bottom: 40px;
+
+  .activity-item {
+    --background: white;
+    --border-radius: 16px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    border-radius: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    ion-icon {
+      font-size: 1.8rem;
+      color: #5a7a6a;
+      margin-right: 12px;
+    }
+
+    ion-label {
+      h2 {
+        color: #2d4a3e;
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0 0 4px 0;
+      }
+
+      p {
+        color: #7a7a7a;
+        font-size: 0.85rem;
+        margin: 0;
+      }
+    }
+
+    .activity-value {
+      color: #5a7a6a;
+      font-size: 0.95rem;
+      font-weight: 600;
+      background: #e8f0e6;
+      padding: 4px 12px;
+      border-radius: 12px;
+    }
+  }
+}
+
+ion-footer {
+  background: transparent;
+}

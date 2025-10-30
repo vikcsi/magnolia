@@ -1,0 +1,95 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar mode="md">
+    <ion-title>Szép napot, Viktória!</ion-title>
+    <ion-buttons slot="end">
+      <ion-button>
+        <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="ion-padding">
+    <ion-card class="main-card">
+      <ion-card-content>
+        <p>Mai lábnyom</p>
+        <div class="footprint-value">
+          <h1>4,1 kg</h1>
+          <span>CO2 kibocsátás</span>
+        </div>
+        <div class="limit-progress">
+          <span>Heti limit: 20 kg</span>
+          <span>20%</span>
+        </div>
+        <ion-progress-bar value="0.2"></ion-progress-bar>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <ion-card class="summary-card">
+            <ion-icon name="trending-up-outline"></ion-icon>
+            <p>Heti átlag</p>
+            <h2>19,1 kg</h2>
+          </ion-card>
+        </ion-col>
+        <ion-col>
+          <ion-card class="summary-card">
+            <ion-icon name="star-outline"></ion-icon>
+            <p>Szint</p>
+            <h2>Zöldfülű</h2>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <h3 class="section-title">Eszközök</h3>
+    <div class="tools-container">
+      <div class="tool-item">
+        <ion-button class="tool-button">
+          <ion-icon name="paper-plane-outline"></ion-icon>
+        </ion-button>
+        <ion-label>Útvonal-tervezés</ion-label>
+      </div>
+      <div class="tool-item">
+        <ion-button class="tool-button">
+          <ion-icon name="eye-outline"></ion-icon>
+        </ion-button>
+        <ion-label>Termék beolvasás</ion-label>
+      </div>
+      <div class="tool-item">
+        <ion-button class="tool-button">
+          <ion-icon name="camera-outline"></ion-icon>
+        </ion-button>
+        <ion-label>Új cél-kitűzés</ion-label>
+      </div>
+    </div>
+
+    <h3 class="section-title">Legutóbbi tevékenységek</h3>
+    <ion-list lines="none">
+      <ion-item class="activity-item">
+        <ion-icon name="bus-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h2>Buszozás</h2>
+          <p>Ma, 16:30 - 2,3 km</p>
+        </ion-label>
+        <div class="activity-value">+1,4 kg</div>
+      </ion-item>
+      <ion-item class="activity-item">
+        <ion-icon name="cart-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h2>Bevásárlás</h2>
+          <p>Ma, 13:13 - 8 termék</p>
+        </ion-label>
+        <div class="activity-value">+5,3 kg</div>
+      </ion-item>
+    </ion-list>
+
+  </div>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <app-navigation></app-navigation>
+</ion-footer>

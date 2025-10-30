@@ -1,0 +1,54 @@
+.scan-button {
+  --background: #5a7a6a;
+  --background-hover: #4a6a5a;
+  --border-radius: 12px;
+  height: 48px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-transform: none;
+  
+  ion-icon {
+    font-size: 1.3rem;
+  }
+}
+
+.products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+  
+  .product-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: #f8faf8;
+    border: 1px solid #e8ede8;
+    border-radius: 12px;
+    
+    .product-info {
+      h4 {
+        color: #2d4a3e;
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin: 0 0 4px 0;
+      }
+      
+      p {
+        color: #7a7a7a;
+        font-size: 0.85rem;
+        margin: 0;
+      }
+    }
+    
+    .product-impact {
+      color: #5a7a6a;
+      font-size: 0.95rem;
+      font-weight: 600;
+      background: #e8f0e6;
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+  }
+}

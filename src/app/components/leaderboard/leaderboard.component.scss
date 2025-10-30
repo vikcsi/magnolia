@@ -1,0 +1,286 @@
+.position-card {
+    background: linear-gradient(135deg, #b8cec0 0%, #a8c5a0 100%);
+    border-radius: 20px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+
+    .position-avatar-wrapper {
+        position: relative;
+        flex-shrink: 0;
+
+        .position-avatar {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #5a7a6a;
+        }
+
+        .position-badge {
+            position: absolute;
+            bottom: -8px;
+            right: -8px;
+            width: 36px;
+            height: 36px;
+            background: #5a7a6a;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+    }
+
+    .position-info {
+        flex: 1;
+
+        .position-label {
+            color: rgba(45, 74, 62, 0.8);
+            font-size: 0.85rem;
+            margin: 0 0 4px 0;
+        }
+
+        h2 {
+            color: #2d4a3e;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0 0 4px 0;
+        }
+
+        .position-trend {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+
+            ion-icon {
+                font-size: 1rem;
+                color: #2d4a3e;
+            }
+
+            span {
+                color: #2d4a3e;
+                font-size: 0.85rem;
+            }
+        }
+    }
+
+    .position-points {
+        text-align: right;
+
+        p {
+            color: rgba(45, 74, 62, 0.8);
+            font-size: 0.85rem;
+            margin: 0 0 4px 0;
+        }
+
+        h3 {
+            color: #2d4a3e;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+    }
+}
+
+.top-three {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 12px;
+    margin-bottom: 24px;
+
+    .podium-item {
+        flex: 1;
+        background: white;
+        border: 2px solid #e0e0d8;
+        border-radius: 16px;
+        padding: 20px 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+
+        &.first {
+            padding-top: 45px;
+            padding-bottom: 45px;
+        }
+
+        &.second {
+            padding-top: 30px;
+            padding-bottom: 30px;
+        }
+
+        .podium-avatar {
+            width: 64px;
+            height: 64px;
+            background: #e0e8e0;
+            border-radius: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: 600;
+            color: #5a7a6a;
+            margin-bottom: 8px;
+        }
+
+        .podium-badge {
+            top: 12px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .first-badge {
+            background: #5a7a6a;
+        }
+
+        .second-badge {
+            background: #7a9d8a;
+        }
+
+        .third-badge {
+            background: #a8b8aa;
+        }
+
+        .podium-name {
+            color: #5a7a6a;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 8px 0 4px 0;
+        }
+
+        .podium-points {
+            color: #7a7a7a;
+            font-size: 0.85rem;
+            margin: 0;
+        }
+    }
+}
+
+.rankings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .rank-item {
+        background: white;
+        border: 2px solid #e0e0d8;
+        border-radius: 16px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        &.you {
+            background: #e8f0e6;
+            border-color: #7a9d8a;
+            margin-bottom: 40px;
+        }
+
+        .rank-badge {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #2d4a3e;
+            flex-shrink: 0;
+
+            &.fourth {
+                background: #f0f0e8;
+            }
+
+            &.fifth {
+                background: #f5f5e8;
+            }
+
+            &.sixth {
+                background: #5a7a6a;
+                color: white;
+            }
+        }
+
+        .rank-avatar {
+            width: 48px;
+            height: 48px;
+            background: #e0e8e0;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #5a7a6a;
+            flex-shrink: 0;
+        }
+
+        .rank-info {
+            flex: 1;
+
+            .rank-name {
+                color: #2d4a3e;
+                font-size: 0.95rem;
+                font-weight: 600;
+                margin: 0 0 4px 0;
+            }
+
+            .rank-points {
+                color: #7a7a7a;
+                font-size: 0.85rem;
+                margin: 0;
+            }
+        }
+
+        .rank-change {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+
+            &.up {
+                background: rgba(168, 197, 160, 0.3);
+                color: #5a7a6a;
+
+                ion-icon {
+                    color: #5a7a6a;
+                }
+            }
+
+            &.down {
+                background: rgba(200, 150, 150, 0.3);
+                color: #a06060;
+
+                ion-icon {
+                    color: #a06060;
+                }
+            }
+
+            ion-icon {
+                font-size: 1rem;
+            }
+        }
+    }
+}

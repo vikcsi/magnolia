@@ -35,3 +35,104 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+
+ion-header {
+  ion-title {
+    -webkit-padding-start: 16px;
+    padding-inline-start: 16px;
+    -webkit-padding-end: 16px;
+    padding-inline-end: 16px;
+  }
+}
+
+// Activity cards global styling
+.activity-section {
+  background: white;
+  border: 2px solid #e0e0d8;
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 40px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+
+  .section-icon {
+    width: 48px;
+    height: 48px;
+    background: #e8f0e6;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+
+    ion-icon {
+      font-size: 1.5rem;
+      color: #5a7a6a;
+    }
+  }
+
+  h3 {
+    color: #2d4a3e;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  p {
+    color: #7a7a7a;
+    font-size: 0.9rem;
+    margin: 4px 0 0 0;
+  }
+}
+
+.toggle-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+
+  .toggle-btn {
+    flex: 1;
+    padding: 12px;
+    background: white;
+    border: 2px solid #e0e0d8;
+    border-radius: 12px;
+    color: #2d4a3e;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &.active {
+      background: #5a7a6a;
+      color: white;
+      border-color: #5a7a6a;
+    }
+  }
+}
+
+.subsection-title {
+  color: #5a5a5a;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin: 20px 0 12px 0;
+}
+
+.save-button {
+  --background: #5a7a6a;
+  --background-hover: #4a6a5a;
+  --border-radius: 12px;
+  height: 48px;
+  font-weight: 600;
+  text-transform: none;
+  margin-top: 8px;
+}
+
+ion-footer {
+  background: transparent;
+}

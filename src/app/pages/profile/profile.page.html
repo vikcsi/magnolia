@@ -1,0 +1,153 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar mode="md">
+    <ion-title>Profil</ion-title>
+    <ion-buttons slot="end">
+      <ion-button>
+        <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="ion-padding">
+
+    <div class="profile-header">
+      <div class="avatar">V</div>
+      <h2>Viktória</h2>
+      <p class="username">@vilenaaa</p>
+      <div class="level-badge">
+        <ion-icon name="star"></ion-icon>
+        <span>1. szint - Zöldfülű</span>
+      </div>
+    </div>
+
+    <div class="xp-section">
+      <div class="xp-header">
+        <div class="xp-label">
+          <ion-icon name="flash"></ion-icon>
+          <span>Szint haladás</span>
+        </div>
+        <span class="xp-value">812 / 1000 XP</span>
+      </div>
+      <ion-progress-bar value="0.812"></ion-progress-bar>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <ion-icon name="ribbon"></ion-icon>
+        </div>
+        <h3>5</h3>
+        <p>Kitűző</p>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <ion-icon name="play-forward"></ion-icon>
+        </div>
+        <h3>10</h3>
+        <p>Streak</p>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <ion-icon name="people"></ion-icon>
+        </div>
+        <h3>2</h3>
+        <p>Barát</p>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">
+        <ion-icon name="radio-button-on"></ion-icon>
+        <h3>Jelenlegi célok</h3>
+      </div>
+      <a class="see-all">Összes</a>
+    </div>
+
+    <div class="goals-list">
+      <div class="goal-item">
+        <div class="goal-icon">
+          <ion-icon name="radio-button-on"></ion-icon>
+        </div>
+        <div class="goal-content">
+          <h4>25%-kal csökkenteni a heti kibocsátást</h4>
+          <span class="goal-time">4 nap múlva vége</span>
+          <div class="goal-progress">
+            <ion-progress-bar value="0.58"></ion-progress-bar>
+            <div class="goal-stats">
+              <span>58% kész</span>
+              <span class="xp-reward">+100 XP</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="goal-item">
+        <div class="goal-icon">
+          <ion-icon name="radio-button-on"></ion-icon>
+        </div>
+        <div class="goal-content">
+          <h4>Jegyezzen fel tevékenységet 30 napon át</h4>
+          <span class="goal-time">15 / 30 nap</span>
+          <div class="goal-progress">
+            <ion-progress-bar value="0.5"></ion-progress-bar>
+            <div class="goal-stats">
+              <span>50% kész</span>
+              <span class="xp-reward">+200 XP</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">
+        <ion-icon name="leaf"></ion-icon>
+        <h3>Legutóbbi kitűzők</h3>
+      </div>
+      <a class="see-all">Összes</a>
+    </div>
+
+    <div class="badges-grid">
+      <div class="badge-item">
+        <div class="badge-icon green">
+          <ion-icon name="leaf"></ion-icon>
+        </div>
+        <p>Eco Harcos</p>
+      </div>
+
+      <div class="badge-item">
+        <div class="badge-icon light-green">
+          <ion-icon name="trophy"></ion-icon>
+        </div>
+        <p>Bajnok</p>
+      </div>
+
+      <div class="badge-item">
+        <div class="badge-icon medium-green">
+          <ion-icon name="star"></ion-icon>
+        </div>
+        <p>Sztár</p>
+      </div>
+
+      <div class="badge-item">
+        <div class="badge-icon pale-green">
+          <ion-icon name="person"></ion-icon>
+        </div>
+        <p>Szintlépő</p>
+      </div>
+    </div>
+
+    <ion-button expand="block" fill="outline" color="danger" (click)="logout()" class="logout-button">
+      Kijelentkezés
+    </ion-button>
+
+  </div>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <app-navigation></app-navigation>
+</ion-footer>

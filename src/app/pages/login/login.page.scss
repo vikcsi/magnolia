@@ -1,0 +1,153 @@
+ion-content {
+  --background: #f5f5f0;
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.login-card {
+  --background: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 24px;
+  width: calc(100% - 32px);
+  max-width: 400px;
+  margin: 0;
+
+  ion-card-header {
+    padding: 24px 24px 8px 24px;
+  }
+
+  ion-card-content {
+    padding: 16px 24px 24px 24px;
+  }
+}
+
+ion-card-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2d4a3e;
+  margin: 0 0 4px 0;
+}
+
+.card-subtitle {
+  color: #7a7a7a;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.items {
+  display: grid;
+  grid-template-columns: 1;
+}
+
+.input-item {
+  --background: transparent;
+  --border-width: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  --inner-padding-end: 0;
+  margin-bottom: 20px;
+
+
+  ion-label {
+    color: #2d4a3e;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .input-wrapper {
+    background: #f8faf8;
+    border: 1px solid #e0e0d8;
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+
+    ion-icon {
+      color: #7a9d8a;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    ion-input {
+      --padding-start: 0;
+      --padding-end: 0;
+      font-size: 0.95rem;
+
+      &::placeholder {
+        color: #a8a8a8;
+      }
+    }
+
+    .toggle-password {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+
+      ion-icon {
+        color: #a8a8a8;
+        font-size: 1.3rem;
+      }
+    }
+  }
+}
+
+.form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  .remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    ion-checkbox {
+      --size: 18px;
+      --checkbox-background-checked: #5a7a6a;
+      --border-color: #d0d0d0;
+      --border-color-checked: #5a7a6a;
+      margin: 0;
+    }
+
+    label {
+      color: #5a5a5a;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+  }
+
+  .forgot-password {
+    color: #7a9d8a;
+    font-size: 0.85rem;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.login-button {
+  --background: linear-gradient(135deg, #7a9d8a 0%, #5a7a6a 100%);
+  --background-hover: #4a6a5a;
+  --background-activated: #4a6a5a;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 12px rgba(90, 122, 106, 0.3);
+  height: 48px;
+  font-weight: 600;
+  text-transform: none;
+  font-size: 1rem;
+  margin: 0;
+}

@@ -1,0 +1,91 @@
+.energy-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        ion-label {
+            color: #5a5a5a;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        ion-select,
+        ion-input {
+            --background: #f8faf8;
+            --padding-start: 16px;
+            --padding-end: 16px;
+            border: 2px solid #e0e0d8;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            min-height: 48px;
+        }
+
+        .input-with-unit {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            ion-input {
+                flex: 1;
+            }
+
+            .unit {
+                color: #5a5a5a;
+                font-size: 0.95rem;
+                font-weight: 500;
+                padding: 0 12px;
+            }
+        }
+    }
+}
+
+.energy-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+
+    .energy-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        background: #f8faf8;
+        border: 1px solid #e8ede8;
+        border-radius: 12px;
+
+        .energy-info {
+            h4 {
+                color: #2d4a3e;
+                font-size: 0.95rem;
+                font-weight: 600;
+                margin: 0 0 4px 0;
+            }
+
+            p {
+                color: #7a7a7a;
+                font-size: 0.85rem;
+                margin: 0;
+
+                .separator {
+                    margin: 0 6px;
+                }
+            }
+        }
+
+        .energy-impact {
+            color: #5a7a6a;
+            font-size: 0.95rem;
+            font-weight: 600;
+            background: #e8f0e6;
+            padding: 4px 10px;
+            border-radius: 8px;
+        }
+    }
+}

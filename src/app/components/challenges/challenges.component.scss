@@ -1,0 +1,191 @@
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        ion-icon {
+            font-size: 1.5rem;
+            color: #2d4a3e;
+        }
+
+        h3 {
+            color: #2d4a3e;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+    }
+}
+
+.challenges-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 32px;
+
+    .challenge-item {
+        background: white;
+        border: 2px solid #e0e0d8;
+        border-radius: 16px;
+        padding: 16px;
+        display: flex;
+        gap: 12px;
+
+        .challenge-icon {
+            width: 48px;
+            height: 48px;
+            background: #5a7a6a;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+
+            ion-icon {
+                font-size: 1.5rem;
+                color: white;
+            }
+        }
+
+        .challenge-content {
+            flex: 1;
+
+            .challenge-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 4px;
+
+                h4 {
+                    color: #2d4a3e;
+                    font-size: 0.95rem;
+                    font-weight: 600;
+                    margin: 0;
+                }
+
+                .time-badge {
+                    background: #e8f0e6;
+                    color: #5a7a6a;
+                    font-size: 0.75rem;
+                    font-weight: 600;
+                    padding: 4px 8px;
+                    border-radius: 10px;
+
+                    &.green {
+                        background: #d0e8d0;
+                    }
+                }
+            }
+
+            .challenge-desc {
+                color: #7a7a7a;
+                font-size: 0.85rem;
+                margin: 0 0 12px 0;
+            }
+
+            .challenge-progress {
+                ion-progress-bar {
+                    --background: rgba(138, 173, 147, 0.3);
+                    --progress-background: #5a7a6a;
+                    height: 6px;
+                    border-radius: 3px;
+                    margin-bottom: 8px;
+                }
+
+                .challenge-stats {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    font-size: 0.85rem;
+
+                    span {
+                        color: #7a7a7a;
+                    }
+
+                    .participants,
+                    .reward {
+                        display: flex;
+                        align-items: center;
+                        gap: 4px;
+                        color: #5a7a6a;
+
+                        ion-icon {
+                            font-size: 1rem;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.join-challenges {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .join-challenge-item {
+        background: white;
+        border: 2px solid #e0e0d8;
+        border-radius: 16px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .join-icon {
+            width: 48px;
+            height: 48px;
+            background: #f0f5ee;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+
+            ion-icon {
+                font-size: 1.5rem;
+                color: #5a7a6a;
+            }
+        }
+
+        .join-info {
+            flex: 1;
+
+            .join-title {
+                color: #2d4a3e;
+                font-size: 0.95rem;
+                font-weight: 600;
+                margin: 0 0 4px 0;
+            }
+
+            .join-desc {
+                color: #7a7a7a;
+                font-size: 0.85rem;
+                margin: 0;
+            }
+        }
+
+        .join-btn {
+            background: #5a7a6a;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+
+            &:active {
+                background: #4a6a5a;
+            }
+        }
+    }
+}

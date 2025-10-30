@@ -1,0 +1,42 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar mode="md">
+    <ion-title>Közösség</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="ion-padding">
+
+    <div class="tab-buttons">
+      <button class="tab-btn" [class.active]="selectedTab === 'leaderboard'" (click)="selectTab('leaderboard')">
+        Ranglista
+      </button>
+      <button class="tab-btn" [class.active]="selectedTab === 'friends'" (click)="selectTab('friends')">
+        Barátok
+      </button>
+      <button class="tab-btn" [class.active]="selectedTab === 'challenges'" (click)="selectTab('challenges')">
+        Kihívások
+      </button>
+    </div>
+
+    @switch (selectedTab) {
+    @case ('leaderboard') {
+    <app-leaderboard></app-leaderboard>
+    }
+    @case ('friends') {
+    <app-friends></app-friends>
+    }
+    @case ('challenges') {
+    <app-challenges></app-challenges>
+    }
+    @default {
+    <div>Nincs találat</div>
+    }
+    }
+    
+  </div>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <app-navigation></app-navigation>
+</ion-footer>
