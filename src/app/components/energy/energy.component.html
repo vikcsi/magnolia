@@ -12,16 +12,18 @@
   <div class="energy-form">
     <div class="form-group">
       <ion-label>Fogyasztás típusa</ion-label>
-      <ion-select placeholder="Válassz" interface="popover">
-        <ion-select-option value="electricity">Villany</ion-select-option>
-        <ion-select-option value="gas">Gáz</ion-select-option>
-        <ion-select-option value="water">Víz</ion-select-option>
-      </ion-select>
+      <div class="input-wrapper">
+        <ion-select placeholder="Válassz" interface="action-sheet">
+          <ion-select-option value="electricity">Villany</ion-select-option>
+          <ion-select-option value="gas">Gáz</ion-select-option>
+          <ion-select-option value="water">Víz</ion-select-option>
+        </ion-select>
+      </div>
     </div>
 
     <div class="form-group">
       <ion-label>Mennyiség</ion-label>
-      <div class="input-with-unit">
+      <div class="input-with-unit input-wrapper">
         <ion-input type="number" placeholder="0"></ion-input>
         <span class="unit">kWh</span>
       </div>
@@ -29,11 +31,13 @@
 
     <div class="form-group">
       <ion-label>Időszak</ion-label>
-      <ion-select placeholder="Válassz" interface="popover">
-        <ion-select-option value="today">Mai nap</ion-select-option>
-        <ion-select-option value="week">Heti</ion-select-option>
-        <ion-select-option value="month">Havi</ion-select-option>
-      </ion-select>
+      <div class="input-wrapper">
+        <ion-select placeholder="Válassz" interface="action-sheet">
+          <ion-select-option value="today">Mai nap</ion-select-option>
+          <ion-select-option value="week">Heti</ion-select-option>
+          <ion-select-option value="month">Havi</ion-select-option>
+        </ion-select>
+      </div>
     </div>
   </div>
 
