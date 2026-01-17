@@ -12,7 +12,7 @@ $RECYCLE.BIN/
 *.log
 log.txt
 
-
+/src/environments/
 /.sourcemaps
 /.versions
 /coverage
@@ -45,13 +45,8 @@ yarn-error.log
 *.sublime-workspace
 
 # Visual Studio Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
+.vscode/
 .history/*
-
 
 # Miscellaneous
 /.angular
@@ -64,6 +59,9 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
+
+.md
+!README.md
 
 # System files
 .DS_Store
