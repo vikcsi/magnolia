@@ -49,7 +49,7 @@ export class LoginPage implements OnInit {
   }
 
   login() {
-    const foundUser = MOCK_USERS.find(u => u.username === this.username && u.password === this.password);
+    const foundUser = MOCK_USERS.find(u => u.username === this.username);
     if (foundUser) {
       this.authService.login(foundUser);
       this.router.navigate(['/home']);
