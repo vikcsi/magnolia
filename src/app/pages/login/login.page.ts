@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
 import { User, MOCK_USERS } from 'src/app/models/user.model';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
@@ -15,13 +14,16 @@ import {
   eyeOff, 
   person
 } from 'ionicons/icons';
+import { IonCheckbox, IonContent, IonInput } from '@ionic/angular/standalone';
+import { IonIcon } from '@ionic/angular/standalone';
+import { IonButton } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule, IonInput, IonIcon, IonButton, IonContent, IonCheckbox]
 })
 export class LoginPage implements OnInit {
   username: string = '';
@@ -49,7 +51,7 @@ export class LoginPage implements OnInit {
   }
 
   login() {
-    const foundUser = MOCK_USERS.find(u => u.username === this.username);
+    const foundUser = MOCK_USERS.find(u => u.username === this.username && u.password === this.password);
     if (foundUser) {
       this.authService.login(foundUser);
       this.router.navigate(['/home']);

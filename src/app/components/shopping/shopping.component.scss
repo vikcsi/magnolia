@@ -1,7 +1,8 @@
 .scan-button {
-  --background: #5a7a6a;
-  --background-hover: #4a6a5a;
+  --background: var(--ion-color-secondary);
+  --background-hover: var(--ion-color-secondary-tint);
   --border-radius: 12px;
+  color: var(--ion-color-primary);
   height: 48px;
   font-weight: 600;
   margin-bottom: 20px;
@@ -23,30 +24,30 @@
     justify-content: space-between;
     align-items: center;
     padding: 16px;
-    background: #f8faf8;
-    border: 1px solid #e8ede8;
+    background: transparent;
+    border: 1px solid var(--ion-color-light-shade);
     border-radius: 12px;
     
     .product-info {
       h4 {
-        color: #2d4a3e;
+        color: var(--ion-color-secondary-shade);
         font-size: 0.95rem;
         font-weight: 600;
         margin: 0 0 4px 0;
       }
       
       p {
-        color: #7a7a7a;
+        color: var(--ion-color-medium);;
         font-size: 0.85rem;
         margin: 0;
       }
     }
     
     .product-impact {
-      color: #5a7a6a;
+      color: var(--ion-color-primary);
       font-size: 0.95rem;
       font-weight: 600;
-      background: #e8f0e6;
+      background: var(--ion-color-secondary);
       padding: 4px 10px;
       border-radius: 8px;
     }

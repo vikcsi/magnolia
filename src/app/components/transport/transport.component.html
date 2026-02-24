@@ -15,21 +15,39 @@
   </div>
 
   <p class="subsection-title">Válassz utazási eszközt</p>
-
   <div class="transport-options">
-    <div class="transport-option">
+    <div
+      class="transport-option"
+      [class.active]="selectedTransport === 'car'"
+      (click)="selectTransport('car')"
+    >
       <div class="transport-icon">🚗</div>
       <ion-label>Autó</ion-label>
     </div>
-    <div class="transport-option">
+
+    <div
+      class="transport-option"
+      [class.active]="selectedTransport === 'bus'"
+      (click)="selectTransport('bus')"
+    >
       <div class="transport-icon">🚌</div>
       <ion-label>Busz</ion-label>
     </div>
-    <div class="transport-option">
+
+    <div
+      class="transport-option"
+      [class.active]="selectedTransport === 'bike'"
+      (click)="selectTransport('bike')"
+    >
       <div class="transport-icon">🚲</div>
       <ion-label>Bicikli</ion-label>
     </div>
-    <div class="transport-option">
+
+    <div
+      class="transport-option"
+      [class.active]="selectedTransport === 'walk'"
+      (click)="selectTransport('walk')"
+    >
       <div class="transport-icon">🚶</div>
       <ion-label>Séta</ion-label>
     </div>

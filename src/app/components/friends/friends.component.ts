@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonIcon } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-friends',
   templateUrl: './friends.component.html',
   styleUrls: ['./friends.component.scss'],
-  imports: [IonicModule]
+  imports: [IonIcon]
 })
 export class FriendsComponent  implements OnInit {
 

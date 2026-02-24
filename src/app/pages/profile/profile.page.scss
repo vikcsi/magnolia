@@ -1,7 +1,7 @@
 ion-header {
   ion-toolbar {
-    --background: #f5f5f0;
-    --color: #2d4a3e;
+    --background: var(--ion-color-light);
+    --color: var(--ion-color-primary);
 
     ion-title {
       font-size: 1.2rem;
@@ -10,13 +10,13 @@ ion-header {
 
     ion-icon {
       font-size: 1.5rem;
-      color: #2d4a3e;
+      color: var(--ion-color-primary);
     }
   }
 }
 
 ion-content {
-  --background: #f5f5f0;
+  --background: var(--ion-color-light);
 }
 
 .profile-header {
@@ -28,26 +28,26 @@ ion-content {
   .avatar {
     width: 120px;
     height: 120px;
-    background: #b8cec0;
+    background: var(--ion-color-secondary);
     border-radius: 24px;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 3.5rem;
     font-weight: 600;
-    color: #5a7a6a;
+    color: var(--ion-color-primary);
     margin-bottom: 16px;
   }
 
   h2 {
-    color: #2d4a3e;
+    color: var(--ion-color-primary);
     font-size: 1.5rem;
     font-weight: 700;
     margin: 0 0 4px 0;
   }
 
   .username {
-    color: #a8c5a0;
+    color: var(--ion-color-secondary-shade);
     font-size: 0.95rem;
     margin: 0 0 12px 0;
   }
@@ -56,8 +56,8 @@ ion-content {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: #5a7a6a;
-    color: white;
+    background: var(--ion-color-primary);
+    color: var(--ion-color-tertiary);
     padding: 8px 20px;
     border-radius: 20px;
 
@@ -88,26 +88,26 @@ ion-content {
 
       ion-icon {
         font-size: 1.2rem;
-        color: #5a7a6a;
+        color: var(--ion-color-primary);
       }
 
       span {
-        color: #2d4a3e;
+        color: var(--ion-color-primary);
         font-size: 0.95rem;
         font-weight: 600;
       }
     }
 
     .xp-value {
-      color: #5a7a6a;
+      color: var(--ion-color-primary);
       font-size: 0.9rem;
       font-weight: 600;
     }
   }
 
   ion-progress-bar {
-    --background: rgba(138, 173, 147, 0.3);
-    --progress-background: #5a7a6a;
+    --background: rgba(197, 197, 197, 0.171);
+    --progress-background: var(--ion-color-secondary);
     height: 8px;
     border-radius: 4px;
   }
@@ -115,13 +115,13 @@ ion-content {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
   gap: 12px;
   margin-bottom: 32px;
 
   .stat-card {
-    background: white;
-    border: 2px solid #e0e0d8;
+    background: var(--ion-color-tertiary);
+    border: 2px solid var(--ion-color-tertiary-shade);
     border-radius: 16px;
     padding: 20px 12px;
     display: flex;
@@ -132,7 +132,7 @@ ion-content {
     .stat-icon {
       width: 48px;
       height: 48px;
-      background: #5a7a6a;
+      background: var(--ion-color-secondary);
       border-radius: 12px;
       display: flex;
       justify-content: center;
@@ -143,19 +143,19 @@ ion-content {
         display: flex;
         align-items: center;
         font-size: 1.3rem;
-        color: white;
+        color: var(--ion-color-primary);
       }
     }
 
     h3 {
-      color: #2d4a3e;
+      color: var(--ion-color-primary);
       font-size: 1.5rem;
       font-weight: 700;
       margin: 0;
     }
 
     p {
-      color: #a8c5a0;
+      color: var(--ion-color-primary);
       font-size: 0.85rem;
       margin: 0;
     }
@@ -175,11 +175,11 @@ ion-content {
 
     ion-icon {
       font-size: 1.5rem;
-      color: #2d4a3e;
+      color: var(--ion-color-primary);
     }
 
     h3 {
-      color: #2d4a3e;
+      color: var(--ion-color-primary);
       font-size: 1.1rem;
       font-weight: 600;
       margin: 0;
@@ -187,7 +187,7 @@ ion-content {
   }
 
   .see-all {
-    color: #a8c5a0;
+    color: var(--ion-color-primary);
     font-size: 0.9rem;
     font-weight: 500;
     text-decoration: none;
@@ -202,8 +202,8 @@ ion-content {
   margin-bottom: 32px;
 
   .goal-item {
-    background: white;
-    border: 2px solid #e0e0d8;
+    background: var(--ion-color-primary);
+    border: 2px solid var(--ion-color-primary-shade);
     border-radius: 16px;
     padding: 16px;
     display: flex;
@@ -212,7 +212,7 @@ ion-content {
     .goal-icon {
       width: 48px;
       height: 48px;
-      background: #3d5a52;
+      background: var(--ion-color-tertiary);
       border-radius: 12px;
       display: flex;
       justify-content: center;
@@ -221,7 +221,7 @@ ion-content {
 
       ion-icon {
         font-size: 1.5rem;
-        color: white;
+        color: var(--ion-color-primary);
       }
     }
 
@@ -229,7 +229,7 @@ ion-content {
       flex: 1;
 
       h4 {
-        color: #2d4a3e;
+        color: var(--ion-color-secondary);
         font-size: 0.95rem;
         font-weight: 600;
         margin: 0 0 4px 0;
@@ -237,8 +237,8 @@ ion-content {
 
       .goal-time {
         display: inline-block;
-        background: #e8f0e6;
-        color: #5a7a6a;
+        background: var(--ion-color-secondary-shade);
+        color: var(--ion-color-primary);
         font-size: 0.8rem;
         padding: 4px 10px;
         border-radius: 10px;
@@ -247,8 +247,8 @@ ion-content {
 
       .goal-progress {
         ion-progress-bar {
-          --background: rgba(138, 173, 147, 0.3);
-          --progress-background: #5a7a6a;
+          --background: rgba(197, 197, 197, 0.171);
+          --progress-background: var(--ion-color-tertiary);
           height: 6px;
           border-radius: 3px;
           margin-bottom: 6px;
@@ -260,11 +260,11 @@ ion-content {
           font-size: 0.85rem;
 
           span {
-            color: #7a7a7a;
+            color: var(--ion-color-tertiary);
           }
 
           .xp-reward {
-            color: #5a7a6a;
+            color: var(--ion-color-secondary);
             font-weight: 600;
           }
         }
@@ -294,29 +294,44 @@ ion-content {
       align-items: center;
 
       &.green {
-        background: #5a7a6a;
+        background: var(--ion-color-primary);
+
+        ion-icon {
+        color: var(--ion-color-secondary);
+        }
       }
 
       &.light-green {
-        background: #a8c5a0;
+        background: var(--ion-color-secondary);
+
+        ion-icon {
+        color: var(--ion-color-primary);
+        }
       }
 
       &.medium-green {
-        background: #7a9d8a;
+        background: var(--ion-color-tertiary);
+
+        ion-icon {
+        color: var(--ion-color-medium);
+        }
       }
 
       &.pale-green {
-        background: #c8d8ca;
+        background: var(--ion-color-medium);
+
+        ion-icon {
+        color: var(--ion-color-tertiary);
+        }
       }
 
       ion-icon {
         font-size: 2rem;
-        color: white;
       }
     }
 
     p {
-      color: #2d4a3e;
+      color: var(--ion-color-primary);
       font-size: 0.8rem;
       text-align: center;
       margin: 0;
@@ -327,6 +342,7 @@ ion-content {
 .logout-button {
   margin-top: 32px;
   margin-bottom: 24px;
+  border-radius: 20px;
 }
 
 ion-footer {

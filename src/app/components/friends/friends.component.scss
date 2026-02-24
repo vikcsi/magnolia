@@ -11,11 +11,11 @@
 
         ion-icon {
             font-size: 1.3rem;
-            color: #5a7a6a;
+            color: var(--ion-color-primary);
         }
 
         h3 {
-            color: #2d4a3e;
+            color: var(--ion-color-primary);
             font-size: 1.1rem;
             font-weight: 600;
             margin: 0;
@@ -23,14 +23,14 @@
     }
 
     h3 {
-        color: #2d4a3e;
+        color: var(--ion-color-primary);
         font-size: 1.1rem;
         font-weight: 600;
         margin: 0;
     }
 
     .badge-count {
-        background: #5a7a6a;
+        background: var(--ion-color-primary);
         color: white;
         font-size: 0.75rem;
         font-weight: 600;
@@ -39,7 +39,7 @@
     }
 
     .see-all {
-        color: #7a9d8a;
+        color: var(--ion-color-primary);
         font-size: 0.9rem;
         text-decoration: none;
         cursor: pointer;
@@ -53,8 +53,8 @@
     margin-bottom: 32px;
 
     .friend-request-item {
-        background: white;
-        border: 2px solid #e0e0d8;
+        background: var(--ion-color-medli);
+        border: 2px solid var(--ion-color-medli-shade);
         border-radius: 16px;
         padding: 16px;
         display: flex;
@@ -64,14 +64,14 @@
         .friend-avatar {
             width: 48px;
             height: 48px;
-            background: #e0e8e0;
+            background: var(--ion-color-primary);
             border-radius: 12px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 1.5rem;
             font-weight: 600;
-            color: #5a7a6a;
+            color: var(--ion-color-secondary);
             flex-shrink: 0;
         }
 
@@ -79,14 +79,14 @@
             flex: 1;
 
             .friend-name {
-                color: #2d4a3e;
+                color: var(--ion-color-primary);
                 font-size: 0.95rem;
                 font-weight: 600;
                 margin: 0 0 4px 0;
             }
 
             .friend-mutual {
-                color: #7a7a7a;
+                color: var(--ion-color-medium);
                 font-size: 0.85rem;
                 margin: 0;
             }
@@ -109,8 +109,8 @@
             }
 
             .accept-btn {
-                background: #5a7a6a;
-                color: white;
+                background: var(--ion-color-primary);
+                color: var(--ion-color-tertiary);
 
                 ion-icon {
                     font-size: 1.2rem;
@@ -118,8 +118,8 @@
             }
 
             .decline-btn {
-                background: #f0f0e8;
-                color: #7a7a7a;
+                background: var(--ion-color-tertiary);
+                color: var(--ion-color-primary);
                 font-size: 1.5rem;
             }
         }
@@ -132,8 +132,8 @@
     gap: 12px;
 
     .friend-item {
-        background: white;
-        border: 2px solid #e0e0d8;
+        background: var(--ion-color-primary);
+        border: 2px solid var(--ion-color-primary-shade);
         border-radius: 16px;
         padding: 16px;
         display: flex;
@@ -143,7 +143,7 @@
         transition: all 0.2s;
 
         &:active {
-            background: #f8faf8;
+            background: var(--ion-color-primary-tint);
         }
 
         .friend-avatar-wrapper {
@@ -153,14 +153,14 @@
             .friend-avatar {
                 width: 48px;
                 height: 48px;
-                background: #e0e8e0;
+                background: var(--ion-color-medli);
                 border-radius: 12px;
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 font-size: 1.5rem;
                 font-weight: 600;
-                color: #5a7a6a;
+                color: var(--ion-color-primary);
             }
 
             .online-indicator {
@@ -169,8 +169,8 @@
                 right: 2px;
                 width: 12px;
                 height: 12px;
-                background: #5a7a6a;
-                border: 2px solid white;
+                background: var(--ion-color-success);
+                border: 2px solid var(--ion-color-light);
                 border-radius: 50%;
             }
         }
@@ -179,7 +179,7 @@
             flex: 1;
 
             .friend-name {
-                color: #2d4a3e;
+                color: var(--ion-color-secondary);
                 font-size: 0.95rem;
                 font-weight: 600;
                 margin: 0 0 6px 0;
@@ -190,8 +190,8 @@
                 gap: 8px;
 
                 .level-badge {
-                    background: #e8f0e6;
-                    color: #5a7a6a;
+                    background: var(--ion-color-tertiary);
+                    color: var(--ion-color-primary);
                     font-size: 0.75rem;
                     font-weight: 600;
                     padding: 3px 8px;
@@ -199,14 +199,14 @@
                 }
 
                 .stat-value {
-                    color: #7a7a7a;
+                    color: var(--ion-color-secondary-shade);
                     font-size: 0.85rem;
                 }
             }
         }
 
         .chevron {
-            color: #a8c5a0;
+            color: var(--ion-color-secondary);
             font-size: 1.2rem;
         }
     }

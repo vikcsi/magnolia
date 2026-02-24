@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonIcon, IonProgressBar } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-challenges',
   templateUrl: './challenges.component.html',
   styleUrls: ['./challenges.component.scss'],
-  imports: [IonicModule]
+  imports: [IonIcon, IonProgressBar]
 })
 export class ChallengesComponent  implements OnInit {
 

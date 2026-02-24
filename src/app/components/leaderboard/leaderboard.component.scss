@@ -1,5 +1,5 @@
 .position-card {
-    background: linear-gradient(135deg, #b8cec0 0%, #a8c5a0 100%);
+    background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-primary-tint) 100%);
     border-radius: 20px;
     padding: 24px;
     display: flex;
@@ -14,14 +14,14 @@
         .position-avatar {
             width: 80px;
             height: 80px;
-            background: rgba(255, 255, 255, 0.4);
+            background: var(--ion-color-secondary);
             border-radius: 16px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 2.5rem;
             font-weight: 600;
-            color: #5a7a6a;
+            color: var(--ion-color-primary);
         }
 
         .position-badge {
@@ -30,12 +30,12 @@
             right: -8px;
             width: 36px;
             height: 36px;
-            background: #5a7a6a;
+            background: var(--ion-color-tertiary);
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: white;
+            color: var(--ion-color-primary);
             font-size: 0.85rem;
             font-weight: 700;
         }
@@ -45,13 +45,13 @@
         flex: 1;
 
         .position-label {
-            color: rgba(45, 74, 62, 0.8);
+            color: var(--ion-color-tertiary);
             font-size: 0.85rem;
             margin: 0 0 4px 0;
         }
 
         h2 {
-            color: #2d4a3e;
+            color: var(--ion-color-secondary);
             font-size: 1.8rem;
             font-weight: 700;
             margin: 0 0 4px 0;
@@ -64,11 +64,11 @@
 
             ion-icon {
                 font-size: 1rem;
-                color: #2d4a3e;
+                color: var(--ion-color-secondary);
             }
 
             span {
-                color: #2d4a3e;
+                color: var(--ion-color-secondary);
                 font-size: 0.85rem;
             }
         }
@@ -78,13 +78,13 @@
         text-align: right;
 
         p {
-            color: rgba(45, 74, 62, 0.8);
+            color: var(--ion-color-tertiary);
             font-size: 0.85rem;
             margin: 0 0 4px 0;
         }
 
         h3 {
-            color: #2d4a3e;
+            color: var(--ion-color-secondary);
             font-size: 1.5rem;
             font-weight: 700;
             margin: 0;
@@ -101,8 +101,8 @@
 
     .podium-item {
         flex: 1;
-        background: white;
-        border: 2px solid #e0e0d8;
+        background: var(--ion-color-medli);
+        border: 2px solid var(--ion-color-secondary-shade);
         border-radius: 16px;
         padding: 20px 12px;
         display: flex;
@@ -123,14 +123,14 @@
         .podium-avatar {
             width: 64px;
             height: 64px;
-            background: #e0e8e0;
+            background: var(--ion-color-tertiary);
             border-radius: 14px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 2rem;
             font-weight: 600;
-            color: #5a7a6a;
+            color: var(--ion-color-primary);
             margin-bottom: 8px;
         }
 
@@ -142,32 +142,32 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            color: white;
+            color: var(--ion-color-tertiary);
             font-size: 0.8rem;
             font-weight: 700;
         }
 
         .first-badge {
-            background: #5a7a6a;
+            background: var(--ion-color-primary);
         }
 
         .second-badge {
-            background: #7a9d8a;
+            background: var(--ion-color-primary);
         }
 
         .third-badge {
-            background: #a8b8aa;
+            background: var(--ion-color-primary);
         }
 
         .podium-name {
-            color: #5a7a6a;
+            color: var(--ion-color-primary);
             font-size: 0.95rem;
             font-weight: 600;
             margin: 8px 0 4px 0;
         }
 
         .podium-points {
-            color: #7a7a7a;
+            color: var(--ion-color-primary-tint);
             font-size: 0.85rem;
             margin: 0;
         }
@@ -180,8 +180,8 @@
     gap: 12px;
 
     .rank-item {
-        background: white;
-        border: 2px solid #e0e0d8;
+        background: transparent;
+        border: 2px solid var(--ion-color-light-shade);
         border-radius: 16px;
         padding: 16px;
         display: flex;
@@ -189,8 +189,8 @@
         gap: 12px;
 
         &.you {
-            background: #e8f0e6;
-            border-color: #7a9d8a;
+            background: var(--ion-color-primary);
+            border-color: var(--ion-color-primary-shade);
             margin-bottom: 40px;
         }
 
@@ -203,34 +203,34 @@
             align-items: center;
             font-size: 0.85rem;
             font-weight: 700;
-            color: #2d4a3e;
+            color: var(--ion-color-secondary);
             flex-shrink: 0;
 
             &.fourth {
-                background: #f0f0e8;
+                background: var(--ion-color-primary);
             }
 
             &.fifth {
-                background: #f5f5e8;
+                background: var(--ion-color-primary);
             }
 
             &.sixth {
-                background: #5a7a6a;
-                color: white;
+                background: var(--ion-color-tertiary);
+                color: var(--ion-color-primary);
             }
         }
 
         .rank-avatar {
             width: 48px;
             height: 48px;
-            background: #e0e8e0;
+            background: var(--ion-color-medli);
             border-radius: 12px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 1.5rem;
             font-weight: 600;
-            color: #5a7a6a;
+            color: var(--ion-color-primary);
             flex-shrink: 0;
         }
 
@@ -238,14 +238,14 @@
             flex: 1;
 
             .rank-name {
-                color: #2d4a3e;
+                color: var(--ion-color-secondary-shade);
                 font-size: 0.95rem;
                 font-weight: 600;
                 margin: 0 0 4px 0;
             }
 
             .rank-points {
-                color: #7a7a7a;
+                color: var(--ion-color-medium);
                 font-size: 0.85rem;
                 margin: 0;
             }
@@ -261,20 +261,20 @@
             font-weight: 600;
 
             &.up {
-                background: rgba(168, 197, 160, 0.3);
-                color: #5a7a6a;
+                background: var(--ion-color-success-tint);
+                color: var(--ion-color-success-shade);
 
                 ion-icon {
-                    color: #5a7a6a;
+                    color: var(--ion-color-success-shade);
                 }
             }
 
             &.down {
-                background: rgba(200, 150, 150, 0.3);
-                color: #a06060;
+                background: var(--ion-color-danger-tint);
+                color: var(--ion-color-danger-shade);
 
                 ion-icon {
-                    color: #a06060;
+                    color: var(--ion-color-danger-shade);
                 }
             }
 

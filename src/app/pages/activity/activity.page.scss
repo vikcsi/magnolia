@@ -1,7 +1,7 @@
 ion-header {
   ion-toolbar {
-    --background: #f5f5f0;
-    --color: #2d4a3e;
+    --background: var(--ion-color-light);
+    --color: var(--ion-color-primary);
 
     ion-title {
       font-size: 1.2rem;
@@ -11,11 +11,11 @@ ion-header {
 }
 
 ion-content {
-  --background: #f5f5f0;
+  --background: var(--ion-color-light);
 }
 
 .section-title {
-  color: #2d4a3e;
+  color: var(--ion-color-primary);
   font-size: 1.1rem;
   font-weight: 600;
   margin: 0 0 16px 0;
@@ -29,8 +29,8 @@ ion-content {
 
   .category-card {
     flex: 1;
-    background: white;
-    border: 2px solid #e0e0d8;
+    background: var(--ion-color-tertiary);
+    border: 2px solid var(--ion-color-tertiary-shade);
     border-radius: 16px;
     padding: 20px 12px;
     display: flex;
@@ -41,14 +41,14 @@ ion-content {
     transition: all 0.2s;
 
     &.active {
-      background: #e8f0e6;
-      border-color: #7a9d8a;
+      background: var(--ion-color-secondary);
+      border-color: var(--ion-color-primary);
     }
 
     .category-icon {
       width: 48px;
       height: 48px;
-      background: #f0f5ee;
+      background: var(--ion-color-secondary);
       border-radius: 12px;
       display: flex;
       justify-content: center;
@@ -57,16 +57,16 @@ ion-content {
 
       ion-icon {
         font-size: 1.5rem;
-        color: #5a7a6a;
+        color: var(--ion-color-primary);
       }
     }
 
     &.active .category-icon {
-      background: white;
+      background: var(--ion-color-tertiary);
     }
 
     ion-label {
-      color: #2d4a3e;
+      color: var(--ion-color-primary);
       font-size: 0.9rem;
       text-align: center;
       font-weight: 500;
@@ -76,6 +76,6 @@ ion-content {
 
 @media (max-width: 380px) {
   .categories-container {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
   }
 }

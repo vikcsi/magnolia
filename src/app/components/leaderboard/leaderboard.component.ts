@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonIcon } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-leaderboard',
   templateUrl: './leaderboard.component.html',
   styleUrls: ['./leaderboard.component.scss'],
-  imports: [IonicModule]
+  imports: [IonIcon]
 })
 export class LeaderboardComponent  implements OnInit {
 

@@ -1,7 +1,7 @@
 ion-header {
     ion-toolbar {
-        --background: #f5f5f0;
-        --color: #2d4a3e;
+        --background: var(--ion-color-light);
+        --color: var(--ion-color-primary);
 
         ion-title {
             font-size: 1.2rem;
@@ -11,15 +11,15 @@ ion-header {
 }
 
 ion-content {
-    --background: #f5f5f0;
+    --background: var(--ion-color-light);
 }
 
 .tab-buttons {
     display: flex;
     gap: 0;
     margin-bottom: 24px;
-    background: white;
-    border: 2px solid #e0e0d8;
+    background: var(--ion-color-tertiary);
+    border: 2px solid var(--ion-color-tertiary-shade);
     border-radius: 20px;
     padding: 4px;
 
@@ -29,15 +29,15 @@ ion-content {
         background: transparent;
         border: none;
         border-radius: 16px;
-        color: #5a7a6a;
+        color: var(--ion-color-primary);
         font-size: 0.9rem;
         font-weight: 500;
         cursor: pointer;
         transition: all 0.2s;
 
         &.active {
-            background: #5a7a6a;
-            color: white;
+            background: var(--ion-color-secondary);
+            color: var(--ion-color-primary);
         }
     }
 }

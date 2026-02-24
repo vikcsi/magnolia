@@ -13,14 +13,14 @@
         margin-bottom: 8px;
 
         ion-label {
-            color: #2d4a3e;
+            color: var(--ion-color-secondary-shade);
             font-size: 0.9rem;
             font-weight: 500;
         }
 
         .input-wrapper {
-            background: #f8faf8;
-            border: 1px solid #e0e0d8;
+            background: var(--ion-color-light);
+            border: 1px solid var(--ion-color-light-shade);
             border-radius: 12px;
             padding: 12px 16px;
             display: flex;
@@ -37,7 +37,7 @@
                 font-size: 0.95rem;
 
                 &::placeholder {
-                    color: #a8a8a8;
+                    color: var(--ion-color-medium-tint);
                 }
             }
         }
@@ -52,7 +52,7 @@
             }
 
             .unit {
-                color: #5a5a5a;
+                color: var(--ion-color-medium);
                 font-size: 0.95rem;
                 font-weight: 500;
                 padding: 0 12px;
@@ -72,20 +72,20 @@
         justify-content: space-between;
         align-items: center;
         padding: 16px;
-        background: #f8faf8;
-        border: 1px solid #e8ede8;
+        background: var(--ion-color-light);
+        border: 1px solid var(--ion-color-light-shade);
         border-radius: 12px;
 
         .energy-info {
             h4 {
-                color: #2d4a3e;
+                color: var(--ion-color-secondary-shade);
                 font-size: 0.95rem;
                 font-weight: 600;
                 margin: 0 0 4px 0;
             }
 
             p {
-                color: #7a7a7a;
+                color: var(--ion-color-medium);
                 font-size: 0.85rem;
                 margin: 0;
 
@@ -96,10 +96,10 @@
         }
 
         .energy-impact {
-            color: #5a7a6a;
+            color: var(--ion-color-primary);
             font-size: 0.95rem;
             font-weight: 600;
-            background: #e8f0e6;
+            background: var(--ion-color-secondary);
             padding: 4px 10px;
             border-radius: 8px;
         }

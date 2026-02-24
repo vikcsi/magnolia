@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonIcon, IonButton } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-shopping',
   templateUrl: './shopping.component.html',
   styleUrls: ['./shopping.component.scss'],
-  imports: [IonicModule]
+  imports: [IonIcon, IonButton]
 })
 export class ShoppingComponent implements OnInit {
 
