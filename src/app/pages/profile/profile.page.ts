@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavigationComponent } from 'src/app/components/navigation/navigation.component';
@@ -18,6 +18,8 @@ import {
 } from 'ionicons/icons';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { Observable } from 'rxjs';
+import { User } from 'src/app/models/user.model';
 import {
   IonHeader,
   IonToolbar,
@@ -51,10 +53,12 @@ import {
   ],
 })
 export class ProfilePage implements OnInit {
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-  ) {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
+  userData$!: Observable<User | null>;
+
+  constructor() {
     addIcons({
       settingsOutline,
       star,
@@ -70,7 +74,9 @@ export class ProfilePage implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.userData$ = this.authService.currentUserProfile$;
+  }
 
   logout() {
     this.authService.logout();

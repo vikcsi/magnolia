@@ -1,5 +1,4 @@
 ion-content.login-content {
-  /* A teljes képernyő háttere a sötétbarna szín (a te korábbi kártya színed) */
   --background: var(--ion-color-primary); 
 }
 
@@ -8,7 +7,7 @@ ion-content.login-content {
   flex-direction: column;
   justify-content: center;
   height: 100%;
-  padding: 32px; /* Távolság a képernyő széleitől */
+  padding: 32px;
 }
 
 .header-section {
@@ -17,7 +16,7 @@ ion-content.login-content {
   h1 {
     font-size: 1.8rem;
     font-weight: 700;
-    color: var(--ion-color-secondary); /* Világos szín a sötét háttéren */
+    color: var(--ion-color-secondary);
     margin: 0 0 8px 0;
   }
 
@@ -28,7 +27,6 @@ ion-content.login-content {
   }
 }
 
-/* Az új, flexbox alapú mező elrendezés az előző válaszomból */
 .items {
   display: flex;
   flex-direction: column;
@@ -126,10 +124,10 @@ ion-content.login-content {
 
 .login-button {
   --background: linear-gradient(135deg, var(--ion-color-secondary) 0%, var(--ion-color-tertiary) 100%);
-  --background-hover: #4a6a5a;
-  --background-activated: #4a6a5a;
+  --background-hover: var(--ion-color-secondary);
+  --background-activated: var(--ion-color-secondary);
   --border-radius: 12px;
-  --box-shadow: 0 4px 12px rgba(90, 122, 106, 0.3);
+  --box-shadow: 0 4px 12px rgba(122, 90, 117, 0.3);
   color: var(--ion-color-primary);
   height: 48px;
   font-weight: 600;

@@ -1,6 +1,5 @@
 <ion-content [fullscreen]="true" class="login-content">
   <div class="login-container">
-    
     <div class="header-section">
       <h1>Üdv újra!</h1>
       <p class="subtitle">Jelentkezz be, hogy folytasd az öko utad!</p>
@@ -8,10 +7,15 @@
 
     <div class="items">
       <div class="custom-input-group">
-        <label class="custom-label">Felhasználónév</label>
+        <label class="custom-label">E-mail</label>
         <div class="input-wrapper">
           <ion-icon name="person"></ion-icon>
-          <ion-input type="text" placeholder="felhasználónév" [(ngModel)]="username"></ion-input>
+          <ion-input
+            type="text"
+            placeholder="e-mail"
+            [(ngModel)]="email"
+            required="true"
+          ></ion-input>
         </div>
       </div>
 
@@ -19,7 +23,12 @@
         <label class="custom-label">Jelszó</label>
         <div class="input-wrapper">
           <ion-icon name="lock-closed"></ion-icon>
-          <ion-input [type]="showPassword ? 'text' : 'password'" placeholder="jelszó" [(ngModel)]="password"></ion-input>
+          <ion-input
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="jelszó"
+            [(ngModel)]="password"
+            required="true"
+          ></ion-input>
           <button class="toggle-password" (click)="togglePassword()">
             <ion-icon [name]="showPassword ? 'eye-off' : 'eye'"></ion-icon>
           </button>
@@ -38,6 +47,5 @@
     <ion-button expand="block" class="login-button" (click)="login()">
       Bejelentkezés
     </ion-button>
-
   </div>
 </ion-content>

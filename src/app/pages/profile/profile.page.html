@@ -10,12 +10,12 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  @if (userData$ | async; as user) {
   <div class="ion-padding">
-
     <div class="profile-header">
-      <div class="avatar">V</div>
-      <h2>Viktória</h2>
-      <p class="username">@vilenaaa</p>
+      <div class="avatar">{{ user.username.charAt(0).toUpperCase() }}</div>
+      <h2>{{ user.username }}</h2>
+      <p class="username">&#64;{{ user.username }}</p>
       <div class="level-badge">
         <ion-icon name="star"></ion-icon>
         <span>1. szint - Zöldfülű</span>
@@ -28,9 +28,9 @@
           <ion-icon name="flash"></ion-icon>
           <span>Szint haladás</span>
         </div>
-        <span class="xp-value">812 / 1000 XP</span>
+        <span class="xp-value">{{ user.allXP }} / 1000 XP</span>
       </div>
-      <ion-progress-bar value="0.812"></ion-progress-bar>
+      <ion-progress-bar [value]="user.allXP / 1000"></ion-progress-bar>
     </div>
 
     <div class="stats-grid">
@@ -38,7 +38,7 @@
         <div class="stat-icon">
           <ion-icon name="ribbon"></ion-icon>
         </div>
-        <h3>5</h3>
+        <h3>{{ user.badges.length }}</h3>
         <p>Kitűző</p>
       </div>
 
@@ -46,7 +46,7 @@
         <div class="stat-icon">
           <ion-icon name="play-forward"></ion-icon>
         </div>
-        <h3>10</h3>
+        <h3>{{ user.streak }}</h3>
         <p>Streak</p>
       </div>
 
@@ -54,7 +54,7 @@
         <div class="stat-icon">
           <ion-icon name="people"></ion-icon>
         </div>
-        <h3>2</h3>
+        <h3>{{ user.friends.length }}</h3>
         <p>Barát</p>
       </div>
     </div>
@@ -141,11 +141,22 @@
       </div>
     </div>
 
-    <ion-button expand="block" fill="outline" color="danger" (click)="logout()" class="logout-button">
+    <ion-button
+      expand="block"
+      fill="outline"
+      color="danger"
+      (click)="logout()"
+      class="logout-button"
+    >
       Kijelentkezés
     </ion-button>
-
   </div>
+
+  } @else {
+  <div class="ion-padding" style="text-align: center; margin-top: 50px">
+    <p>Adatok betöltése...</p>
+  </div>
+  }
 </ion-content>
 
 <ion-footer class="ion-no-border">

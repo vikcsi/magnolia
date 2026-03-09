@@ -8,7 +8,8 @@ export interface User {
   streak : number,
   friends : string[],
   badges : string[],
-  activities : string[]
+  activities : string[],
+  challenges : string[]
 }
 
 export interface Badge {
@@ -29,6 +30,7 @@ export const MOCK_USERS: User[] = [
     streak : 0,
     friends : [],
     badges : [],
-    activities : []
+    activities : [],
+    challenges : []
   }
 ];

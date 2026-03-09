@@ -25,15 +25,17 @@
     "@angular/platform-browser": "^20.0.0",
     "@angular/platform-browser-dynamic": "^20.0.0",
     "@angular/router": "^20.0.0",
-    "@capacitor/android": "^7.5.0",
-    "@capacitor/app": "7.1.0",
-    "@capacitor/core": "^7.5.0",
-    "@capacitor/haptics": "7.0.2",
-    "@capacitor/ios": "^7.4.4",
-    "@capacitor/keyboard": "7.0.3",
-    "@capacitor/status-bar": "7.0.3",
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/app": "^8.0.0",
+    "@capacitor/barcode-scanner": "^3.0.2",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/haptics": "^8.0.0",
+    "@capacitor/ios": "^8.0.0",
+    "@capacitor/keyboard": "^8.0.0",
+    "@capacitor/status-bar": "^8.0.0",
     "@ionic/angular": "^8.0.0",
     "firebase": "^12.9.0",
+    "firebase-admin": "^13.6.1",
     "ionicons": "^7.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
@@ -49,7 +51,7 @@
     "@angular/cli": "^21.1.0",
     "@angular/compiler-cli": "^20.0.0",
     "@angular/language-service": "^20.0.0",
-    "@capacitor/cli": "^7.5.0",
+    "@capacitor/cli": "^8.0.0",
     "@ionic/angular-toolkit": "^12.0.0",
     "@types/jasmine": "~5.1.0",
     "@typescript-eslint/eslint-plugin": "^8.18.0",
@@ -67,5 +69,15 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.8.0"
   },
-  "description": "An Ionic project"
+  "description": "An Ionic project",
+  "main": "karma.conf.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vikcsi/magnolia.git"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vikcsi/magnolia/issues"
+  }
 }
