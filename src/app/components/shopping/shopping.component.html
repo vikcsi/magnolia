@@ -10,14 +10,194 @@
   </div>
 
   <div class="toggle-buttons">
-    <button class="toggle-btn active">Termék beolvasás</button>
-    <button class="toggle-btn">Manuális hozzáadás</button>
+    <button
+      class="toggle-btn"
+      [class.active]="activeMode === 'scan'"
+      (click)="setMode('scan')"
+    >
+      Termék beolvasás
+    </button>
+    <button
+      class="toggle-btn"
+      [class.active]="activeMode === 'manual'"
+      (click)="setMode('manual')"
+    >
+      Manuális hozzáadás
+    </button>
   </div>
 
-  <ion-button expand="block" class="scan-button">
-    <ion-icon name="camera-outline" slot="start"></ion-icon>
-    Vonalkód beolvasása
-  </ion-button>
+  @if (activeMode === "scan") {
+    @if (isLoading) {
+      <div class="loading-state">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Termék azonosítása...</p>
+      </div>
+    }
+
+    @if (scannedProduct && !isLoading) {
+      <div class="scanned-product-card">
+        <p class="scanned-title">Felismerve:</p>
+        <div class="product-details">
+          @if (scannedProduct.imageUrl) {
+            <img
+              [src]="scannedProduct.imageUrl"
+              alt="Termék"
+              class="product-img"
+            />
+          }
+          <div>
+            <h4>{{ scannedProduct.name }}</h4>
+            <p>{{ scannedProduct.brands }}</p>
+          </div>
+        </div>
+
+        <div class="form-group row-inputs">
+          <div class="input-col">
+            <ion-label>Súly/Mennyiség (kg/l) *</ion-label>
+            <div class="input-wrapper">
+              <ion-input
+                type="number"
+                [(ngModel)]="scannedForm.weight"
+                min="0.1"
+                step="0.1"
+              ></ion-input>
+            </div>
+          </div>
+
+          @if (!scannedProduct.exactCo2 && !scannedProduct.ecoScore) {
+            <div class="input-col">
+              <ion-label>Kategória *</ion-label>
+              <div class="input-wrapper">
+                <ion-select
+                  [(ngModel)]="scannedForm.category"
+                  interface="popover"
+                >
+                  <ion-select-option value="meat">Húsféle</ion-select-option>
+                  <ion-select-option value="dairy">Tejtermék</ion-select-option>
+                  <ion-select-option value="bakery">Pékáru</ion-select-option>
+                  <ion-select-option value="vegetable"
+                    >Zöldség/Gyüm.</ion-select-option
+                  >
+                  <ion-select-option value="drink">Ital</ion-select-option>
+                  <ion-select-option value="other">Egyéb</ion-select-option>
+                </ion-select>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="action-buttons">
+          <ion-button fill="outline" color="danger" (click)="discardProduct()"
+            >Elvetés</ion-button
+          >
+          <ion-button fill="solid" color="success" (click)="approveProduct()"
+            >Hozzáadás</ion-button
+          >
+        </div>
+      </div>
+    }
+
+    @if (!scannedProduct && !isLoading) {
+      <ion-button expand="block" class="scan-button" (click)="startScan()">
+        <ion-icon name="camera-outline" slot="start"></ion-icon>
+        Vonalkód beolvasása
+      </ion-button>
+    }
+  }
+
+  @if (activeMode === "manual") {
+    <div class="manual-form">
+      <div class="form-group">
+        <ion-label>Vonalkód (opcionális)</ion-label>
+        <div class="input-wrapper">
+          <ion-input
+            type="text"
+            [(ngModel)]="manualProduct.barcode"
+            placeholder="Pl. 599..."
+          ></ion-input>
+        </div>
+      </div>
+      <div class="form-group">
+        <ion-label>Termék neve *</ion-label>
+        <div class="input-wrapper">
+          <ion-input
+            type="text"
+            [(ngModel)]="manualProduct.name"
+            placeholder="Pl. Tej 1L"
+          ></ion-input>
+        </div>
+      </div>
+      <div class="form-group">
+        <ion-label>Márka</ion-label>
+        <div class="input-wrapper">
+          <ion-input
+            type="text"
+            [(ngModel)]="manualProduct.brands"
+            placeholder="Pl. Mizo"
+          ></ion-input>
+        </div>
+      </div>
+
+      <div class="form-group row-inputs">
+        <div class="input-col">
+          <ion-label>Súly (kg/l) *</ion-label>
+          <div class="input-wrapper">
+            <ion-input
+              type="number"
+              [(ngModel)]="manualProduct.weight"
+              min="0.1"
+              step="0.1"
+            ></ion-input>
+          </div>
+        </div>
+        <div class="input-col">
+          <ion-label>Kategória *</ion-label>
+          <div class="input-wrapper">
+            <ion-select
+              [(ngModel)]="manualProduct.category"
+              interface="popover"
+            >
+              <ion-select-option value="meat">Húsféle</ion-select-option>
+              <ion-select-option value="dairy">Tejtermék</ion-select-option>
+              <ion-select-option value="bakery">Pékáru</ion-select-option>
+              <ion-select-option value="vegetable"
+                >Zöldség/Gyüm.</ion-select-option
+              >
+              <ion-select-option value="drink">Ital</ion-select-option>
+              <ion-select-option value="other">Egyéb</ion-select-option>
+            </ion-select>
+          </div>
+        </div>
+      </div>
+
+      <ion-button
+        expand="block"
+        class="scan-button manual-add-btn"
+        (click)="addManualProduct()"
+        [disabled]="!manualProduct.name"
+      >
+        Hozzáadás a listához
+      </ion-button>
+    </div>
+  }
+
+  @if (pendingProducts.length > 0) {
+    <p class="subsection-title">Beolvasott termékek</p>
+    <div class="products-list pending-list">
+      @for (product of pendingProducts; track product.barcode) {
+        <div class="product-item">
+          <div class="product-info">
+            <h4>{{ product.name }}</h4>
+            <p>
+              {{ product.weight }} kg/l •
+              {{ product.brands || "Ismeretlen márka" }}
+            </p>
+          </div>
+          <div class="product-impact">+{{ product.emission }} kg CO₂</div>
+        </div>
+      }
+    </div>
+  }
 
   <p class="subsection-title">Legutóbbi termékek</p>
   <div class="products-list">
@@ -33,7 +213,13 @@
   <ion-button
     expand="block"
     class="save-button"
+    [disabled]="pendingProducts.length === 0 || isSaving"
+    (click)="saveActivity()"
   >
-    Tevékenység mentése
+    @if (isSaving) {
+      <ion-spinner name="crescent"></ion-spinner>
+    } @else {
+      Tevékenység mentése
+    }
   </ion-button>
 </div>

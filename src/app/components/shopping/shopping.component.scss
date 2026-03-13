@@ -53,3 +53,143 @@
     }
   }
 }
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 0;
+  gap: 12px;
+  
+  ion-spinner {
+    color: var(--ion-color-primary);
+  }
+  p {
+    color: var(--ion-color-medium);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+}
+
+.scanned-product-card {
+  background: var(--ion-color-light);
+  border: 2px solid var(--ion-color-primary);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 20px;
+
+  .scanned-title {
+    color: var(--ion-color-secondary-shade);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+  }
+
+  .product-details {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    .product-img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 1px solid var(--ion-color-light-shade);
+    }
+
+    h4 {
+      color: var(--ion-color-primary);
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0 0 4px 0;
+    }
+
+    p {
+      color: var(--ion-color-medium);
+      font-size: 0.85rem;
+      margin: 0;
+    }
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 12px;
+    
+    ion-button {
+      flex: 1;
+      margin: 0;
+      font-weight: 600;
+      text-transform: none;
+      --border-radius: 12px;
+    }
+  }
+}
+
+.pending-list {
+  margin-bottom: 32px;
+  
+  .product-item {
+    border-left: 4px solid var(--ion-color-secondary);
+  }
+}
+
+.manual-form {
+  margin-bottom: 24px;
+  background: transparent;
+
+  .form-group {
+    margin-bottom: 12px;
+
+    ion-label {
+      color: var(--ion-color-secondary-shade);
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .input-wrapper {
+      background: var(--ion-color-light);
+      border: 1px solid var(--ion-color-light-shade);
+      border-radius: 12px;
+      padding: 4px 16px;
+      display: flex;
+      align-items: center;
+      width: 100%;
+
+      ion-input {
+        --padding-start: 0;
+        --padding-end: 0;
+        font-size: 0.95rem;
+
+        &::placeholder {
+          color: var(--ion-color-medium-tint);
+        }
+      }
+    }
+  }
+
+  .manual-add-btn {
+    margin-top: 16px;
+    --background: var(--ion-color-tertiary);
+    color: var(--ion-color-primary);
+  }
+}
+
+.row-inputs {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  
+  .input-col {
+    flex: 1;
+    
+    ion-select {
+      width: 100%;
+      --padding-start: 0;
+    }
+  }
+}
