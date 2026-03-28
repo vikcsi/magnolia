@@ -16,7 +16,7 @@
       <ion-card-content>
         <p>Mai lábnyom</p>
         <div class="footprint-value">
-          <h1>{{ user.emission }} kg</h1>
+          <h1>{{ user.emission | number:'1.0-2' }} kg</h1>
         </div>
         <div class="limit-progress">
           <span>Heti limit: 20 kg</span>
@@ -49,13 +49,13 @@
       </div>
       <div class="tool-item">
         <ion-button class="tool-button">
-          <ion-icon name="eye-outline"></ion-icon>
+          <ion-icon name="camera-outline"></ion-icon>
         </ion-button>
         <ion-label>Termék beolvasás</ion-label>
       </div>
       <div class="tool-item">
         <ion-button class="tool-button">
-          <ion-icon name="camera-outline"></ion-icon>
+          <ion-icon name="list-outline"></ion-icon>
         </ion-button>
         <ion-label>Új célkitűzés</ion-label>
       </div>
@@ -66,11 +66,16 @@
       @for (activity of activities$ | async; track activity.id) {
       <ion-item class="activity-item">
         <ion-icon
-          [name]="activity.type === 'travel' ? 'bus-outline' : 'cart-outline'"
+          [name]="activity.type === 'travel' ? 'bus-outline' : (activity.type === 'shopping' ? 'cart-outline' : (activity.type ===
+            'energy' ? 'flash-outline' : 'add-outline'))"
           slot="start"
         ></ion-icon>
         <ion-label>
-          <h2>{{ activity.type === 'travel' ? 'Utazás' : 'Egyéb' }}</h2>
+          <h2>
+            {{ activity.type === 'travel' ? 'Utazás' : (activity.type ===
+            'shopping' ? 'Bevásárlás' : (activity.type ===
+            'energy' ? 'Energia' : 'Egyéb')) }}
+          </h2>
           <p>{{ activity.timestamp | firestoreDate | date:'short' }}</p>
         </ion-label>
         <div class="activity-value">+{{ activity.emission }} kg</div>

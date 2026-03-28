@@ -17,6 +17,9 @@ import {
   cameraOutline,
   busOutline,
   cartOutline,
+  listOutline,
+  flashOutline,
+  addOutline,
 } from 'ionicons/icons';
 import {
   IonHeader,
@@ -29,9 +32,6 @@ import {
   IonCard,
   IonCardContent,
   IonProgressBar,
-  IonGrid,
-  IonRow,
-  IonCol,
   IonLabel,
   IonList,
   IonItem,
@@ -81,6 +81,9 @@ export class HomePage implements OnInit {
       cameraOutline,
       busOutline,
       cartOutline,
+      flashOutline,
+      addOutline,
+      listOutline
     });
   }
 

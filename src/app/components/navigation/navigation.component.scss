@@ -27,7 +27,8 @@
       transition: color 0.2s;
     }
     
-    &:hover ion-icon {
+    &:hover ion-icon,
+    &.active ion-icon {
       color: var(--ion-color-tertiary);
     }
   }

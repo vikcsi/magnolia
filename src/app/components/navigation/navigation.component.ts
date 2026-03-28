@@ -34,6 +34,10 @@ export class NavigationComponent  implements OnInit {
     this.router.navigate([path]);
   }
 
+  isActive(path: string): boolean {
+    return this.router.url.startsWith(path);
+  }
+
   ngOnInit() {}
 
 }
