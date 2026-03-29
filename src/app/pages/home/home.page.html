@@ -12,31 +12,71 @@
 
 <ion-content [fullscreen]="true">
   <div class="ion-padding">
+
+    <!-- Fő hero kártya -->
     <ion-card class="main-card">
       <ion-card-content>
-        <p>Mai lábnyom</p>
-        <div class="footprint-value">
-          <h1>{{ user.emission | number:'1.0-2' }} kg</h1>
+        <div class="main-card-top">
+          <div class="main-card-text">
+            <p>Mai lábnyom</p>
+            <div class="footprint-value">
+              <h1>{{ todayEmission | number:'1.0-1' }} kg</h1>
+            </div>
+          </div>
+          <!-- Kis Magnólia SVG -->
+          <div class="magnolia-mini-wrap">
+            <svg class="magnolia-mini" [class]="magnoliaState" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <g transform="translate(50,50)">
+                <ellipse class="petal" rx="11" ry="23" transform="rotate(0) translate(0,-21)"/>
+                <ellipse class="petal" rx="11" ry="23" transform="rotate(60) translate(0,-21)"/>
+                <ellipse class="petal" rx="11" ry="23" transform="rotate(120) translate(0,-21)"/>
+                <ellipse class="petal" rx="11" ry="23" transform="rotate(180) translate(0,-21)"/>
+                <ellipse class="petal" rx="11" ry="23" transform="rotate(240) translate(0,-21)"/>
+                <ellipse class="petal" rx="11" ry="23" transform="rotate(300) translate(0,-21)"/>
+                <circle class="flower-center" r="13"/>
+                <circle class="stamen" r="3.5" cx="0"  cy="-4"/>
+                <circle class="stamen" r="3"   cx="-5" cy="3"/>
+                <circle class="stamen" r="3"   cx="5"  cy="3"/>
+              </g>
+            </svg>
+            <p class="magnolia-mini-label">
+              @if (magnoliaState === 'bloom') { Virágzó }
+              @if (magnoliaState === 'fade')  { Figyelj oda }
+              @if (magnoliaState === 'wilt')  { Túlterhelve }
+            </p>
+          </div>
         </div>
+
         <div class="limit-progress">
-          <span>Heti limit: 20 kg</span>
-          <span>20%</span>
+          <span>Napi limit: {{ DAILY_LIMIT }} kg</span>
+          <span>{{ (getDailyProgressValue() * 100) | number:'1.0-0' }}%</span>
         </div>
-        <ion-progress-bar value="0.2"></ion-progress-bar>
+        <ion-progress-bar [value]="getDailyProgressValue()"></ion-progress-bar>
       </ion-card-content>
     </ion-card>
 
+    <!-- Streak + Szint összesítő kártyák -->
     <div class="summary-container">
       <ion-card class="summary-card">
-        <ion-icon name="trending-up-outline"></ion-icon>
-        <p>Heti átlag</p>
-        <h2>19,1 kg</h2>
+        <ion-icon name="flame-outline" class="streak-icon"></ion-icon>
+        <p>Sorozat</p>
+        <h2>{{ weeklyStreak }} nap</h2>
       </ion-card>
       <ion-card class="summary-card">
         <ion-icon name="star-outline"></ion-icon>
         <p>Szint</p>
         <h2>Zöldfülű</h2>
       </ion-card>
+    </div>
+
+    <!-- Insight kártya -->
+    <div class="insight-card" [class.success]="insight.type === 'success'"
+                               [class.warning]="insight.type === 'warning'">
+      <div class="insight-accent"></div>
+      <div class="insight-body">
+        <ion-icon [name]="insight.type === 'success' ? 'leaf-outline' : 'warning-outline'"></ion-icon>
+        <p>{{ insight.text }}</p>
+      </div>
     </div>
 
     <h3 class="section-title">Eszközök</h3>
@@ -63,27 +103,27 @@
 
     <h3 class="section-title">Legutóbbi tevékenységek</h3>
     <ion-list lines="none">
-      @for (activity of activities$ | async; track activity.id) {
+      @for (activity of recentActivities; track activity.id) {
       <ion-item class="activity-item">
         <ion-icon
-          [name]="activity.type === 'travel' ? 'bus-outline' : (activity.type === 'shopping' ? 'cart-outline' : (activity.type ===
-            'energy' ? 'flash-outline' : 'add-outline'))"
+          [name]="activity.type === 'travel' ? 'bus-outline' :
+                  (activity.type === 'shopping' ? 'cart-outline' :
+                  (activity.type === 'energy' ? 'flash-outline' : 'add-outline'))"
           slot="start"
         ></ion-icon>
         <ion-label>
-          <h2>
-            {{ activity.type === 'travel' ? 'Utazás' : (activity.type ===
-            'shopping' ? 'Bevásárlás' : (activity.type ===
-            'energy' ? 'Energia' : 'Egyéb')) }}
-          </h2>
+          <h2>{{ activity.type === 'travel' ? 'Utazás' :
+                 (activity.type === 'shopping' ? 'Bevásárlás' :
+                 (activity.type === 'energy' ? 'Energia' : 'Egyéb')) }}</h2>
           <p>{{ activity.timestamp | firestoreDate | date:'short' }}</p>
         </ion-label>
-        <div class="activity-value">+{{ activity.emission }} kg</div>
+        <div class="activity-value">+{{ activity.emission | number:'1.0-2' }} kg</div>
       </ion-item>
       } @empty {
-      <p>Még nincs rögzített tevékenységed.</p>
+      <p class="empty-activities">Még nincs rögzített tevékenységed.</p>
       }
     </ion-list>
+
   </div>
 </ion-content>
 

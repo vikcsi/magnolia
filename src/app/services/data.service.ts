@@ -74,6 +74,8 @@ export class DataService {
       emission: increment(totalEmission),
       allXP: increment(earnedXp),
     });
+
+    await this.updateMonthlyStats(userId, totalEmission, 'shopping');
   }
 
   async saveTravelActivity(
@@ -112,6 +114,42 @@ export class DataService {
       emission: increment(emission),
       allXP: increment(earnedXp),
     });
+
+    await this.updateMonthlyStats(userId, emission, 'travel');
+  }
+
+  async saveEnergyActivity(
+    userId: string,
+    typeEnergy: 'water' | 'gas' | 'electricity',
+    amount: number,
+    period: 'week' | 'month' | 'year',
+    emission: number,
+  ): Promise<void> {
+    const activityRef = collection(this.firestore, 'activities');
+    const userRef = doc(this.firestore, `users/${userId}`);
+    const earnedXp = 10;
+
+    await addDoc(activityRef, {
+      userId,
+      xp: earnedXp,
+      emission,
+      timestamp: new Date(),
+      type: 'energy',
+      details: {
+        typeEnergy,
+        amount,
+        period,
+      },
+    });
+
+    await updateDoc(userRef, {
+      emission: increment(emission),
+      allXP: increment(earnedXp),
+    });
+
+    const periodDays = period === 'week' ? 7 : period === 'month' ? 30 : 365;
+    const dailyEmission = Math.round((emission / periodDays) * 10) / 10;
+    await this.updateMonthlyStats(userId, dailyEmission * 30, 'energy');
   }
 
   async getCommunityProduct(barcode: string): Promise<any | null> {
@@ -128,6 +166,29 @@ export class DataService {
     } catch (error) {
       console.error('Hiba a közösségi adatbázis lekérdezésekor:', error);
       return null;
+    }
+  }
+
+  private async updateMonthlyStats(
+    userId: string,
+    emission: number,
+    type: 'travel' | 'shopping' | 'energy',
+  ): Promise<void> {
+    try {
+      const now = new Date();
+      const key = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      const statsRef = doc(this.firestore, `users/${userId}/stats/${key}`);
+      const day = now.getDate();
+      await setDoc(statsRef, {
+        year: now.getFullYear(),
+        month: now.getMonth() + 1,
+        totalEmission: increment(emission),
+        [`byCategory.${type}`]: increment(emission),
+        [`dailyEmissions.${day}`]: increment(emission),
+        activityCount: increment(1),
+      }, { merge: true });
+    } catch {
+      // Nem kritikus – a fő mentés már sikerült
     }
   }
 

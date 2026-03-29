@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonHeader,
   IonToolbar,
   IonTitle,
   IonButtons,
-  IonBackButton,
   IonContent,
   IonIcon,
   IonButton,
@@ -22,6 +22,7 @@ import {
   navigateOutline,
   checkmarkCircleOutline,
   swapVerticalOutline,
+  arrowBackOutline,
 } from 'ionicons/icons';
 import { Capacitor } from '@capacitor/core';
 import { environment } from 'src/environments/environment';
@@ -48,7 +49,7 @@ export interface ComparisonItem {
   templateUrl: './route-planner.page.html',
   styleUrls: ['./route-planner.page.scss'],
   imports: [
-    IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
+    IonHeader, IonToolbar, IonTitle, IonButtons,
     IonContent, IonIcon, IonButton, IonSpinner, IonInput, FormsModule,
   ],
 })
@@ -59,6 +60,7 @@ export class RoutePlannerPage implements OnInit, OnDestroy {
   private dataService = inject(DataService);
   private authService = inject(AuthService);
   private toastController = inject(ToastController);
+  private location = inject(Location);
 
   fromQuery = '';
   toQuery = '';
@@ -89,7 +91,11 @@ export class RoutePlannerPage implements OnInit, OnDestroy {
   };
 
   constructor() {
-    addIcons({ locationOutline, navigateOutline, checkmarkCircleOutline, swapVerticalOutline });
+    addIcons({ locationOutline, navigateOutline, checkmarkCircleOutline, swapVerticalOutline, arrowBackOutline });
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
   ngOnInit(): void {

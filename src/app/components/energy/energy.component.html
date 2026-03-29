@@ -13,7 +13,7 @@
     <div class="form-group">
       <ion-label>Fogyasztás típusa</ion-label>
       <div class="input-wrapper">
-        <ion-select placeholder="Válassz" interface="action-sheet">
+        <ion-select [(ngModel)]="typeEnergy" (ngModelChange)="onTypeChange()" placeholder="Válassz" interface="action-sheet">
           <ion-select-option value="electricity">Villany</ion-select-option>
           <ion-select-option value="gas">Gáz</ion-select-option>
           <ion-select-option value="water">Víz</ion-select-option>
@@ -24,42 +24,54 @@
     <div class="form-group">
       <ion-label>Mennyiség</ion-label>
       <div class="input-with-unit input-wrapper">
-        <ion-input type="number" placeholder="0"></ion-input>
-        <span class="unit">kWh</span>
+        <ion-input type="number" [(ngModel)]="amount" (ngModelChange)="calculatedEmission = null" placeholder="0" min="0"></ion-input>
+        <span class="unit">{{ unit }}</span>
       </div>
     </div>
 
     <div class="form-group">
       <ion-label>Időszak</ion-label>
       <div class="input-wrapper">
-        <ion-select placeholder="Válassz" interface="action-sheet">
-          <ion-select-option value="today">Mai nap</ion-select-option>
-          <ion-select-option value="week">Heti</ion-select-option>
-          <ion-select-option value="month">Havi</ion-select-option>
+        <ion-select [(ngModel)]="period" placeholder="Válassz" interface="action-sheet">
+          <ion-select-option value="week">Ez a hét</ion-select-option>
+          <ion-select-option value="month">Ez a hónap</ion-select-option>
+          <ion-select-option value="year">Ez az év</ion-select-option>
         </ion-select>
       </div>
     </div>
   </div>
 
-  <p class="subsection-title">Korábbi bejegyzések</p>
-
-  <div class="energy-list">
-    <div class="energy-item">
-      <div class="energy-info">
-        <h4>Villany fogyasztás</h4>
-        <p>150 kWh <span class="separator">•</span> Ez a hét</p>
-      </div>
-      <div class="energy-impact">+42 kg</div>
+  @if (calculatedEmission !== null) {
+    <div class="emission-preview">
+      Becsült kibocsátás: <strong>{{ calculatedEmission }} kg CO₂</strong>
     </div>
+  }
 
-    <div class="energy-item">
-      <div class="energy-info">
-        <h4>Gáz fogyasztás</h4>
-        <p>80 m³ <span class="separator">•</span> Ez a hét</p>
-      </div>
-      <div class="energy-impact">+160 kg</div>
+  <ion-button expand="block" fill="outline" class="calculate-button" (click)="calculateEmission()" [disabled]="amount <= 0">
+    Kiszámít
+  </ion-button>
+
+  <ion-button expand="block" class="save-button" (click)="save()" [disabled]="isSaving || amount <= 0">
+    {{ isSaving ? 'Mentés...' : 'Mentés' }}
+  </ion-button>
+
+  @if (recentEnergyActivities.length > 0) {
+    <p class="subsection-title">Korábbi bejegyzések</p>
+
+    <div class="energy-list">
+      @for (activity of recentEnergyActivities; track activity.id) {
+        <div class="energy-item">
+          <div class="energy-info">
+            <h4>{{ typeLabels[getDetails(activity).typeEnergy] }} fogyasztás</h4>
+            <p>
+              {{ getDetails(activity).amount }} {{ unitLabels[getDetails(activity).typeEnergy] }}
+              <span class="separator">•</span>
+              {{ periodLabels[getDetails(activity).period] }}
+            </p>
+          </div>
+          <div class="energy-impact">+{{ activity.emission }} kg</div>
+        </div>
+      }
     </div>
-  </div>
-
-  <ion-button expand="block" class="save-button">Mentés</ion-button>
+  }
 </div>

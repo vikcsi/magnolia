@@ -1,0 +1,254 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar mode="md">
+    <ion-title>Statisztikák</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="ion-padding">
+
+    <div class="tab-buttons">
+      <button class="tab-btn" [class.active]="selectedPeriod === 'week'"    (click)="selectPeriod('week')">Heti</button>
+      <button class="tab-btn" [class.active]="selectedPeriod === 'month'"   (click)="selectPeriod('month')">Havi</button>
+      <button class="tab-btn" [class.active]="selectedPeriod === 'year'" (click)="selectPeriod('year')">Éves</button>
+    </div>
+
+    @if (stats) {
+
+    <div class="hero-card" [class]="'hero-card ' + stats.magnoliaState">
+      <div class="hero-left">
+        <p class="hero-label">{{ getPeriodLabel() }}</p>
+        <h1 class="hero-number">{{ stats.totalEmission | number:'1.0-1' }} kg</h1>
+        <p class="hero-sub">CO₂ kibocsátás</p>
+        <div class="hero-progress-row">
+          <span class="hero-limit-label">{{ getLimitLabel() }}</span>
+          <span class="hero-pct">{{ (getLimitProgressValue() * 100) | number:'1.0-0' }}%</span>
+        </div>
+        <div class="hero-progress-track">
+          <div class="hero-progress-fill" [style.width.%]="getLimitProgressValue() * 100"></div>
+        </div>
+        <p class="hero-status-text" [class.over]="stats.magnoliaState === 'wilt'">
+          {{ getMagnoliaStatusText() }}
+        </p>
+      </div>
+
+      <div class="hero-right">
+        <svg class="magnolia-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <g transform="translate(50,50)">
+            <ellipse class="petal" rx="11" ry="23" transform="rotate(0) translate(0,-21)"/>
+            <ellipse class="petal" rx="11" ry="23" transform="rotate(60) translate(0,-21)"/>
+            <ellipse class="petal" rx="11" ry="23" transform="rotate(120) translate(0,-21)"/>
+            <ellipse class="petal" rx="11" ry="23" transform="rotate(180) translate(0,-21)"/>
+            <ellipse class="petal" rx="11" ry="23" transform="rotate(240) translate(0,-21)"/>
+            <ellipse class="petal" rx="11" ry="23" transform="rotate(300) translate(0,-21)"/>
+            <circle class="flower-center" r="13"/>
+            <circle class="stamen" r="3.5" cx="0"  cy="-4"/>
+            <circle class="stamen" r="3"   cx="-5" cy="3"/>
+            <circle class="stamen" r="3"   cx="5"  cy="3"/>
+          </g>
+        </svg>
+        <p class="magnolia-state-label">
+          @if (stats.magnoliaState === 'bloom') { Virágzó 🌸 }
+          @if (stats.magnoliaState === 'fade')  { Figyelj oda! 🌼 }
+          @if (stats.magnoliaState === 'wilt')  { Túlterhelve 🍂 }
+        </p>
+      </div>
+    </div>
+
+    <div class="equiv-card">
+      <div class="tree-icons-row">
+        @for (t of getTreeIcons(); track $index) {
+          <ion-icon [name]="t === 'empty' ? 'leaf-outline' : 'leaf'"
+                    [class]="'tree-icon tree-' + t"></ion-icon>
+        }
+        @if (stats.treeCount > 5) {
+          <span class="tree-plus">+{{ (stats.treeCount - 5) | number:'1.0-0' }}</span>
+        }
+      </div>
+      <p class="equiv-text">
+        A kibocsátásod semlegesítéséhez
+        <strong>{{ stats.treeCount | number:'1.1-1' }} kifejlett fának</strong>
+        kellene egy évig dolgoznia.
+      </p>
+      <p class="equiv-sub">1 fa ≈ 21 kg CO₂/év · Párizsi célszint: 10 kg/nap</p>
+    </div>
+
+    <div class="insight-card" [class.success]="stats.insight.type === 'success'"
+                               [class.warning]="stats.insight.type === 'warning'">
+      <div class="insight-accent"></div>
+      <div class="insight-body">
+        <ion-icon [name]="stats.insight.type === 'success' ? 'leaf-outline' : 'warning-outline'"></ion-icon>
+        <p>{{ stats.insight.text }}</p>
+      </div>
+    </div>
+
+    <div class="section-title">Kategóriák</div>
+
+    <div class="category-section">
+      <div class="category-bar-track">
+        <div class="category-bar-seg travel"  [style.flex]="stats.categoryPercent.travel"></div>
+        <div class="category-bar-seg shopping"[style.flex]="stats.categoryPercent.shopping"></div>
+        <div class="category-bar-seg energy"  [style.flex]="stats.categoryPercent.energy"></div>
+      </div>
+      <div class="category-pills">
+        <div class="cat-pill travel">
+          <span class="cat-dot"></span>
+          <div class="cat-info">
+            <span class="cat-name">Közlekedés</span>
+            <span class="cat-val">{{ stats.byCategory.travel | number:'1.0-1' }} kg</span>
+            <span class="cat-pct">{{ stats.categoryPercent.travel }}%</span>
+          </div>
+        </div>
+        <div class="cat-pill shopping">
+          <span class="cat-dot"></span>
+          <div class="cat-info">
+            <span class="cat-name">Vásárlás</span>
+            <span class="cat-val">{{ stats.byCategory.shopping | number:'1.0-1' }} kg</span>
+            <span class="cat-pct">{{ stats.categoryPercent.shopping }}%</span>
+          </div>
+        </div>
+        <div class="cat-pill energy">
+          <span class="cat-dot"></span>
+          <div class="cat-info">
+            <span class="cat-name">Energia</span>
+            <span class="cat-val">{{ stats.byCategory.energy | number:'1.0-1' }} kg</span>
+            <span class="cat-pct">{{ stats.categoryPercent.energy }}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Trend</div>
+
+    <div class="chart-card">
+      <div class="chart-wrap" [style.height.px]="CHART_HEIGHT + 28">
+        <div class="limit-line" [style.bottom.px]="getLimitLinePx() + 24">
+          <span class="limit-line-label">limit</span>
+        </div>
+        <div class="bars-row">
+          @for (bar of stats.dailyBars; track bar.label) {
+            <div class="bar-col" [class.today]="bar.isToday">
+              <div class="bar-stack" [style.height.px]="getBarHeightPx(bar)">
+                <div class="bar-seg energy"  [style.height.px]="getSegmentHeightPx(bar, 'energy')"></div>
+                <div class="bar-seg shopping"[style.height.px]="getSegmentHeightPx(bar, 'shopping')"></div>
+                <div class="bar-seg travel"  [style.height.px]="getSegmentHeightPx(bar, 'travel')"></div>
+              </div>
+              <span class="bar-label">{{ bar.label }}</span>
+            </div>
+          }
+        </div>
+      </div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-dot travel"></span>Közlekedés</span>
+        <span class="legend-item"><span class="legend-dot shopping"></span>Vásárlás</span>
+        <span class="legend-item"><span class="legend-dot energy"></span>Energia</span>
+      </div>
+    </div>
+
+    <div class="section-title">Teljesítmény</div>
+
+    <div class="perf-grid">
+      <div class="perf-card streak">
+        <ion-icon name="flame-outline"></ion-icon>
+        <h3>{{ statsService.getLongestStreakInPeriod(activities, selectedPeriod) }}</h3>
+        <p>nap – legjobb sorozat</p>
+      </div>
+      <div class="perf-card avg-day">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <h3>{{ getDailyAvg() | number:'1.0-1' }}</h3>
+        <p>kg/nap átlag</p>
+      </div>
+      <div class="perf-card best">
+        <ion-icon name="trophy-outline"></ion-icon>
+        @if (stats.bestDay) {
+          <h3>{{ stats.bestDay.emission | number:'1.0-1' }}</h3>
+          <p>kg – {{ stats.bestDay.label }}</p>
+        } @else {
+          <h3>–</h3><p>Nincs adat</p>
+        }
+      </div>
+      <div class="perf-card worst">
+        <ion-icon name="trending-up-outline"></ion-icon>
+        @if (stats.worstDay) {
+          <h3>{{ stats.worstDay.emission | number:'1.0-1' }}</h3>
+          <p>kg – {{ stats.worstDay.label }}</p>
+        } @else {
+          <h3>–</h3><p>Nincs adat</p>
+        }
+      </div>
+    </div>
+
+    @if (stats.percentChange !== null) {
+      <div class="compare-card">
+        <div class="compare-col">
+          <p class="compare-label">Előző időszak</p>
+          <h3 class="compare-val">{{ stats.previousPeriodEmission | number:'1.0-1' }} kg</h3>
+        </div>
+        <div class="compare-arrow" [class.better]="stats.percentChange < 0"
+                                   [class.worse]="stats.percentChange >= 0">
+          <ion-icon [name]="stats.percentChange < 0 ? 'trending-down-outline' : 'trending-up-outline'"></ion-icon>
+          <span>{{ stats.percentChange > 0 ? '+' : '' }}{{ stats.percentChange }}%</span>
+        </div>
+        <div class="compare-col">
+          <p class="compare-label">Ez az időszak</p>
+          <h3 class="compare-val">{{ stats.totalEmission | number:'1.0-1' }} kg</h3>
+        </div>
+      </div>
+    }
+
+    <div class="section-title">Kontextus</div>
+
+    <div class="context-card">
+      <div class="context-header">
+        <p class="context-title">Összehasonlítás</p>
+        <span class="context-source">Forrás: KSH, 2022</span>
+      </div>
+
+      <div class="context-row you">
+        <div class="context-row-left">
+          <span class="context-dot"></span>
+          <span class="context-label">Te</span>
+        </div>
+        <div class="context-bar-wrap">
+          <div class="context-bar" [style.width.%]="Math.min(100, (stats.totalEmission / getHungarianAvg()) * 100)"></div>
+        </div>
+        <span class="context-val">{{ stats.totalEmission | number:'1.0-1' }} kg</span>
+      </div>
+
+      <div class="context-row avg">
+        <div class="context-row-left">
+          <span class="context-dot"></span>
+          <span class="context-label">Magyar átlag</span>
+        </div>
+        <div class="context-bar-wrap">
+          <div class="context-bar" style="width: 100%"></div>
+        </div>
+        <span class="context-val">{{ getHungarianAvg() | number:'1.0-0' }} kg</span>
+      </div>
+
+      <div class="context-row target">
+        <div class="context-row-left">
+          <span class="context-dot"></span>
+          <span class="context-label">Párizsi cél</span>
+        </div>
+        <div class="context-bar-wrap">
+          <div class="context-bar" [style.width.%]="Math.min(100, (stats.periodLimitKg / getHungarianAvg()) * 100)"></div>
+        </div>
+        <span class="context-val">{{ stats.periodLimitKg | number:'1.0-0' }} kg</span>
+      </div>
+    </div>
+
+    } @else {
+      <div class="empty-state">
+        <ion-icon name="leaf-outline"></ion-icon>
+        <p>Még nincs elegendő adat a statisztikákhoz.</p>
+        <p>Rögzítsd az első tevékenységedet!</p>
+      </div>
+    }
+
+  </div>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <app-navigation></app-navigation>
+</ion-footer>

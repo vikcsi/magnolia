@@ -43,3 +43,16 @@ export interface Activity {
     type : 'travel' | 'shopping' | 'energy',
     details : Travel | Shopping | Energy
 }
+
+export interface MonthlyStats {
+    year: number;
+    month: number;
+    totalEmission: number;
+    byCategory: {
+        travel: number;
+        shopping: number;
+        energy: number;
+    };
+    dailyEmissions: Record<number, number>;
+    activityCount: number;
+}
