@@ -136,6 +136,16 @@ ion-header {
   margin: 20px 0 12px 0;
 }
 
+.outline-btn {
+  --border-radius: 12px;
+  --border-color: var(--ion-color-primary);
+  --color: var(--ion-color-primary);
+  height: 48px;
+  font-weight: 600;
+  text-transform: none;
+  margin-bottom: 12px;
+}
+
 .save-button {
   --background: var(--ion-color-primary);
   --background-hover: var(--ion-color-medium);

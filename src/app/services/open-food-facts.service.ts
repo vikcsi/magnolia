@@ -7,6 +7,8 @@ export interface OffProduct {
   imageUrl?: string;
   ecoScore?: string;
   exactCo2?: number;
+  category?: string;
+  offCategories?: string[];
 }
 
 @Injectable({
@@ -17,7 +19,7 @@ export class OpenFoodFactsService {
 
   async getProductByBarcode(barcode: string): Promise<OffProduct | null> {
     try {
-      const response = await fetch(`${this.baseUrl}/${barcode}.json?fields=product_name,brands,image_front_url,ecoscore_grade,ecoscore_data`);
+      const response = await fetch(`${this.baseUrl}/${barcode}.json?fields=product_name,brands,image_front_url,ecoscore_grade,ecoscore_data,categories_tags`);
       const data = await response.json();
 
       if (data.status === 1 && data.product) {
@@ -32,7 +34,8 @@ export class OpenFoodFactsService {
           brands: data.product.brands || 'Ismeretlen márka',
           imageUrl: data.product.image_front_url,
           ecoScore: data.product.ecoscore_grade,
-          exactCo2: co2Value
+          exactCo2: co2Value,
+          offCategories: data.product.categories_tags || []
         };
       }
       return null;

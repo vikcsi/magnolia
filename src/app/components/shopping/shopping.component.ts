@@ -1,13 +1,36 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
+import { CommonModule, AsyncPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonIcon, IonButton, IonSpinner, ToastController, IonInput, IonLabel, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Shopping } from 'src/app/models/activity.model';
+import { Platform } from '@ionic/angular';
+import { Capacitor } from '@capacitor/core';
+import { Html5QrcodeScanner } from 'html5-qrcode';
+import {
+  IonIcon,
+  IonButton,
+  IonSpinner,
+  ToastController,
+  IonInput,
+  IonLabel,
+  IonSelect,
+  IonSelectOption,
+} from '@ionic/angular/standalone';
 import { CapacitorBarcodeScanner } from '@capacitor/barcode-scanner';
-import { OpenFoodFactsService, OffProduct } from 'src/app/services/open-food-facts.service';
+import {
+  OpenFoodFactsService,
+  OffProduct,
+} from 'src/app/services/open-food-facts.service';
 import { CarbonCalculatorService } from 'src/app/services/carbon-calculator.service';
 import { DataService } from 'src/app/services/data.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { alertCircleOutline, cameraOutline, cartOutline, checkmarkCircleOutline } from 'ionicons/icons';
+import {
+  alertCircleOutline,
+  cameraOutline,
+  cartOutline,
+  checkmarkCircleOutline,
+} from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 
 export interface ShoppingItem {
@@ -26,94 +49,272 @@ export interface ShoppingItem {
   selector: 'app-shopping',
   templateUrl: './shopping.component.html',
   styleUrls: ['./shopping.component.scss'],
-  imports: [IonIcon, IonButton, IonSpinner, IonInput, IonLabel, IonSelect, IonSelectOption, CommonModule, FormsModule],
+  imports: [
+    IonIcon,
+    IonButton,
+    IonSpinner,
+    IonInput,
+    IonLabel,
+    IonSelect,
+    IonSelectOption,
+    CommonModule,
+    FormsModule,
+    AsyncPipe,
+    DatePipe,
+  ],
 })
-export class ShoppingComponent implements OnInit {
+export class ShoppingComponent implements OnInit, OnDestroy {
   private offService = inject(OpenFoodFactsService);
   private calcService = inject(CarbonCalculatorService);
   private dataService = inject(DataService);
   private authService = inject(AuthService);
   private toastController = inject(ToastController);
+  private platform = inject(Platform);
+  isWebScannerActive = false;
+  private html5QrcodeScanner: Html5QrcodeScanner | null = null;
 
   activeMode: 'scan' | 'manual' = 'scan';
   isLoading = false;
   isSaving = false;
-  
+
   scannedProduct: OffProduct | null = null;
   pendingProducts: ShoppingItem[] = [];
+  recentProducts$: Observable<any[]> = of([]);
 
   scannedForm = { weight: 1, category: 'other' };
-  manualProduct = { barcode: '', name: '', brands: '', weight: 1, category: 'other' };
+  manualProduct = {
+    barcode: '',
+    name: '',
+    brands: '',
+    weight: 1,
+    category: '',
+  };
 
   constructor() {
-    addIcons({ alertCircleOutline, cameraOutline, cartOutline, checkmarkCircleOutline });
+    addIcons({
+      alertCircleOutline,
+      cameraOutline,
+      cartOutline,
+      checkmarkCircleOutline,
+    });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    const user = this.authService.currentUser;
+    if (user) {
+      this.recentProducts$ = this.dataService.getUserActivities(user.uid).pipe(
+        map((activities) => {
+          const shoppingActivities = activities.filter(
+            (a) => a.type === 'shopping',
+          );
+
+          shoppingActivities.sort((a, b) => {
+            const dateA = (a.timestamp as any)?.toDate?.()?.getTime() || 0;
+            const dateB = (b.timestamp as any)?.toDate?.()?.getTime() || 0;
+            return dateB - dateA;
+          });
+
+          const latestShopping = shoppingActivities[0];
+          if (!latestShopping || !latestShopping.details) return [];
+
+          const details = latestShopping.details as Shopping;
+          const activityDate =
+            (latestShopping.timestamp as any)?.toDate?.() || new Date();
+
+          return (details.products || []).slice(0, 5).map((p: any) => ({
+            name: p.name,
+            emission: p.emission,
+            weight: p.weight,
+            date: activityDate,
+          }));
+        }),
+      );
+    }
+  }
+
+  ngOnDestroy() {
+    this.stopWebScanner();
+  }
+
+  @ViewChild('reader') set readerElement(element: ElementRef) {
+    if (element && this.isWebScannerActive && !this.html5QrcodeScanner) {
+      this.initScanner();
+    }
+  }
 
   setMode(mode: 'scan' | 'manual') {
     this.activeMode = mode;
   }
 
-  async startScan() {
+  async startSmartScan() {
+    if (Capacitor.isNativePlatform()) {
+      await this.startNativeCapacitorScan();
+    } else {
+      if (this.platform.is('mobileweb') || this.platform.is('tablet')) {
+        await this.startWebFallbackScan();
+      } else {
+        this.setMode('manual');
+        const toast = await this.toastController.create({
+          message: 'Asztali gépen a manuális hozzáadást javasoljuk.',
+          duration: 3000,
+          color: 'primary',
+          position: 'top',
+        });
+        await toast.present();
+      }
+    }
+  }
+
+  private async startNativeCapacitorScan() {
     try {
       const result = await CapacitorBarcodeScanner.scanBarcode({ hint: 17 });
       if (result && result.ScanResult) {
         await this.handleScannedBarcode(result.ScanResult);
       }
     } catch (error) {
-      console.log('Szkennelés megszakítva:', error);
+      console.error('Natív szkennelés megszakítva:', error);
     }
+  }
+
+  private async startWebFallbackScan() {
+    this.isWebScannerActive = true;
+  }
+
+  private initScanner() {
+    this.html5QrcodeScanner = new Html5QrcodeScanner(
+      'reader',
+      { fps: 10, qrbox: { width: 250, height: 250 } },
+      false
+    );
+
+    this.html5QrcodeScanner.render(
+      async (decodedText) => {
+        this.stopWebScanner();
+        await this.handleScannedBarcode(decodedText);
+      },
+      (errorMessage) => {}
+    );
+  }
+
+  stopWebScanner() {
+    if (this.html5QrcodeScanner) {
+      this.html5QrcodeScanner.clear().catch((error) => {
+        console.error('Hiba a szkenner leállításakor.', error);
+      });
+      this.html5QrcodeScanner = null;
+    }
+    this.isWebScannerActive = false;
   }
 
   async handleScannedBarcode(barcode: string) {
     this.isLoading = true;
-    const product = await this.offService.getProductByBarcode(barcode);
-    this.isLoading = false;
 
-    if (product) {
-      this.scannedProduct = product;
-      this.scannedForm = { weight: 1, category: 'other' };
-    } else {
-      const toast = await this.toastController.create({
-        message: `Ismeretlen vonalkód. Segíts bővíteni az adatbázist!`,
-        duration: 3000, color: 'warning', icon: 'alert-circle-outline'
-      });
-      await toast.present();
-      this.manualProduct.barcode = barcode;
-      this.setMode('manual');
+    try {
+      let product = await this.offService.getProductByBarcode(barcode);
+
+      if (!product) {
+        const communityProd =
+          await this.dataService.getCommunityProduct(barcode);
+
+        if (communityProd) {
+          product = {
+            barcode: communityProd.barcode,
+            name: communityProd.name,
+            brands: communityProd.brands,
+            category: communityProd.category,
+          };
+        }
+      }
+
+      if (product) {
+        this.scannedProduct = product;
+        
+        let finalCategory = 'other';
+        if ((product as any).category) {
+          finalCategory = (product as any).category;
+        } else if (product.offCategories && product.offCategories.length > 0) {
+          finalCategory = this.calcService.mapApiCategoriesToLocal(product.offCategories);
+        }
+
+        this.scannedForm = { 
+          weight: 1, 
+          category: finalCategory 
+        };
+      } else {
+        const toast = await this.toastController.create({
+          message: `Ismeretlen vonalkód. Segíts bővíteni az adatbázist!`,
+          duration: 3000,
+          color: 'warning',
+          icon: 'alert-circle-outline',
+        });
+        await toast.present();
+
+        this.manualProduct.barcode = barcode;
+        this.setMode('manual');
+      }
+    } catch (error) {
+      console.error('Kritikus hiba a vonalkód feldolgozásánál:', error);
+    } finally {
+      this.isLoading = false;
     }
   }
 
   approveProduct() {
     if (this.scannedProduct && this.scannedForm.weight > 0) {
       const emission = this.calcService.calculateEmission(
-        this.scannedForm.weight, this.scannedForm.category, this.scannedProduct.ecoScore, this.scannedProduct.exactCo2
+        this.scannedForm.weight,
+        this.scannedForm.category,
+        this.scannedProduct.ecoScore,
+        this.scannedProduct.exactCo2,
       );
 
       this.pendingProducts.push({
-        barcode: this.scannedProduct.barcode, name: this.scannedProduct.name,
-        brands: this.scannedProduct.brands || '', ecoScore: this.scannedProduct.ecoScore,
-        category: this.scannedForm.category, weight: this.scannedForm.weight,
-        emission: emission, exactCo2: this.scannedProduct.exactCo2, isCommunityNew: false
+        barcode: this.scannedProduct.barcode,
+        name: this.scannedProduct.name,
+        brands: this.scannedProduct.brands || '',
+        ecoScore: this.scannedProduct.ecoScore,
+        category: this.scannedForm.category,
+        weight: this.scannedForm.weight,
+        emission: emission,
+        exactCo2: this.scannedProduct.exactCo2,
+        isCommunityNew: false,
       });
       this.scannedProduct = null;
     }
   }
 
-  addManualProduct() {
-    if (!this.manualProduct.name.trim() || this.manualProduct.weight <= 0) return;
+  async addManualProduct() {
+    if (!this.manualProduct.name.trim() || this.manualProduct.weight <= 0)
+      return;
 
-    const emission = this.calcService.calculateEmission(this.manualProduct.weight, this.manualProduct.category);
+    const emission = this.calcService.calculateEmission(
+      this.manualProduct.weight,
+      this.manualProduct.category,
+    );
 
-    this.pendingProducts.push({
+    const newItem = {
       barcode: this.manualProduct.barcode || 'manual-' + Date.now(),
-      name: this.manualProduct.name, brands: this.manualProduct.brands,
-      category: this.manualProduct.category, weight: this.manualProduct.weight,
-      emission: emission, isCommunityNew: !!this.manualProduct.barcode
-    });
+      name: this.manualProduct.name,
+      brands: this.manualProduct.brands,
+      category: this.manualProduct.category,
+      weight: this.manualProduct.weight,
+      emission: emission,
+      isCommunityNew: !!this.manualProduct.barcode,
+    };
 
-    this.manualProduct = { barcode: '', name: '', brands: '', weight: 1, category: 'other' };
+    this.pendingProducts.push(newItem);
+
+    if (this.manualProduct.barcode) {
+      await this.dataService.saveCommunityProducts([newItem]);
+    }
+
+    this.manualProduct = {
+      barcode: '',
+      name: '',
+      brands: '',
+      weight: 1,
+      category: 'other',
+    };
     this.setMode('scan');
   }
 
@@ -128,18 +329,23 @@ export class ShoppingComponent implements OnInit {
     this.isSaving = true;
 
     try {
-      const totalEmission = Number(this.pendingProducts.reduce((sum, item) => sum + item.emission, 0).toFixed(2));
-      
-      await this.dataService.saveShoppingActivity(user.uid, totalEmission, this.pendingProducts);
+      const totalEmission = Number(
+        this.pendingProducts
+          .reduce((sum, item) => sum + item.emission, 0)
+          .toFixed(2),
+      );
 
-      const communityItems = this.pendingProducts.filter(p => p.isCommunityNew);
-      if (communityItems.length > 0) {
-        await this.dataService.saveCommunityProducts(communityItems);
-      }
+      await this.dataService.saveShoppingActivity(
+        user.uid,
+        totalEmission,
+        this.pendingProducts,
+      );
 
       const toast = await this.toastController.create({
         message: `Vásárlás rögzítve! +${totalEmission} kg CO₂ adódott a lábnyomodhoz.`,
-        duration: 3000, color: 'success', icon: 'checkmark-circle-outline'
+        duration: 3000,
+        color: 'success',
+        icon: 'checkmark-circle-outline',
       });
       await toast.present();
 
@@ -147,7 +353,9 @@ export class ShoppingComponent implements OnInit {
     } catch (error) {
       console.error('Mentési hiba:', error);
       const toast = await this.toastController.create({
-        message: `Hiba történt a mentés során.`, duration: 3000, color: 'danger'
+        message: `Hiba történt a mentés során.`,
+        duration: 3000,
+        color: 'danger',
       });
       await toast.present();
     } finally {

@@ -1,0 +1,169 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar mode="md">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Útvonaltervezés</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- Cím mezők -->
+  <div class="address-block">
+    <div class="address-row">
+      <div class="address-dot from-dot"></div>
+      <ion-input
+        class="address-input"
+        placeholder="Honnan? (pl. Budapest, Keleti pu.)"
+        [value]="fromQuery"
+        (ionInput)="fromQuery = $any($event).detail.value; onFromInput($any($event).detail.value)"
+        clearInput="true"
+      ></ion-input>
+      <button class="location-btn" (click)="useCurrentLocation()">
+        <ion-icon name="location-outline"></ion-icon>
+      </button>
+    </div>
+
+    @if (isSearchingFrom) {
+      <div class="searching-indicator">
+        <ion-spinner name="dots" class="tiny-spinner"></ion-spinner>
+        <span>Keresés...</span>
+      </div>
+    }
+    @if (fromSuggestions.length > 0) {
+      <div class="suggestions-dropdown">
+        @for (suggestion of fromSuggestions; track suggestion.lat) {
+          <div class="suggestion-item" (click)="selectFrom(suggestion)">
+            {{ suggestion.displayName }}
+          </div>
+        }
+      </div>
+    }
+
+    <button class="swap-btn" (click)="swapAddresses()">
+      <ion-icon name="swap-vertical-outline"></ion-icon>
+    </button>
+
+    <div class="address-row">
+      <div class="address-dot to-dot"></div>
+      <ion-input
+        class="address-input"
+        placeholder="Hova? (pl. Budapest, Deák tér)"
+        [value]="toQuery"
+        (ionInput)="toQuery = $any($event).detail.value; onToInput($any($event).detail.value)"
+        clearInput="true"
+      ></ion-input>
+    </div>
+
+    @if (isSearchingTo) {
+      <div class="searching-indicator">
+        <ion-spinner name="dots" class="tiny-spinner"></ion-spinner>
+        <span>Keresés...</span>
+      </div>
+    }
+    @if (toSuggestions.length > 0) {
+      <div class="suggestions-dropdown">
+        @for (suggestion of toSuggestions; track suggestion.lat) {
+          <div class="suggestion-item" (click)="selectTo(suggestion)">
+            {{ suggestion.displayName }}
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Összehasonlítás gomb -->
+  <ion-button
+    expand="block"
+    class="save-button"
+    [disabled]="!fromCoords || !toCoords || isComparing"
+    (click)="compare()"
+  >
+    @if (isComparing) {
+      <ion-spinner name="crescent" slot="start"></ion-spinner>
+      <span>Összehasonlítás...</span>
+    } @else {
+      <span>Módok összehasonlítása</span>
+    }
+  </ion-button>
+
+  <!-- Eredmények -->
+  @if (comparisonItems.length > 0) {
+    <div class="comparison-list">
+      @for (item of comparisonItems; track item.mode) {
+        <div
+          class="comparison-card"
+          [class.selected]="selectedItem?.mode === item.mode"
+          (click)="selectItem(item)"
+        >
+          <div class="card-header">
+            <span class="card-icon">{{ item.icon }}</span>
+            <span class="card-label">{{ item.label }}</span>
+            <div class="badges">
+              @if (item.isGreenest) {
+                <span class="badge badge-green">🌿 Legzöldebb</span>
+              }
+              @if (item.isFastest) {
+                <span class="badge badge-blue">⚡ Leggyorsabb</span>
+              }
+            </div>
+          </div>
+          <div class="card-stats">
+            <div class="stat">
+              <span class="stat-value" [class.zero-emission]="item.emissionKg === 0">
+                {{ item.emissionKg === 0 ? '0' : item.emissionKg }} kg
+              </span>
+              <span class="stat-label">CO₂</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value">{{ formatDuration(item.durationMin) }}</span>
+              <span class="stat-label">menetidő</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value">{{ item.distanceKm }} km</span>
+              <span class="stat-label">távolság</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (selectedItem) {
+      @if (selectedItem.polyline) {
+        <ion-button
+          expand="block"
+          fill="outline"
+          class="outline-btn"
+          (click)="showRouteMap()"
+        >
+          <ion-icon name="navigate-outline" slot="start"></ion-icon>
+          <span>Mutasd az útvonalat</span>
+        </ion-button>
+      }
+
+      @if (staticMapUrl) {
+        <div class="map-container" (click)="openInGoogleMaps()">
+          <img [src]="staticMapUrl" alt="Útvonal térkép" class="route-map-img" />
+          <div class="map-overlay">
+            <ion-icon name="navigate-outline"></ion-icon>
+            <span>Megnyitás Google Mapsben</span>
+          </div>
+        </div>
+      }
+
+      <ion-button
+        expand="block"
+        class="save-button"
+        [disabled]="isSaving"
+        (click)="saveRoute()"
+      >
+        @if (isSaving) {
+          <ion-spinner name="crescent" slot="start"></ion-spinner>
+        }
+        <span>{{ isSaving ? 'Mentés...' : 'Mentés a naplóba – ' + selectedItem.label }}</span>
+      </ion-button>
+    }
+  }
+
+</ion-content>

@@ -70,16 +70,56 @@
               <div class="input-wrapper">
                 <ion-select
                   [(ngModel)]="scannedForm.category"
-                  interface="popover"
+                  interface="action-sheet"
+                  placeholder="Válassz..."
                 >
-                  <ion-select-option value="meat">Húsféle</ion-select-option>
-                  <ion-select-option value="dairy">Tejtermék</ion-select-option>
-                  <ion-select-option value="bakery">Pékáru</ion-select-option>
-                  <ion-select-option value="vegetable"
-                    >Zöldség/Gyüm.</ion-select-option
+                  <ion-select-option value="meat_beef"
+                    >Marha, Bárány</ion-select-option
                   >
-                  <ion-select-option value="drink">Ital</ion-select-option>
-                  <ion-select-option value="other">Egyéb</ion-select-option>
+                  <ion-select-option value="meat_pork"
+                    >Sertés, Felvágott</ion-select-option
+                  >
+                  <ion-select-option value="meat_poultry"
+                    >Baromfi</ion-select-option
+                  >
+                  <ion-select-option value="fish"
+                    >Hal, Tenger gyümölcsei</ion-select-option
+                  >
+                  <ion-select-option value="egg">Tojás</ion-select-option>
+                  <ion-select-option value="dairy_cheese"
+                    >Sajt</ion-select-option
+                  >
+                  <ion-select-option value="dairy_milk"
+                    >Tej, Joghurt, Vaj</ion-select-option
+                  >
+                  <ion-select-option value="fruit">Gyümölcs</ion-select-option>
+                  <ion-select-option value="vegetable"
+                    >Zöldség</ion-select-option
+                  >
+                  <ion-select-option value="bakery"
+                    >Pékáru, Tészta</ion-select-option
+                  >
+                  <ion-select-option value="drink_water"
+                    >Ásványvíz</ion-select-option
+                  >
+                  <ion-select-option value="drink_soda"
+                    >Üdítő, Szénsavas ital</ion-select-option
+                  >
+                  <ion-select-option value="drink_juice"
+                    >Gyümölcslé</ion-select-option
+                  >
+                  <ion-select-option value="drink_alcohol"
+                    >Alkohol (Sör, Bor)</ion-select-option
+                  >
+                  <ion-select-option value="snack_sweet"
+                    >Csokoládé, Édesség</ion-select-option
+                  >
+                  <ion-select-option value="snack_salty"
+                    >Chips, Sós snack</ion-select-option
+                  >
+                  <ion-select-option value="other"
+                    >Egyéb / Nem besorolható</ion-select-option
+                  >
                 </ion-select>
               </div>
             </div>
@@ -97,11 +137,25 @@
       </div>
     }
 
-    @if (!scannedProduct && !isLoading) {
-      <ion-button expand="block" class="scan-button" (click)="startScan()">
+    @if (!scannedProduct && !isLoading && !isWebScannerActive) {
+      <ion-button expand="block" class="scan-button" (click)="startSmartScan()">
         <ion-icon name="camera-outline" slot="start"></ion-icon>
         Vonalkód beolvasása
       </ion-button>
+    }
+
+    @if (isWebScannerActive) {
+      <div class="web-scanner-container">
+        <div #reader id="reader" width="100%"></div>
+        <ion-button
+          expand="block"
+          color="medium"
+          fill="outline"
+          (click)="stopWebScanner()"
+        >
+          Mégsem
+        </ion-button>
+      </div>
     }
   }
 
@@ -155,16 +209,52 @@
           <div class="input-wrapper">
             <ion-select
               [(ngModel)]="manualProduct.category"
-              interface="popover"
+              interface="action-sheet"
+              placeholder="Válassz..."
             >
-              <ion-select-option value="meat">Húsféle</ion-select-option>
-              <ion-select-option value="dairy">Tejtermék</ion-select-option>
-              <ion-select-option value="bakery">Pékáru</ion-select-option>
-              <ion-select-option value="vegetable"
-                >Zöldség/Gyüm.</ion-select-option
+              <ion-select-option value="meat_beef"
+                >Marha, Bárány</ion-select-option
               >
-              <ion-select-option value="drink">Ital</ion-select-option>
-              <ion-select-option value="other">Egyéb</ion-select-option>
+              <ion-select-option value="meat_pork"
+                >Sertés, Felvágott</ion-select-option
+              >
+              <ion-select-option value="meat_poultry"
+                >Baromfi</ion-select-option
+              >
+              <ion-select-option value="fish"
+                >Hal, Tenger gyümölcsei</ion-select-option
+              >
+              <ion-select-option value="egg">Tojás</ion-select-option>
+              <ion-select-option value="dairy_cheese">Sajt</ion-select-option>
+              <ion-select-option value="dairy_milk"
+                >Tej, Joghurt, Vaj</ion-select-option
+              >
+              <ion-select-option value="fruit">Gyümölcs</ion-select-option>
+              <ion-select-option value="vegetable">Zöldség</ion-select-option>
+              <ion-select-option value="bakery"
+                >Pékáru, Tészta</ion-select-option
+              >
+              <ion-select-option value="drink_water"
+                >Ásványvíz</ion-select-option
+              >
+              <ion-select-option value="drink_soda"
+                >Üdítő, Szénsavas ital</ion-select-option
+              >
+              <ion-select-option value="drink_juice"
+                >Gyümölcslé</ion-select-option
+              >
+              <ion-select-option value="drink_alcohol"
+                >Alkohol (Sör, Bor)</ion-select-option
+              >
+              <ion-select-option value="snack_sweet"
+                >Csokoládé, Édesség</ion-select-option
+              >
+              <ion-select-option value="snack_salty"
+                >Chips, Sós snack</ion-select-option
+              >
+              <ion-select-option value="other"
+                >Egyéb / Nem besorolható</ion-select-option
+              >
             </ion-select>
           </div>
         </div>
@@ -199,16 +289,23 @@
     </div>
   }
 
-  <p class="subsection-title">Legutóbbi termékek</p>
-  <div class="products-list">
-    <div class="product-item">
-      <div class="product-info">
-        <h4>Tej, 1L</h4>
-        <p>Tegnap</p>
-      </div>
-      <div class="product-impact">+0,9 kg</div>
+  @if ((recentProducts$ | async)?.length) {
+    <p class="subsection-title">Legutóbbi termékek</p>
+    <div class="products-list">
+      @for (product of recentProducts$ | async; track product.name) {
+        <div class="product-item">
+          <div class="product-info">
+            <h4>{{ product.name }}</h4>
+            <p>
+              {{ product.weight }} kg/l <span class="separator">•</span>
+              {{ product.date | date: "MM. dd." }}
+            </p>
+          </div>
+          <div class="product-impact">+{{ product.emission }} kg</div>
+        </div>
+      }
     </div>
-  </div>
+  }
 
   <ion-button
     expand="block"

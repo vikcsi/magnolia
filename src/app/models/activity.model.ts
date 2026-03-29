@@ -7,10 +7,17 @@ export interface Travel {
     to? : string
 }
 
+export interface ShoppingProductSnapshot {
+    barcode: string;
+    name: string;
+    emission: number;
+    weight: number;
+}
+
 export interface Shopping {
-    products : string[],
-    date : Date,
-    store? : string
+    products: ShoppingProductSnapshot[]; 
+    date: Date;
+    store?: string;
 }
 
 export interface Product {

@@ -1,7 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { User } from 'src/app/models/user.model';
 import { Activity } from 'src/app/models/activity.model';
 import { AuthService } from 'src/app/services/auth.service';
@@ -61,7 +63,8 @@ import { FirestoreDatePipe } from 'src/app/pipes/firestore-date.pipe';
     NavigationComponent,
     CommonModule,
     FormsModule,
-    FirestoreDatePipe
+    FirestoreDatePipe,
+    RouterLink,
   ],
 })
 export class HomePage implements OnInit {
@@ -92,7 +95,17 @@ export class HomePage implements OnInit {
     
     const firebaseUser = this.authService.currentUser;
     if (firebaseUser) {
-      this.activities$ = this.dataService.getUserActivities(firebaseUser.uid);
+      this.activities$ = this.dataService.getUserActivities(firebaseUser.uid).pipe(
+        map((activities) =>
+          [...activities]
+            .sort((a, b) => {
+              const aTime = a.timestamp instanceof Date ? a.timestamp.getTime() : (a.timestamp as any)?.toMillis?.() ?? 0;
+              const bTime = b.timestamp instanceof Date ? b.timestamp.getTime() : (b.timestamp as any)?.toMillis?.() ?? 0;
+              return bTime - aTime;
+            })
+            .slice(0, 5)
+        )
+      );
     }
   }
 }

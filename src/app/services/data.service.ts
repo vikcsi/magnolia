@@ -16,6 +16,7 @@ import {
   updateDoc,
   increment,
   setDoc,
+  getDoc,
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { User } from '../models/user.model';
@@ -41,11 +42,21 @@ export class DataService {
     });
   }
 
-  async saveShoppingActivity(userId: string, totalEmission: number, products: any[]): Promise<void> {
+  async saveShoppingActivity(
+    userId: string,
+    totalEmission: number,
+    products: any[],
+  ): Promise<void> {
     const activityRef = collection(this.firestore, 'activities');
     const userRef = doc(this.firestore, `users/${userId}`);
-
     const earnedXp = products.length * 10;
+
+    const productSnapshots = products.map((p) => ({
+      barcode: p.barcode,
+      name: p.name,
+      emission: p.emission,
+      weight: p.weight,
+    }));
 
     await addDoc(activityRef, {
       userId: userId,
@@ -54,27 +65,99 @@ export class DataService {
       timestamp: new Date(),
       type: 'shopping',
       details: {
-        products: products.map(p => p.name),
-        date: new Date()
-      }
+        products: productSnapshots,
+        date: new Date(),
+      },
     });
 
     await updateDoc(userRef, {
       emission: increment(totalEmission),
-      allXP: increment(earnedXp)
+      allXP: increment(earnedXp),
     });
   }
 
+  async saveTravelActivity(
+    userId: string,
+    mode: string,
+    distanceKm: number,
+    durationMin: number,
+    emission: number,
+    from: string,
+    to: string,
+  ): Promise<void> {
+    const activityRef = collection(this.firestore, 'activities');
+    const userRef = doc(this.firestore, `users/${userId}`);
+    const earnedXp = Math.max(5, Math.round(distanceKm));
+
+    const now = new Date();
+    const departedAt = new Date(now.getTime() - durationMin * 60 * 1000);
+
+    await addDoc(activityRef, {
+      userId,
+      xp: earnedXp,
+      emission,
+      timestamp: now,
+      type: 'travel',
+      details: {
+        mode,
+        distance: distanceKm,
+        departedAt,
+        arrivedAt: now,
+        from,
+        to,
+      },
+    });
+
+    await updateDoc(userRef, {
+      emission: increment(emission),
+      allXP: increment(earnedXp),
+    });
+  }
+
+  async getCommunityProduct(barcode: string): Promise<any | null> {
+    try {
+      return await runInInjectionContext(this.injector, async () => {
+        const docRef = doc(this.firestore, `community_products/${barcode}`);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          return docSnap.data();
+        }
+        return null;
+      });
+    } catch (error) {
+      console.error('Hiba a közösségi adatbázis lekérdezésekor:', error);
+      return null;
+    }
+  }
+
   async saveCommunityProducts(products: any[]): Promise<void> {
-    for (const product of products) {
-      const productRef = doc(this.firestore, `community_products/${product.barcode}`);
-      await setDoc(productRef, {
-        barcode: product.barcode,
-        name: product.name,
-        brands: product.brands || '',
-        category: product.category,
-        addedAt: new Date()
-      }, { merge: true });
+    try {
+      await runInInjectionContext(this.injector, async () => {
+        const promises = products.map((product) => {
+          if (!product.barcode) return Promise.resolve();
+
+          const productRef = doc(
+            this.firestore,
+            `community_products/${product.barcode}`,
+          );
+          return setDoc(
+            productRef,
+            {
+              barcode: product.barcode,
+              name: product.name,
+              brands: product.brands || '',
+              category: product.category || 'other',
+              addedAt: new Date(),
+            },
+            { merge: true },
+          );
+        });
+
+        await Promise.all(promises);
+      });
+    } catch (error) {
+      console.error('Hiba a közösségi termékek mentésekor:', error);
     }
   }
 }

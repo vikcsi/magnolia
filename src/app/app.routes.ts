@@ -23,6 +23,11 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'route-planner',
+    loadComponent: () => import('./pages/route-planner/route-planner.page').then(m => m.RoutePlannerPage),
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'login',
     loadComponent: () => import('./pages/login/login.page').then(m => m.LoginPage)
   },

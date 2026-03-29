@@ -1,7 +1,7 @@
 <div class="activity-section">
   <div class="section-header">
     <div class="section-icon">
-      <ion-icon name="location-outline"></ion-icon>
+      <ion-icon name="navigate-outline"></ion-icon>
     </div>
     <div>
       <h3>Közlekedés</h3>
@@ -10,68 +10,183 @@
   </div>
 
   <div class="toggle-buttons">
-    <button class="toggle-btn active">Bemért útvonalak</button>
-    <button class="toggle-btn">Manuális hozzáadás</button>
+    <button class="toggle-btn" [class.active]="activeTab === 'manual'" (click)="setTab('manual')">
+      Manuális hozzáadás
+    </button>
+    <button class="toggle-btn" [class.active]="activeTab === 'tracking'" (click)="setTab('tracking')">
+      Útvonalkövetés
+    </button>
   </div>
 
-  <p class="subsection-title">Válassz utazási eszközt</p>
-  <div class="transport-options">
-    <div
-      class="transport-option"
-      [class.active]="selectedTransport === 'car'"
-      (click)="selectTransport('car')"
-    >
-      <div class="transport-icon">🚗</div>
-      <ion-label>Autó</ion-label>
+  @if (activeTab === 'manual') {
+
+    <p class="subsection-title">Közlekedési mód</p>
+    <div class="transport-options">
+      @for (mode of manualModes; track mode) {
+        <div
+          class="transport-option"
+          [class.active]="manualMode === mode"
+          (click)="manualMode = mode; manualEmission = null"
+        >
+          <div class="transport-icon">{{ modeConfig[mode].icon }}</div>
+          <ion-label>{{ modeConfig[mode].label }}</ion-label>
+        </div>
+      }
     </div>
 
-    <div
-      class="transport-option"
-      [class.active]="selectedTransport === 'bus'"
-      (click)="selectTransport('bus')"
-    >
-      <div class="transport-icon">🚌</div>
-      <ion-label>Busz</ion-label>
+    <p class="subsection-title">Megtett távolság</p>
+    <div class="manual-input-row">
+      <ion-input
+        type="number"
+        class="distance-input"
+        placeholder="pl. 12.5"
+        [(ngModel)]="manualDistanceKm"
+        (ionChange)="manualEmission = null"
+        min="0.1"
+      ></ion-input>
+      <span class="unit-label">km</span>
     </div>
 
-    <div
-      class="transport-option"
-      [class.active]="selectedTransport === 'bike'"
-      (click)="selectTransport('bike')"
+    <ion-button
+      expand="block"
+      class="save-button"
+      [disabled]="manualDistanceKm <= 0"
+      (click)="calculateManual()"
     >
-      <div class="transport-icon">🚲</div>
-      <ion-label>Bicikli</ion-label>
-    </div>
+      Emissziók kiszámítása
+    </ion-button>
 
-    <div
-      class="transport-option"
-      [class.active]="selectedTransport === 'walk'"
-      (click)="selectTransport('walk')"
-    >
-      <div class="transport-icon">🚶</div>
-      <ion-label>Séta</ion-label>
-    </div>
-  </div>
+    @if (manualEmission !== null) {
+      <div class="result-card">
+        <div class="result-row">
+          <div class="result-item">
+            <span class="result-icon">📏</span>
+            <span class="result-value">{{ manualDistanceKm }} km</span>
+            <span class="result-label">távolság</span>
+          </div>
+          <div class="result-divider"></div>
+          <div class="result-item">
+            <span class="result-icon">🌿</span>
+            <span class="result-value" [class.zero-emission]="manualEmission === 0">
+              {{ manualEmission === 0 ? '0' : manualEmission }} kg
+            </span>
+            <span class="result-label">CO₂</span>
+          </div>
+        </div>
 
-  <p class="subsection-title">Válassz az útvonalak közül</p>
-
-  <div class="routes-list">
-    <div class="route-item">
-      <div class="route-info">
-        <h4>Otthon - Munka</h4>
-        <p>~15 perc <span class="separator">•</span> Ma, 8:14</p>
+        <ion-button
+          expand="block"
+          class="save-button"
+          [disabled]="isSavingManual"
+          (click)="saveManual()"
+        >
+          @if (isSavingManual) {
+            <ion-spinner name="crescent" slot="start"></ion-spinner>
+          }
+          <span>{{ isSavingManual ? 'Mentés...' : 'Mentés a naplóba' }}</span>
+        </ion-button>
       </div>
-      <div class="route-distance">3,4 km</div>
-    </div>
+    }
+  }
 
-    <div class="route-item">
-      <div class="route-info">
-        <h4>Munka - Élelmiszer­bolt</h4>
-        <p>~5 perc <span class="separator">•</span> Tegnap, 16:32</p>
+  @if (activeTab === 'tracking') {
+
+    @if (!isNative) {
+      <div class="tracking-unavailable">
+        <span class="tracking-unavailable-icon">📱</span>
+        <p>Az útvonalkövetés csak mobilon érhető el.</p>
       </div>
-      <div class="route-distance">1,4 km</div>
-    </div>
-  </div>
+    } @else {
 
-  <ion-button expand="block" class="save-button">Mentés</ion-button>
+      @if (!trackingState.isTracking && !trackingState.stopped) {
+        <div class="tracking-idle">
+          <div class="tracking-idle-icon">🗺️</div>
+          <p>Indítsd el a követést, amikor útra kelsz.<br>Az app automatikusan érzékeli, ha megálltál.</p>
+          <ion-button expand="block" class="start-btn" (click)="startTracking()">
+            <ion-icon name="play-circle-outline" slot="start"></ion-icon>
+            Követés indítása
+          </ion-button>
+        </div>
+      }
+
+      @if (trackingState.isTracking) {
+        <div class="tracking-active">
+          <div class="tracking-pulse">
+            <div class="pulse-dot"></div>
+            <span>Követés aktív</span>
+          </div>
+
+          <div class="tracking-stats">
+            <div class="tracking-stat">
+              <span class="tracking-stat-value">{{ formatDuration(trackingState.elapsedSeconds) }}</span>
+              <span class="tracking-stat-label">eltelt idő</span>
+            </div>
+            <div class="tracking-stat-divider"></div>
+            <div class="tracking-stat">
+              <span class="tracking-stat-value">{{ trackingState.distanceKm }} km</span>
+              <span class="tracking-stat-label">megtett út</span>
+            </div>
+          </div>
+
+          <ion-button
+            expand="block"
+            fill="outline"
+            color="danger"
+            class="stop-btn"
+            (click)="stopTrackingManually()"
+          >
+            <ion-icon name="stop-circle-outline" slot="start"></ion-icon>
+            Leállítás
+          </ion-button>
+        </div>
+      }
+    }
+  }
+
 </div>
+
+@if (showModeModal) {
+  <div class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+
+      <h3 class="modal-title">Milyen eszközzel utaztál?</h3>
+
+      <div class="modal-stats">
+        <div class="modal-stat">
+          <span class="modal-stat-value">{{ formatDuration(trackingState.elapsedSeconds) }}</span>
+          <span class="modal-stat-label">idő</span>
+        </div>
+        <div class="modal-stat">
+          <span class="modal-stat-value">{{ trackingState.distanceKm }} km</span>
+          <span class="modal-stat-label">távolság</span>
+        </div>
+      </div>
+
+      <div class="transport-options">
+        @for (mode of trackingModes; track mode) {
+          <div
+            class="transport-option"
+            [class.active]="selectedTrackingMode === mode"
+            (click)="selectedTrackingMode = mode"
+          >
+            <div class="transport-icon">{{ modeConfig[mode].icon }}</div>
+            <ion-label>{{ modeConfig[mode].label }}</ion-label>
+          </div>
+        }
+      </div>
+
+      <ion-button
+        expand="block"
+        class="save-button"
+        [disabled]="isSavingTrip"
+        (click)="saveTrip()"
+      >
+        @if (isSavingTrip) {
+          <ion-spinner name="crescent" slot="start"></ion-spinner>
+        }
+        <span>{{ isSavingTrip ? 'Mentés...' : 'Mentés a naplóba' }}</span>
+      </ion-button>
+    </div>
+  </div>
+}
