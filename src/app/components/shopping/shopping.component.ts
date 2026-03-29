@@ -1,4 +1,11 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+  inject,
+} from '@angular/core';
 import { CommonModule, AsyncPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Observable, of } from 'rxjs';
@@ -30,6 +37,7 @@ import {
   cameraOutline,
   cartOutline,
   checkmarkCircleOutline,
+  trophyOutline,
 } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 
@@ -96,6 +104,7 @@ export class ShoppingComponent implements OnInit, OnDestroy {
       cameraOutline,
       cartOutline,
       checkmarkCircleOutline,
+      trophyOutline,
     });
   }
 
@@ -184,7 +193,7 @@ export class ShoppingComponent implements OnInit, OnDestroy {
     this.html5QrcodeScanner = new Html5QrcodeScanner(
       'reader',
       { fps: 10, qrbox: { width: 250, height: 250 } },
-      false
+      false,
     );
 
     this.html5QrcodeScanner.render(
@@ -192,7 +201,7 @@ export class ShoppingComponent implements OnInit, OnDestroy {
         this.stopWebScanner();
         await this.handleScannedBarcode(decodedText);
       },
-      (errorMessage) => {}
+      (errorMessage) => {},
     );
   }
 
@@ -228,17 +237,19 @@ export class ShoppingComponent implements OnInit, OnDestroy {
 
       if (product) {
         this.scannedProduct = product;
-        
+
         let finalCategory = 'other';
         if ((product as any).category) {
           finalCategory = (product as any).category;
         } else if (product.offCategories && product.offCategories.length > 0) {
-          finalCategory = this.calcService.mapApiCategoriesToLocal(product.offCategories);
+          finalCategory = this.calcService.mapApiCategoriesToLocal(
+            product.offCategories,
+          );
         }
 
-        this.scannedForm = { 
-          weight: 1, 
-          category: finalCategory 
+        this.scannedForm = {
+          weight: 1,
+          category: finalCategory,
         };
       } else {
         const toast = await this.toastController.create({
@@ -335,7 +346,7 @@ export class ShoppingComponent implements OnInit, OnDestroy {
           .toFixed(2),
       );
 
-      await this.dataService.saveShoppingActivity(
+      const completedGoals = await this.dataService.saveShoppingActivity(
         user.uid,
         totalEmission,
         this.pendingProducts,
@@ -348,6 +359,20 @@ export class ShoppingComponent implements OnInit, OnDestroy {
         icon: 'checkmark-circle-outline',
       });
       await toast.present();
+
+      if (completedGoals && completedGoals.length > 0) {
+        for (const goal of completedGoals) {
+          const rewardToast = await this.toastController.create({
+            message: `🎉 Gratulálok! Teljesítetted a '${goal.title}' célkitűzést! +${goal.xpReward} XP`,
+            duration: 4500,
+            color: 'tertiary',
+            icon: 'trophy-outline',
+            position: 'middle',
+            cssClass: 'reward-toast',
+          });
+          await rewardToast.present();
+        }
+      }
 
       this.pendingProducts = [];
     } catch (error) {

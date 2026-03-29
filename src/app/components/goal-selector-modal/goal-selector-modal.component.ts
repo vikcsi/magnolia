@@ -1,0 +1,109 @@
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonButton,
+  IonButtons,
+  IonIcon,
+  ModalController,
+} from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import {
+  closeOutline,
+  checkmarkCircleOutline,
+  trophyOutline,
+} from 'ionicons/icons';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { DataService } from 'src/app/services/data.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { FIXED_GOALS } from 'src/app/constants/goals.constant';
+import { Goal } from 'src/app/models/goal.model';
+
+interface GoalSelectionDisplay extends Goal {
+  isActive: boolean;
+  isCompleted: boolean;
+  isLocked: boolean;
+}
+
+@Component({
+  selector: 'app-goal-selector-modal',
+  templateUrl: './goal-selector-modal.component.html',
+  styleUrls: ['./goal-selector-modal.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonButton,
+    IonButtons,
+    IonIcon,
+  ],
+})
+export class GoalSelectorModalComponent implements OnInit {
+  private modalCtrl = inject(ModalController);
+  private dataService = inject(DataService);
+  private authService = inject(AuthService);
+
+  goalsDisplay$!: Observable<GoalSelectionDisplay[]>;
+
+  constructor() {
+    addIcons({ closeOutline, checkmarkCircleOutline, trophyOutline });
+  }
+
+  ngOnInit() {
+    const user = this.authService.currentUser;
+    if (user) {
+      this.goalsDisplay$ = this.dataService.getUserGoals(user.uid).pipe(
+        map((userGoals) => {
+          const activeCount = userGoals.filter(
+            (ug) => ug.status === 'active',
+          ).length;
+          const limitReached = activeCount >= 2;
+
+          const mappedGoals = FIXED_GOALS.map((goal) => {
+            const userGoal = userGoals.find((ug) => ug.goalId === goal.id);
+            const isActive = userGoal?.status === 'active';
+            const isCompleted = userGoal?.status === 'completed';
+
+            const isLocked = limitReached && !isActive && !isCompleted;
+
+            return {
+              ...goal,
+              isActive,
+              isCompleted,
+              isLocked,
+            };
+          });
+
+          return mappedGoals.sort((a, b) => {
+            if (a.isActive && !b.isActive) return -1;
+            if (!a.isActive && b.isActive) return 1; 
+
+            if (a.isCompleted && !b.isCompleted) return 1;
+            if (!a.isCompleted && b.isCompleted) return -1;
+
+            return 0;
+          });
+        }),
+      );
+    }
+  }
+
+  async startGoal(goalId: string) {
+    const user = this.authService.currentUser;
+    if (user) {
+      await this.dataService.startNewGoal(user.uid, goalId);
+      this.close();
+    }
+  }
+
+  close() {
+    this.modalCtrl.dismiss();
+  }
+}

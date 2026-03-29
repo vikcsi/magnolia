@@ -43,7 +43,6 @@ export class StatsPage implements OnInit, OnDestroy {
 
   readonly CHART_HEIGHT = 120;
   readonly DAILY_LIMIT = this.statsService.DAILY_LIMIT_KG;
-  // KSH 2022 – fogyasztás-alapú szén-lábnyom, Magyarország: 6 350 kg CO₂/fő/év
   readonly KSH_YEARLY_KG = 6350;
 
   constructor() {
@@ -80,8 +79,6 @@ export class StatsPage implements OnInit, OnDestroy {
     }
   }
 
-  // ── Bar chart helpers ────────────────────────────────────────────────────
-
   getChartMax(): number {
     if (!this.stats) return 10;
     const maxBar = Math.max(...this.stats.dailyBars.map(b => b.total), this.stats.barLimitKg);
@@ -103,13 +100,9 @@ export class StatsPage implements OnInit, OnDestroy {
     return Math.round((this.stats.barLimitKg / this.getChartMax()) * this.CHART_HEIGHT);
   }
 
-  // ── Tree icons ────────────────────────────────────────────────────────────
-
   getTreeIcons(): Array<'full' | 'partial' | 'empty'> {
     return this.statsService.getTreeIcons(this.stats?.treeCount ?? 0);
   }
-
-  // ── Period label helpers ─────────────────────────────────────────────────
 
   getPeriodLabel(): string {
     switch (this.selectedPeriod) {

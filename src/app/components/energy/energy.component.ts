@@ -2,12 +2,17 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-  IonIcon, IonLabel, IonSelect, IonSelectOption,
-  IonInput, IonButton, ToastController,
+  IonIcon,
+  IonLabel,
+  IonSelect,
+  IonSelectOption,
+  IonInput,
+  IonButton,
+  ToastController,
 } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
 import { addIcons } from 'ionicons';
-import { checkmarkCircleOutline } from 'ionicons/icons';
+import { checkmarkCircleOutline, trophyOutline } from 'ionicons/icons';
 import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
 import { Activity, Energy } from 'src/app/models/activity.model';
@@ -17,9 +22,14 @@ import { Activity, Energy } from 'src/app/models/activity.model';
   templateUrl: './energy.component.html',
   styleUrls: ['./energy.component.scss'],
   imports: [
-    IonIcon, IonLabel, IonSelect, IonSelectOption,
-    IonInput, IonButton,
-    CommonModule, FormsModule,
+    IonIcon,
+    IonLabel,
+    IonSelect,
+    IonSelectOption,
+    IonInput,
+    IonButton,
+    CommonModule,
+    FormsModule,
   ],
 })
 export class EnergyComponent implements OnInit, OnDestroy {
@@ -38,9 +48,9 @@ export class EnergyComponent implements OnInit, OnDestroy {
   private sub?: Subscription;
 
   private readonly EMISSION_FACTORS: Record<string, number> = {
-    electricity: 0.233,  // kg CO₂/kWh (EU átlag)
-    gas: 2.0,            // kg CO₂/m³ (földgáz)
-    water: 0.149,        // kg CO₂/m³ (vízellátás + kezelés)
+    electricity: 0.233,
+    gas: 2.0,
+    water: 0.149,
   };
 
   readonly unitLabels: Record<string, string> = {
@@ -62,24 +72,30 @@ export class EnergyComponent implements OnInit, OnDestroy {
   };
 
   constructor() {
-    addIcons({ checkmarkCircleOutline });
+    addIcons({ checkmarkCircleOutline, trophyOutline });
   }
 
   ngOnInit(): void {
     const user = this.authService.currentUser;
     if (user) {
-      this.sub = this.dataService.getUserActivities(user.uid).subscribe(acts => {
-        this.recentEnergyActivities = acts
-          .filter(a => a.type === 'energy')
-          .sort((a, b) => {
-            const ta = a.timestamp instanceof Date ? a.timestamp.getTime()
-                        : (a.timestamp as any)?.toMillis?.() ?? 0;
-            const tb = b.timestamp instanceof Date ? b.timestamp.getTime()
-                        : (b.timestamp as any)?.toMillis?.() ?? 0;
-            return tb - ta;
-          })
-          .slice(0, 5);
-      });
+      this.sub = this.dataService
+        .getUserActivities(user.uid)
+        .subscribe((acts) => {
+          this.recentEnergyActivities = acts
+            .filter((a) => a.type === 'energy')
+            .sort((a, b) => {
+              const ta =
+                a.timestamp instanceof Date
+                  ? a.timestamp.getTime()
+                  : ((a.timestamp as any)?.toMillis?.() ?? 0);
+              const tb =
+                b.timestamp instanceof Date
+                  ? b.timestamp.getTime()
+                  : ((b.timestamp as any)?.toMillis?.() ?? 0);
+              return tb - ta;
+            })
+            .slice(0, 5);
+        });
     }
   }
 
@@ -110,8 +126,9 @@ export class EnergyComponent implements OnInit, OnDestroy {
     if (this.calculatedEmission === null) return;
 
     this.isSaving = true;
+
     try {
-      await this.dataService.saveEnergyActivity(
+      const completedGoals = await this.dataService.saveEnergyActivity(
         user.uid,
         this.typeEnergy,
         this.amount,
@@ -127,6 +144,20 @@ export class EnergyComponent implements OnInit, OnDestroy {
         position: 'top',
       });
       await toast.present();
+
+      if (completedGoals && completedGoals.length > 0) {
+        for (const goal of completedGoals) {
+          const rewardToast = await this.toastController.create({
+            message: `🎉 Gratulálok! Teljesítetted a '${goal.title}' célkitűzést! +${goal.xpReward} XP`,
+            duration: 4500,
+            color: 'tertiary',
+            icon: 'trophy-outline',
+            position: 'middle',
+            cssClass: 'reward-toast',
+          });
+          await rewardToast.present();
+        }
+      }
 
       this.amount = 0;
       this.calculatedEmission = null;

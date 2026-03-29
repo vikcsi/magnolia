@@ -11,7 +11,6 @@
 
 <ion-content class="ion-padding">
 
-  <!-- Cím mezők -->
   <div class="address-block">
     <div class="address-row">
       <div class="address-dot from-dot"></div>
@@ -75,7 +74,6 @@
     }
   </div>
 
-  <!-- Összehasonlítás gomb -->
   <ion-button
     expand="block"
     class="save-button"
@@ -90,7 +88,6 @@
     }
   </ion-button>
 
-  <!-- Eredmények -->
   @if (comparisonItems.length > 0) {
     <div class="comparison-list">
       @for (item of comparisonItems; track item.mode) {

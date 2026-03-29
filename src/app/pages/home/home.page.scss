@@ -10,8 +10,6 @@ ion-content { --background: var(--ion-color-light); }
 
 .ion-padding { padding: 16px; }
 
-// ── Fő hero kártya ────────────────────────────────────────────────────────────
-
 .main-card {
   background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-primary-tint) 100%);
   border-radius: 24px;
@@ -61,8 +59,6 @@ ion-content { --background: var(--ion-color-light); }
   }
 }
 
-// ── Kis Magnólia a hero kártyán ───────────────────────────────────────────────
-
 .magnolia-mini-wrap {
   display: flex;
   flex-direction: column;
@@ -108,8 +104,6 @@ ion-content { --background: var(--ion-color-light); }
   }
 }
 
-// ── Összesítő kártyák ─────────────────────────────────────────────────────────
-
 .summary-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -132,8 +126,6 @@ ion-content { --background: var(--ion-color-light); }
   p  { color: var(--ion-color-primary); font-size: 0.85rem; margin: 4px 0 2px; }
   h2 { color: var(--ion-color-primary); font-size: 1.3rem; font-weight: 700; margin: 0; }
 }
-
-// ── Insight kártya ────────────────────────────────────────────────────────────
 
 .insight-card {
   display: flex;
@@ -166,7 +158,6 @@ ion-content { --background: var(--ion-color-light); }
   }
 }
 
-// ── Eszközök ──────────────────────────────────────────────────────────────────
 
 .section-title {
   color: var(--ion-color-primary);
@@ -208,8 +199,6 @@ ion-content { --background: var(--ion-color-light); }
     }
   }
 }
-
-// ── Tevékenység lista ─────────────────────────────────────────────────────────
 
 ion-list {
   background: transparent;

@@ -1,5 +1,3 @@
-// ===== CÍM MEZŐK =====
-
 .address-block {
   display: flex;
   flex-direction: column;
@@ -66,8 +64,6 @@
   width: 100%;
 }
 
-// ===== AUTOCOMPLETE =====
-
 .suggestions-dropdown {
   background: var(--ion-color-light);
   border: 1px solid var(--ion-color-light-shade);
@@ -102,8 +98,6 @@
 
   .tiny-spinner { width: 14px; height: 14px; }
 }
-
-// ===== ÖSSZEHASONLÍTÁS LISTA =====
 
 .comparison-list {
   display: flex;
@@ -170,8 +164,6 @@
     letter-spacing: 0.4px;
   }
 }
-
-// ===== TÉRKÉP =====
 
 .map-container {
   margin: 12px 0;

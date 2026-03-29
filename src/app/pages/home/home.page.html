@@ -13,7 +13,6 @@
 <ion-content [fullscreen]="true">
   <div class="ion-padding">
 
-    <!-- Fő hero kártya -->
     <ion-card class="main-card">
       <ion-card-content>
         <div class="main-card-top">
@@ -23,7 +22,6 @@
               <h1>{{ todayEmission | number:'1.0-1' }} kg</h1>
             </div>
           </div>
-          <!-- Kis Magnólia SVG -->
           <div class="magnolia-mini-wrap">
             <svg class="magnolia-mini" [class]="magnoliaState" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
               <g transform="translate(50,50)">
@@ -55,7 +53,6 @@
       </ion-card-content>
     </ion-card>
 
-    <!-- Streak + Szint összesítő kártyák -->
     <div class="summary-container">
       <ion-card class="summary-card">
         <ion-icon name="flame-outline" class="streak-icon"></ion-icon>
@@ -69,7 +66,6 @@
       </ion-card>
     </div>
 
-    <!-- Insight kártya -->
     <div class="insight-card" [class.success]="insight.type === 'success'"
                                [class.warning]="insight.type === 'warning'">
       <div class="insight-accent"></div>

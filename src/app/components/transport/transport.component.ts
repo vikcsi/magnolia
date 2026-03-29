@@ -10,12 +10,21 @@ import {
 } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
 import { addIcons } from 'ionicons';
-import { checkmarkCircleOutline, stopCircleOutline, playCircleOutline, navigateOutline } from 'ionicons/icons';
+import {
+  checkmarkCircleOutline,
+  stopCircleOutline,
+  playCircleOutline,
+  navigateOutline,
+  trophyOutline,
+} from 'ionicons/icons';
 import { TransportMode } from 'src/app/services/directions.service';
 import { CarbonCalculatorService } from 'src/app/services/carbon-calculator.service';
 import { DataService } from 'src/app/services/data.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { TrackingService, TrackingState } from 'src/app/services/tracking.service';
+import {
+  TrackingService,
+  TrackingState,
+} from 'src/app/services/tracking.service';
 import { Capacitor } from '@capacitor/core';
 
 @Component({
@@ -38,26 +47,51 @@ export class TransportComponent implements OnInit, OnDestroy {
   manualEmission: number | null = null;
   isSavingManual = false;
 
-  trackingState: TrackingState = { isTracking: false, distanceKm: 0, elapsedSeconds: 0, stopped: false };
+  trackingState: TrackingState = {
+    isTracking: false,
+    distanceKm: 0,
+    elapsedSeconds: 0,
+    stopped: false,
+  };
   showModeModal = false;
   selectedTrackingMode: TransportMode = 'car';
   isSavingTrip = false;
   private trackingSub?: Subscription;
 
-  readonly modeConfig: Record<TransportMode, { label: string; icon: string }> = {
-    car: { label: 'Autó', icon: '🚗' },
-    motorbike: { label: 'Motor', icon: '🏍️' },
-    bus: { label: 'Tömeg-\nközlekedés', icon: '🚌' },
-    train: { label: 'Vonat', icon: '🚆' },
-    bicycling: { label: 'Bicikli', icon: '🚲' },
-    walking: { label: 'Gyalog', icon: '🚶' },
-  };
+  readonly modeConfig: Record<TransportMode, { label: string; icon: string }> =
+    {
+      car: { label: 'Autó', icon: '🚗' },
+      motorbike: { label: 'Motor', icon: '🏍️' },
+      bus: { label: 'Tömeg-\nközlekedés', icon: '🚌' },
+      train: { label: 'Vonat', icon: '🚆' },
+      bicycling: { label: 'Bicikli', icon: '🚲' },
+      walking: { label: 'Gyalog', icon: '🚶' },
+    };
 
-  readonly manualModes: TransportMode[] = ['car', 'motorbike', 'bus', 'bicycling', 'walking'];
-  readonly trackingModes: TransportMode[] = ['car', 'motorbike', 'bus', 'train', 'bicycling', 'walking'];
+  readonly manualModes: TransportMode[] = [
+    'car',
+    'motorbike',
+    'bus',
+    'bicycling',
+    'walking',
+  ];
+  readonly trackingModes: TransportMode[] = [
+    'car',
+    'motorbike',
+    'bus',
+    'train',
+    'bicycling',
+    'walking',
+  ];
 
   constructor() {
-    addIcons({ checkmarkCircleOutline, stopCircleOutline, playCircleOutline, navigateOutline });
+    addIcons({
+      checkmarkCircleOutline,
+      stopCircleOutline,
+      playCircleOutline,
+      navigateOutline,
+      trophyOutline,
+    });
   }
 
   ngOnInit(): void {
@@ -81,18 +115,29 @@ export class TransportComponent implements OnInit, OnDestroy {
 
   calculateManual(): void {
     if (this.manualDistanceKm > 0) {
-      this.manualEmission = this.calcService.calculateTravelEmission(this.manualDistanceKm, this.manualMode);
+      this.manualEmission = this.calcService.calculateTravelEmission(
+        this.manualDistanceKm,
+        this.manualMode,
+      );
     }
   }
 
   async saveManual(): Promise<void> {
     const user = this.authService.currentUser;
-    if (!user || this.manualEmission === null || this.manualDistanceKm <= 0) return;
+    if (!user || this.manualEmission === null || this.manualDistanceKm <= 0)
+      return;
 
     this.isSavingManual = true;
+
     try {
-      await this.dataService.saveTravelActivity(
-        user.uid, this.manualMode, this.manualDistanceKm, 0, this.manualEmission, '', '',
+      const completedGoals = await this.dataService.saveTravelActivity(
+        user.uid,
+        this.manualMode,
+        this.manualDistanceKm,
+        0,
+        this.manualEmission,
+        '',
+        '',
       );
 
       const toast = await this.toastController.create({
@@ -104,16 +149,30 @@ export class TransportComponent implements OnInit, OnDestroy {
       });
       await toast.present();
 
+      if (completedGoals && completedGoals.length > 0) {
+        for (const goal of completedGoals) {
+          const rewardToast = await this.toastController.create({
+            message: `🎉 Gratulálok! Teljesítetted a '${goal.title}' célkitűzést! +${goal.xpReward} XP`,
+            duration: 4500,
+            color: 'tertiary',
+            icon: 'trophy-outline',
+            position: 'middle',
+            cssClass: 'reward-toast',
+          });
+          await rewardToast.present();
+        }
+      }
+
       this.manualDistanceKm = 1;
       this.manualEmission = null;
-    } catch {
-      const toast = await this.toastController.create({
+    } catch (error) {
+      const errorToast = await this.toastController.create({
         message: 'Hiba történt a mentés során.',
         duration: 3000,
         color: 'danger',
         position: 'top',
       });
-      await toast.present();
+      await errorToast.present();
     } finally {
       this.isSavingManual = false;
     }
@@ -135,7 +194,9 @@ export class TransportComponent implements OnInit, OnDestroy {
   async saveTrip(): Promise<void> {
     this.isSavingTrip = true;
     try {
-      await this.trackingService.saveTrip(this.selectedTrackingMode);
+      const completedGoals = await this.trackingService.saveTrip(
+        this.selectedTrackingMode,
+      );
       this.showModeModal = false;
 
       const toast = await this.toastController.create({
@@ -146,6 +207,20 @@ export class TransportComponent implements OnInit, OnDestroy {
         position: 'top',
       });
       await toast.present();
+
+      if (completedGoals && completedGoals.length > 0) {
+        for (const goal of completedGoals) {
+          const rewardToast = await this.toastController.create({
+            message: `🎉 Gratulálok! Teljesítetted a '${goal.title}' célkitűzést! +${goal.xpReward} XP`,
+            duration: 4500,
+            color: 'tertiary',
+            icon: 'trophy-outline',
+            position: 'middle',
+            cssClass: 'reward-toast',
+          });
+          await rewardToast.present();
+        }
+      }
     } catch {
       const toast = await this.toastController.create({
         message: 'Hiba történt a mentés során.',
@@ -168,7 +243,8 @@ export class TransportComponent implements OnInit, OnDestroy {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
     const s = seconds % 60;
-    if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    if (h > 0)
+      return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   }
 }

@@ -1,14 +1,20 @@
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { registerPlugin } from '@capacitor/core';
-import type { BackgroundGeolocationPlugin, Location } from '@capacitor-community/background-geolocation';
+import type {
+  BackgroundGeolocationPlugin,
+  Location,
+} from '@capacitor-community/background-geolocation';
 import { LocalNotifications } from '@capacitor/local-notifications';
 
-const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>('BackgroundGeolocation');
+const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>(
+  'BackgroundGeolocation',
+);
 import { TransportMode } from './directions.service';
 import { CarbonCalculatorService } from './carbon-calculator.service';
 import { DataService } from './data.service';
 import { AuthService } from './auth.service';
+import { Goal } from '../models/goal.model';
 
 export interface TrackingState {
   isTracking: boolean;
@@ -18,7 +24,7 @@ export interface TrackingState {
 }
 
 const STOP_SPEED_THRESHOLD_KMH = 2;
-const STOP_DURATION_MS = 1 * 60 * 1000; // 1 perc (teszteléshez)
+const STOP_DURATION_MS = 5 * 60 * 1000; 
 
 @Injectable({ providedIn: 'root' })
 export class TrackingService {
@@ -44,7 +50,9 @@ export class TrackingService {
       await LocalNotifications.requestPermissions();
       const { Geolocation } = await import('@capacitor/geolocation');
       const result = await Geolocation.requestPermissions();
-      return result.location === 'granted' || result.coarseLocation === 'granted';
+      return (
+        result.location === 'granted' || result.coarseLocation === 'granted'
+      );
     } catch {
       return false;
     }
@@ -57,7 +65,12 @@ export class TrackingService {
     this.points = [];
     this.lastMovingAt = Date.now();
 
-    this.patchState({ isTracking: true, distanceKm: 0, elapsedSeconds: 0, stopped: false });
+    this.patchState({
+      isTracking: true,
+      distanceKm: 0,
+      elapsedSeconds: 0,
+      stopped: false,
+    });
 
     this.watcherId = await BackgroundGeolocation.addWatcher(
       {
@@ -79,7 +92,10 @@ export class TrackingService {
     }, 1000);
 
     this.stopCheckInterval = setInterval(() => {
-      if (!this.state$.value.stopped && Date.now() - this.lastMovingAt >= STOP_DURATION_MS) {
+      if (
+        !this.state$.value.stopped &&
+        Date.now() - this.lastMovingAt >= STOP_DURATION_MS
+      ) {
         this.detectStop();
       }
     }, 30_000);
@@ -91,9 +107,16 @@ export class TrackingService {
 
     if (this.points.length > 0) {
       const prev = this.points[this.points.length - 1];
-      const delta = this.haversineKm(prev.lat, prev.lon, newPoint.lat, newPoint.lon);
+      const delta = this.haversineKm(
+        prev.lat,
+        prev.lon,
+        newPoint.lat,
+        newPoint.lon,
+      );
       const current = this.state$.value;
-      this.patchState({ distanceKm: Math.round((current.distanceKm + delta) * 100) / 100 });
+      this.patchState({
+        distanceKm: Math.round((current.distanceKm + delta) * 100) / 100,
+      });
     }
 
     this.points.push(newPoint);
@@ -128,15 +151,15 @@ export class TrackingService {
     this.patchState({ isTracking: false });
   }
 
-  async saveTrip(mode: TransportMode): Promise<void> {
+  async saveTrip(mode: TransportMode): Promise<Goal[]> {
     const user = this.authService.currentUser;
-    if (!user) return;
+    if (!user) return [];
 
     const { distanceKm, elapsedSeconds } = this.state$.value;
     const emission = this.calcService.calculateTravelEmission(distanceKm, mode);
     const durationMin = Math.round(elapsedSeconds / 60);
 
-    await this.dataService.saveTravelActivity(
+    const completedGoals = await this.dataService.saveTravelActivity(
       user.uid,
       mode,
       distanceKm,
@@ -146,12 +169,24 @@ export class TrackingService {
       '',
     );
 
-    this.patchState({ isTracking: false, distanceKm: 0, elapsedSeconds: 0, stopped: false });
+    this.patchState({
+      isTracking: false,
+      distanceKm: 0,
+      elapsedSeconds: 0,
+      stopped: false,
+    });
     this.points = [];
+
+    return completedGoals;
   }
 
   discardTrip(): void {
-    this.patchState({ isTracking: false, distanceKm: 0, elapsedSeconds: 0, stopped: false });
+    this.patchState({
+      isTracking: false,
+      distanceKm: 0,
+      elapsedSeconds: 0,
+      stopped: false,
+    });
     this.points = [];
   }
 
@@ -169,7 +204,6 @@ export class TrackingService {
         ],
       });
     } catch {
-      // értesítés nem kritikus
     }
   }
 
@@ -177,13 +211,20 @@ export class TrackingService {
     this.state$.next({ ...this.state$.value, ...partial });
   }
 
-  private haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  private haversineKm(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number,
+  ): number {
     const R = 6371;
     const dLat = this.toRad(lat2 - lat1);
     const dLon = this.toRad(lon2 - lon1);
     const a =
       Math.sin(dLat / 2) ** 2 +
-      Math.cos(this.toRad(lat1)) * Math.cos(this.toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+      Math.cos(this.toRad(lat1)) *
+        Math.cos(this.toRad(lat2)) *
+        Math.sin(dLon / 2) ** 2;
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   }
 

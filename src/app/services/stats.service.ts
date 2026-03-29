@@ -97,7 +97,6 @@ export class StatsService {
         travel += this.sumCat(da, 'travel');
         shopping += this.sumCat(da, 'shopping');
       }
-      // Az energia heti értéke: az adott hétre eső bejegyzések napi rátájának 7-szerese
       const weekEnergyActs = activities.filter(
         a => a.type === 'energy' && weekDays.some(d => this.isSameDay(this.toDate(a.timestamp), d))
       );
@@ -152,7 +151,6 @@ export class StatsService {
       energy: bars.reduce((s, b) => s + b.energy, 0),
     };
 
-    // Előző 12 hónap összege az összehasonlításhoz
     let prevTotal = 0;
     for (let m = 12; m <= 23; m++) {
       const d = new Date(today.getFullYear(), today.getMonth() - m, 1);

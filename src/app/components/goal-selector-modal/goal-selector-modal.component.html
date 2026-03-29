@@ -1,0 +1,48 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar mode="md">
+    <ion-title>Célkitűzések</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <p class="instruction">Egyszerre maximum 2 célkitűzésed lehet folyamatban.</p>
+  
+  @if (goalsDisplay$ | async; as goals) {
+    <div class="available-goals-list">
+      @for (goal of goals; track goal.id) {
+        <div class="goal-card" [class.locked]="goal.isLocked" [class.active]="goal.isActive">
+          <div class="goal-info">
+            <h4>{{ goal.title }}</h4>
+            <p>{{ goal.description }}</p>
+            <span class="xp-badge">+{{ goal.xpReward }} XP</span>
+          </div>
+          
+          @if (goal.isActive) {
+            <ion-button fill="clear" color="success" disabled>
+              <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+              Folyamatban
+            </ion-button>
+          } @else if (goal.isCompleted) {
+            <ion-button fill="clear" color="warning" disabled>
+              <ion-icon name="trophy-outline" slot="start"></ion-icon>
+              Teljesítve
+            </ion-button>
+          } @else {
+            <ion-button 
+              expand="block"
+              (click)="startGoal(goal.id)" 
+              [disabled]="goal.isLocked"
+              class="start-btn">
+              Kiválasztom
+            </ion-button>
+          }
+        </div>
+      }
+    </div>
+  }
+</ion-content>

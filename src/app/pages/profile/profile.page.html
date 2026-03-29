@@ -64,43 +64,49 @@
         <ion-icon name="radio-button-on"></ion-icon>
         <h3>Jelenlegi célok</h3>
       </div>
-      <a class="see-all">Összes</a>
+      <a class="see-all" (click)="openGoalSelector()"
+        >Összes cél / Új felvétele</a
+      >
     </div>
 
     <div class="goals-list">
+      @if (activeGoalsDisplay$ | async; as activeGoals) { @for (item of
+      activeGoals; track item.userGoal.id) {
       <div class="goal-item">
         <div class="goal-icon">
-          <ion-icon name="radio-button-on"></ion-icon>
+          <ion-icon name="leaf"></ion-icon>
         </div>
         <div class="goal-content">
-          <h4>25%-kal csökkenteni a heti kibocsátást</h4>
-          <span class="goal-time">4 nap múlva vége</span>
-          <div class="goal-progress">
-            <ion-progress-bar value="0.58"></ion-progress-bar>
-            <div class="goal-stats">
-              <span>58% kész</span>
-              <span class="xp-reward">+100 XP</span>
-            </div>
-          </div>
-        </div>
-      </div>
+          <h4>{{ item.details.title }}</h4>
 
-      <div class="goal-item">
-        <div class="goal-icon">
-          <ion-icon name="radio-button-on"></ion-icon>
-        </div>
-        <div class="goal-content">
-          <h4>Jegyezzen fel tevékenységet 30 napon át</h4>
-          <span class="goal-time">15 / 30 nap</span>
+          <p class="goal-description">{{ item.details.description }}</p>
+
+          <div class="goal-meta">
+            <span class="goal-time">
+              <ion-icon name="time-outline"></ion-icon>
+              {{ item.remainingDays }} nap maradt
+            </span>
+            <span class="goal-progress-text">
+              {{ item.userGoal.progress }} / {{ item.details.targetValue }}
+            </span>
+          </div>
+
           <div class="goal-progress">
-            <ion-progress-bar value="0.5"></ion-progress-bar>
+            <ion-progress-bar [value]="item.progressPercent"></ion-progress-bar>
             <div class="goal-stats">
-              <span>50% kész</span>
-              <span class="xp-reward">+200 XP</span>
+              <span
+                >{{ (item.progressPercent * 100) | number:'1.0-0' }}% kész</span
+              >
+              <span class="xp-reward">+{{ item.details.xpReward }} XP</span>
             </div>
           </div>
         </div>
       </div>
+      } @if (activeGoals.length === 0) {
+      <p class="empty-state">
+        Jelenleg nincs aktív célkitűzésed. Válassz egyet a listából!
+      </p>
+      } }
     </div>
 
     <div class="section-header">
