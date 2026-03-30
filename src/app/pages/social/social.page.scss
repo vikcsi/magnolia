@@ -15,31 +15,27 @@ ion-content {
 }
 
 .tab-buttons {
-    display: flex;
-    gap: 0;
-    margin-bottom: 24px;
-    background: var(--ion-color-tertiary);
-    border: 2px solid var(--ion-color-tertiary-shade);
-    border-radius: 20px;
-    padding: 4px;
+  display: flex;
+  gap: 0;
+  margin-bottom: 20px;
+  background: var(--ion-color-tertiary);
+  border: 2px solid var(--ion-color-tertiary-shade);
+  border-radius: 20px;
+  padding: 4px;
 
-    .tab-btn {
-        flex: 1;
-        padding: 12px;
-        background: transparent;
-        border: none;
-        border-radius: 16px;
-        color: var(--ion-color-primary);
-        font-size: 0.9rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s;
-
-        &.active {
-            background: var(--ion-color-secondary);
-            color: var(--ion-color-primary);
-        }
-    }
+  .tab-btn {
+    flex: 1;
+    padding: 10px 6px;
+    background: transparent;
+    border: none;
+    border-radius: 16px;
+    color: var(--ion-color-primary);
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    &.active { background: var(--ion-color-secondary); }
+  }
 }
 
 .tab-content {

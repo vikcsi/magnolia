@@ -1,0 +1,20 @@
+<div class="goal-modal-wrapper">
+  <div class="modal-card">
+    <div class="icon-ring">
+      <ion-icon name="trophy-outline"></ion-icon>
+    </div>
+    <p class="label-cel">Célkitűzés elérve!</p>
+    
+    <h2 class="goal-title">{{ goal.title }}</h2>
+    
+    <p class="congrats-text">
+      Gratulálunk! Sikerült elérned a kitűzött környezetvédelmi célodat. Minden apró lépés számít!
+    </p>
+    
+    <div class="xp-badge">+{{ goal.xpReward }} XP jutalom</div>
+    
+    <ion-button expand="block" class="continue-btn" (click)="close()">
+      Remek!
+    </ion-button>
+  </div>
+</div>

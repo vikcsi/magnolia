@@ -10,12 +10,13 @@
   </div>
 
   <div class="toggle-buttons">
-    <button class="toggle-btn" [class.active]="activeTab === 'manual'" (click)="setTab('manual')">
-      Manuális hozzáadás
-    </button>
     <button class="toggle-btn" [class.active]="activeTab === 'tracking'" (click)="setTab('tracking')">
       Útvonalkövetés
     </button>
+    <button class="toggle-btn" [class.active]="activeTab === 'manual'" (click)="setTab('manual')">
+      Manuális hozzáadás
+    </button>
+  
   </div>
 
   @if (activeTab === 'manual') {

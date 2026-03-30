@@ -18,7 +18,10 @@
       <p class="username">&#64;{{ user.username }}</p>
       <div class="level-badge">
         <ion-icon name="star"></ion-icon>
-        <span>1. szint - Zöldfülű</span>
+        <span
+          >{{ user.currentLevel.level }}. szint - {{ user.currentLevel.name
+          }}</span
+        >
       </div>
     </div>
 
@@ -28,9 +31,12 @@
           <ion-icon name="flash"></ion-icon>
           <span>Szint haladás</span>
         </div>
-        <span class="xp-value">{{ user.allXP }} / 1000 XP</span>
+        <span class="xp-value"
+          >{{ user.allXP }} / {{ user.nextLevel ? user.nextLevel.requiredXp :
+          'Max' }} XP</span
+        >
       </div>
-      <ion-progress-bar [value]="user.allXP / 1000"></ion-progress-bar>
+      <ion-progress-bar [value]="user.levelProgress"></ion-progress-bar>
     </div>
 
     <div class="stats-grid">
@@ -46,7 +52,7 @@
         <div class="stat-icon">
           <ion-icon name="play-forward"></ion-icon>
         </div>
-        <h3>{{ user.streak }}</h3>
+        <h3>{{ weeklyStreak }}</h3>
         <p>Streak</p>
       </div>
 

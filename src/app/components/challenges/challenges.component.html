@@ -7,39 +7,56 @@
   </div>
 
   <div class="challenges-list">
-    <div class="challenge-item">
-      <div class="challenge-icon">
-        <ion-icon name="radio-button-on"></ion-icon>
-      </div>
-      <div class="challenge-content">
-        <h4>25%-kal csökkenteni a heti kibocsátást</h4>
-        <span class="challenge-time">4 nap múlva vége</span>
-        <div class="challenge-progress">
-          <ion-progress-bar value="0.58"></ion-progress-bar>
-          <div class="challenge-stats">
-            <span>58% kész</span>
-            <span class="xp-reward">+100 XP</span>
+    @if (activeChallenges$ | async; as activeChallenges) {
+      @for (item of activeChallenges; track item.userChallenge.id) {
+        <div class="challenge-item">
+          <div class="challenge-icon">
+            <ion-icon [name]="item.details.icon"></ion-icon>
           </div>
-        </div>
-      </div>
-    </div>
+          <div class="challenge-content">
+            <h4>{{ item.details.name }}</h4>
+            <p class="challenge-desc">{{ item.details.desc }}</p>
 
-    <div class="challenge-item">
-      <div class="challenge-icon">
-        <ion-icon name="radio-button-on"></ion-icon>
-      </div>
-      <div class="challenge-content">
-        <h4>Jegyezzen fel tevékenységet 30 napon át</h4>
-        <span class="challenge-time">15 / 30 nap</span>
-        <div class="challenge-progress">
-          <ion-progress-bar value="0.5"></ion-progress-bar>
-          <div class="challenge-stats">
-            <span>50% kész</span>
-            <span class="xp-reward">+200 XP</span>
+            <div class="challenge-meta">
+              <span
+                class="challenge-time"
+                [class.expiring-soon]="item.isExpiringSoon"
+              >
+                <ion-icon name="time-outline"></ion-icon>
+                {{ item.timeRemainingText }}
+              </span>
+              <span class="challenge-progress-text">
+                {{ item.userChallenge.progress }} /
+                {{ item.details.targetValue }}
+              </span>
+            </div>
+
+            <div class="challenge-progress">
+              <ion-progress-bar
+                [value]="item.progressPercent"
+              ></ion-progress-bar>
+              <div class="challenge-stats">
+                <span
+                  >{{ item.progressPercent * 100 | number: "1.0-0" }}%
+                  kész</span
+                >
+                <span class="xp-reward">+{{ item.details.xpReward }} XP</span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      }
+
+      @if (activeChallenges.length === 0) {
+        <div class="empty-state">
+          <ion-icon name="radio-button-on"></ion-icon>
+          <p>Jelenleg nincs aktív kihívásod.</p>
+          <p>Csatlakozz egyhez az alábbi listából!</p>
+        </div>
+      }
+    } @else {
+      <p class="loading-text">Kihívások betöltése...</p>
+    }
   </div>
 
   <div class="section-header">
@@ -47,15 +64,55 @@
   </div>
 
   <div class="join-challenges">
-    <div class="join-challenge-item">
-      <div class="join-icon">
-        <ion-icon name="radio-button-on"></ion-icon>
-      </div>
-      <div class="join-info">
-        <p class="join-title">Eco Transport</p>
-        <p class="join-desc">Használj tömegközlekedést 5 napig</p>
-      </div>
-      <button class="join-btn">Csatlakozás</button>
-    </div>
+    @if (completedThisRotation$ | async; as completedThisRotation) {
+      @for (challenge of completedThisRotation; track challenge.id) {
+        <div class="join-challenge-item completed-this-rotation">
+          <div class="join-icon">
+            <ion-icon [name]="challenge.icon"></ion-icon>
+          </div>
+          <div class="join-info">
+            <p class="join-title">{{ challenge.name }}</p>
+            <p class="join-desc">{{ challenge.desc }}</p>
+          </div>
+          <div class="completed-badge">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+            Teljesítve
+          </div>
+        </div>
+      }
+    }
+
+    @if (availableChallenges$ | async; as available) {
+      @for (challenge of available; track challenge.id) {
+        <div class="join-challenge-item">
+          <div class="join-icon">
+            <ion-icon [name]="challenge.icon"></ion-icon>
+          </div>
+          <div class="join-info">
+            <p class="join-title">{{ challenge.name }}</p>
+            <p class="join-desc">{{ challenge.desc }}</p>
+          </div>
+          <button
+            class="join-btn"
+            [disabled]="isJoining[challenge.id]"
+            (click)="joinChallenge(challenge)"
+          >
+            @if (isJoining[challenge.id]) {
+              <ion-spinner name="crescent" class="btn-spinner"></ion-spinner>
+            } @else {
+              Csatlakozás
+            }
+          </button>
+        </div>
+      }
+
+      @if (available.length === 0 && (completedThisRotation$ | async)?.length === 0) {
+        <p class="empty-state-text">
+          Jelenleg nincs több elérhető kihívás a héten. Szép munka!
+        </p>
+      }
+    } @else {
+      <p class="loading-text">Kínálat betöltése...</p>
+    }
   </div>
 </div>

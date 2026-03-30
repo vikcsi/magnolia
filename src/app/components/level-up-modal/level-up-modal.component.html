@@ -1,0 +1,48 @@
+<div class="level-up-wrapper">
+  <div class="modal-card">
+
+    <div class="sparkle-ring">
+      <svg class="magnolia-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <g transform="translate(50,50)">
+          <ellipse class="petal" rx="11" ry="23" transform="rotate(0) translate(0,-21)"/>
+          <ellipse class="petal" rx="11" ry="23" transform="rotate(60) translate(0,-21)"/>
+          <ellipse class="petal" rx="11" ry="23" transform="rotate(120) translate(0,-21)"/>
+          <ellipse class="petal" rx="11" ry="23" transform="rotate(180) translate(0,-21)"/>
+          <ellipse class="petal" rx="11" ry="23" transform="rotate(240) translate(0,-21)"/>
+          <ellipse class="petal" rx="11" ry="23" transform="rotate(300) translate(0,-21)"/>
+          <circle class="flower-center" r="13"/>
+          <circle class="stamen" r="3.5" cx="0"  cy="-4"/>
+          <circle class="stamen" r="3"   cx="-5" cy="3"/>
+          <circle class="stamen" r="3"   cx="5"  cy="3"/>
+        </g>
+      </svg>
+    </div>
+
+    <p class="label-szintlpes">Szintlépés!</p>
+
+    <div class="level-transition">
+      <div class="level-pill old">
+        <span class="level-num">{{ oldLevel.level }}. szint</span>
+        <span class="level-name">{{ oldLevel.name }}</span>
+      </div>
+      <ion-icon name="arrow-forward-outline" class="arrow-icon"></ion-icon>
+      <div class="level-pill new">
+        <span class="level-num">{{ newLevel.level }}. szint</span>
+        <span class="level-name">{{ newLevel.name }}</span>
+      </div>
+    </div>
+
+    <p class="congrats-text">
+      Gratulálunk! Megérdemelt szintlépés, <br>tartsd fenn ezt a tempót!
+    </p>
+
+    @if (earnedXp > 0) {
+      <div class="xp-badge">+{{ earnedXp }} XP szerzett</div>
+    }
+
+    <ion-button expand="block" class="continue-btn" (click)="close()">
+      Tovább
+    </ion-button>
+
+  </div>
+</div>

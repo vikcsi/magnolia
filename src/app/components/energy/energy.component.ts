@@ -9,12 +9,17 @@ import {
   IonInput,
   IonButton,
   ToastController,
+  ModalController,
 } from '@ionic/angular/standalone';
-import { Subscription } from 'rxjs';
+import { Subscription, firstValueFrom } from 'rxjs';
 import { addIcons } from 'ionicons';
-import { checkmarkCircleOutline, trophyOutline } from 'ionicons/icons';
+import { checkmarkCircleOutline } from 'ionicons/icons';
 import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
+import { getCurrentLevel, LevelDefinition } from 'src/app/constants/leveling.constant';
+import { LevelUpModalComponent } from 'src/app/components/level-up-modal/level-up-modal.component';
+import { GoalCompletedModalComponent } from 'src/app/components/goal-completed-modal/goal-completed-modal.component';
+import { ChallengeCompletedModalComponent } from 'src/app/components/challenge-completed-modal/challenge-completed-modal.component';
 import { Activity, Energy } from 'src/app/models/activity.model';
 
 @Component({
@@ -36,6 +41,7 @@ export class EnergyComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private dataService = inject(DataService);
   private toastController = inject(ToastController);
+  private modalCtrl = inject(ModalController);
 
   typeEnergy: 'electricity' | 'gas' | 'water' = 'electricity';
   amount: number = 0;
@@ -72,7 +78,7 @@ export class EnergyComponent implements OnInit, OnDestroy {
   };
 
   constructor() {
-    addIcons({ checkmarkCircleOutline, trophyOutline });
+    addIcons({ checkmarkCircleOutline });
   }
 
   ngOnInit(): void {
@@ -128,7 +134,11 @@ export class EnergyComponent implements OnInit, OnDestroy {
     this.isSaving = true;
 
     try {
-      const completedGoals = await this.dataService.saveEnergyActivity(
+      const userProfile = await firstValueFrom(this.authService.currentUserProfile$);
+      const xpBefore = userProfile?.allXP ?? 0;
+      const oldLevel = getCurrentLevel(xpBefore);
+
+      const { completedGoals, completedChallenges, earnedXp } = await this.dataService.saveEnergyActivity(
         user.uid,
         this.typeEnergy,
         this.amount,
@@ -137,7 +147,7 @@ export class EnergyComponent implements OnInit, OnDestroy {
       );
 
       const toast = await this.toastController.create({
-        message: `Fogyasztás rögzítve! +${this.calculatedEmission} kg CO₂ adódott a lábnyomodhoz.`,
+        message: `Fogyasztás rögzítve! +${this.calculatedEmission} kg CO₂, +${earnedXp} XP szerzett.`,
         duration: 3000,
         color: 'success',
         icon: 'checkmark-circle-outline',
@@ -147,16 +157,33 @@ export class EnergyComponent implements OnInit, OnDestroy {
 
       if (completedGoals && completedGoals.length > 0) {
         for (const goal of completedGoals) {
-          const rewardToast = await this.toastController.create({
-            message: `🎉 Gratulálok! Teljesítetted a '${goal.title}' célkitűzést! +${goal.xpReward} XP`,
-            duration: 4500,
-            color: 'tertiary',
-            icon: 'trophy-outline',
-            position: 'middle',
-            cssClass: 'reward-toast',
+          const modal = await this.modalCtrl.create({
+            component: GoalCompletedModalComponent,
+            componentProps: { goal },
+            cssClass: 'celebration-modal',
+            backdropDismiss: true,
           });
-          await rewardToast.present();
+          await modal.present();
+          await modal.onDidDismiss();
         }
+      }
+
+      if (completedChallenges && completedChallenges.length > 0) {
+        for (const challenge of completedChallenges) {
+          const modal = await this.modalCtrl.create({
+            component: ChallengeCompletedModalComponent,
+            componentProps: { challenge },
+            cssClass: 'celebration-modal',
+            backdropDismiss: true,
+          });
+          await modal.present();
+          await modal.onDidDismiss();
+        }
+      }
+
+      const newLevel = getCurrentLevel(xpBefore + earnedXp);
+      if (newLevel.level > oldLevel.level) {
+        await this.showLevelUpModal(oldLevel, newLevel, earnedXp);
       }
 
       this.amount = 0;
@@ -172,6 +199,21 @@ export class EnergyComponent implements OnInit, OnDestroy {
     } finally {
       this.isSaving = false;
     }
+  }
+
+  private async showLevelUpModal(
+    oldLevel: LevelDefinition,
+    newLevel: LevelDefinition,
+    earnedXp: number,
+  ): Promise<void> {
+    const modal = await this.modalCtrl.create({
+      component: LevelUpModalComponent,
+      componentProps: { oldLevel, newLevel, earnedXp },
+      cssClass: 'celebration-modal',
+      backdropDismiss: true,
+    });
+    await modal.present();
+    await modal.onDidDismiss();
   }
 
   getDetails(activity: Activity): Energy {

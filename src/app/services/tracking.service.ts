@@ -12,9 +12,8 @@ const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>(
 );
 import { TransportMode } from './directions.service';
 import { CarbonCalculatorService } from './carbon-calculator.service';
-import { DataService } from './data.service';
+import { ActivitySaveResult, DataService } from './data.service';
 import { AuthService } from './auth.service';
-import { Goal } from '../models/goal.model';
 
 export interface TrackingState {
   isTracking: boolean;
@@ -151,15 +150,15 @@ export class TrackingService {
     this.patchState({ isTracking: false });
   }
 
-  async saveTrip(mode: TransportMode): Promise<Goal[]> {
+  async saveTrip(mode: TransportMode): Promise<ActivitySaveResult> {
     const user = this.authService.currentUser;
-    if (!user) return [];
+    if (!user) return { completedGoals: [], completedChallenges: [], earnedXp: 0 };
 
     const { distanceKm, elapsedSeconds } = this.state$.value;
     const emission = this.calcService.calculateTravelEmission(distanceKm, mode);
     const durationMin = Math.round(elapsedSeconds / 60);
 
-    const completedGoals = await this.dataService.saveTravelActivity(
+    const result = await this.dataService.saveTravelActivity(
       user.uid,
       mode,
       distanceKm,
@@ -177,7 +176,7 @@ export class TrackingService {
     });
     this.points = [];
 
-    return completedGoals;
+    return result;
   }
 
   discardTrip(): void {

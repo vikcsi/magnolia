@@ -175,7 +175,6 @@ export class CarbonCalculatorService {
 
     if (exactCo2PerKg !== undefined && exactCo2PerKg !== null) {
       finalFactor = exactCo2PerKg;
-      console.log(`[Kalkuláció] Egzakt OFF adat: ${finalFactor} kg CO2/kg`);
     } else {
       const baseFactor =
         this.categoryFactors[category] || this.categoryFactors['other'];
@@ -183,14 +182,8 @@ export class CarbonCalculatorService {
       if (ecoScore && this.ecoScoreMultipliers[ecoScore.toLowerCase()]) {
         const multiplier = this.ecoScoreMultipliers[ecoScore.toLowerCase()];
         finalFactor = baseFactor * multiplier;
-        console.log(
-          `[Kalkuláció] Kategória (${baseFactor}) * EcoScore ${ecoScore.toUpperCase()} (${multiplier}) = ${finalFactor}`,
-        );
       } else {
         finalFactor = baseFactor;
-        console.log(
-          `[Kalkuláció] Csak kategória alapján (${category}): ${finalFactor}`,
-        );
       }
     }
 

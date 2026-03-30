@@ -39,7 +39,7 @@
             </svg>
             <p class="magnolia-mini-label">
               @if (magnoliaState === 'bloom') { Virágzó }
-              @if (magnoliaState === 'fade')  { Figyelj oda }
+              @if (magnoliaState === 'fade')  { Figyelj oda! }
               @if (magnoliaState === 'wilt')  { Túlterhelve }
             </p>
           </div>
@@ -61,8 +61,8 @@
       </ion-card>
       <ion-card class="summary-card">
         <ion-icon name="star-outline"></ion-icon>
-        <p>Szint</p>
-        <h2>Zöldfülű</h2>
+        <p>{{ user.currentLevel.level }}. szint</p>
+        <h2>{{ user.currentLevel.name }}</h2>
       </ion-card>
     </div>
 
@@ -84,13 +84,13 @@
         <ion-label>Útvonaltervezés</ion-label>
       </div>
       <div class="tool-item">
-        <ion-button class="tool-button">
+        <ion-button class="tool-button" [routerLink]="['/activity']">
           <ion-icon name="camera-outline"></ion-icon>
         </ion-button>
         <ion-label>Termék beolvasás</ion-label>
       </div>
       <div class="tool-item">
-        <ion-button class="tool-button">
+        <ion-button class="tool-button" [routerLink]="['/profile']">
           <ion-icon name="list-outline"></ion-icon>
         </ion-button>
         <ion-label>Új célkitűzés</ion-label>

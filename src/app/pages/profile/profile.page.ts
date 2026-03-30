@@ -1,6 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { NavigationComponent } from 'src/app/components/navigation/navigation.component';
 import { addIcons } from 'ionicons';
 import {
@@ -21,10 +20,10 @@ import {
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { DataService } from 'src/app/services/data.service';
-import { Observable, combineLatest, map } from 'rxjs';
+import { StatsService } from 'src/app/services/stats.service';
+import { Observable, Subscription, map } from 'rxjs';
 import { User } from 'src/app/models/user.model';
 import { FIXED_GOALS } from 'src/app/constants/goals.constant';
-import { UserGoal, Goal } from 'src/app/models/goal.model';
 import {
   IonHeader,
   IonToolbar,
@@ -38,6 +37,17 @@ import {
   ModalController,
 } from '@ionic/angular/standalone';
 import { GoalSelectorModalComponent } from 'src/app/components/goal-selector-modal/goal-selector-modal.component';
+import {
+  getCurrentLevel,
+  getNextLevel,
+  LevelDefinition,
+} from 'src/app/constants/leveling.constant';
+
+export interface UserViewData extends User {
+  currentLevel: LevelDefinition;
+  nextLevel: LevelDefinition | null;
+  levelProgress: number;
+}
 
 @Component({
   selector: 'app-profile',
@@ -56,17 +66,20 @@ import { GoalSelectorModalComponent } from 'src/app/components/goal-selector-mod
     IonFooter,
     NavigationComponent,
     CommonModule,
-    FormsModule,
   ],
 })
-export class ProfilePage implements OnInit {
+export class ProfilePage implements OnInit, OnDestroy {
   private dataService = inject(DataService);
   private authService = inject(AuthService);
+  private statsService = inject(StatsService);
   private router = inject(Router);
   private modalCtrl = inject(ModalController);
 
-  userData$!: Observable<User | null>;
+  private activitySub?: Subscription;
+
+  userData$!: Observable<UserViewData | null>;
   activeGoalsDisplay$!: Observable<any[]>;
+  weeklyStreak = 0;
 
   constructor() {
     addIcons({
@@ -82,17 +95,47 @@ export class ProfilePage implements OnInit {
       trophy,
       person,
       playForward,
-      timeOutline
+      timeOutline,
     });
   }
 
   ngOnInit() {
-    this.userData$ = this.authService.currentUserProfile$;
+    this.userData$ = this.authService.currentUserProfile$.pipe(
+      map((user) => {
+        if (!user) return null;
+
+        const currentLevel = getCurrentLevel(user.allXP);
+        const nextLevel = getNextLevel(user.allXP);
+        let levelProgress = 1;
+
+        if (nextLevel) {
+          const xpRange = nextLevel.requiredXp - currentLevel.requiredXp;
+          const xpGainedInLevel = user.allXP - currentLevel.requiredXp;
+          levelProgress = xpGainedInLevel / xpRange;
+        }
+
+        return {
+          ...user,
+          currentLevel,
+          nextLevel,
+          levelProgress,
+        };
+      }),
+    );
 
     const user = this.authService.currentUser;
     if (user) {
       this.loadActiveGoals(user.uid);
+      this.activitySub = this.dataService
+        .getUserActivities(user.uid)
+        .subscribe((acts) => {
+          this.weeklyStreak = this.statsService.getWeeklyStreak(acts);
+        });
     }
+  }
+
+  ngOnDestroy() {
+    this.activitySub?.unsubscribe();
   }
 
   private loadActiveGoals(uid: string) {
@@ -135,12 +178,11 @@ export class ProfilePage implements OnInit {
       component: GoalSelectorModalComponent,
       presentingElement: routerOutlet || undefined,
       canDismiss: true,
-      cssClass: 'rounded-card-modal'
+      cssClass: 'rounded-card-modal',
     });
 
     await modal.present();
-
-    const { data } = await modal.onDidDismiss();
+    await modal.onDidDismiss();
   }
 
   logout() {

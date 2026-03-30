@@ -162,5 +162,15 @@ ion-footer {
 }
 
 .rounded-card-modal {
-  --border-radius: 24px; 
+  --border-radius: 24px;
+}
+
+ion-modal.custom-transparent-modal {
+  --background: transparent;
+  --box-shadow: none;
+}
+
+ion-modal.celebration-modal {
+  --background: transparent;
+  --box-shadow: none;
 }

@@ -1,0 +1,20 @@
+<div class="challenge-modal-wrapper">
+  <div class="modal-card">
+    <div class="icon-ring">
+      <ion-icon name="flame-outline"></ion-icon>
+    </div>
+    <p class="label-kihivas">Kihívás teljesítve!</p>
+    
+    <h2 class="challenge-name">{{ challenge.name }}</h2>
+    
+    <p class="congrats-text">
+      Szép munka! Megküzdöttél érte és sikerült. Tartsd meg ezt a jó szokásodat!
+    </p>
+    
+    <div class="xp-badge">+{{ challenge.xpReward }} XP szerzett</div>
+    
+    <ion-button expand="block" class="continue-btn" (click)="close()">
+      Szuper!
+    </ion-button>
+  </div>
+</div>
