@@ -10,6 +10,7 @@ import { LocalNotifications } from '@capacitor/local-notifications';
 const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>(
   'BackgroundGeolocation',
 );
+
 import { TransportMode } from './directions.service';
 import { CarbonCalculatorService } from './carbon-calculator.service';
 import { ActivitySaveResult, DataService } from './data.service';
@@ -23,7 +24,7 @@ export interface TrackingState {
 }
 
 const STOP_SPEED_THRESHOLD_KMH = 2;
-const STOP_DURATION_MS = 5 * 60 * 1000; 
+const STOP_DURATION_MS = 5 * 60 * 1000;
 
 @Injectable({ providedIn: 'root' })
 export class TrackingService {
@@ -152,7 +153,14 @@ export class TrackingService {
 
   async saveTrip(mode: TransportMode): Promise<ActivitySaveResult> {
     const user = this.authService.currentUser;
-    if (!user) return { completedGoals: [], completedChallenges: [], earnedXp: 0 };
+    if (!user) {
+      return {
+        completedGoals: [],
+        completedChallenges: [],
+        earnedXp: 0,
+        earnedBadges: [],
+      };
+    }
 
     const { distanceKm, elapsedSeconds } = this.state$.value;
     const emission = this.calcService.calculateTravelEmission(distanceKm, mode);
@@ -202,8 +210,7 @@ export class TrackingService {
           },
         ],
       });
-    } catch {
-    }
+    } catch {}
   }
 
   private patchState(partial: Partial<TrackingState>): void {

@@ -14,7 +14,12 @@ import {
   ToastController,
 } from '@ionic/angular/standalone';
 import { Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  tap,
+} from 'rxjs/operators';
 import { lastValueFrom } from 'rxjs';
 import { addIcons } from 'ionicons';
 import {
@@ -26,11 +31,25 @@ import {
 } from 'ionicons/icons';
 import { Capacitor } from '@capacitor/core';
 import { environment } from 'src/environments/environment';
-import { DirectionsService, RouteComparison, TransportMode } from 'src/app/services/directions.service';
-import { LocationSearchService, LocationSearchResult } from 'src/app/services/location-search.service';
+import {
+  DirectionsService,
+  RouteComparison,
+  TransportMode,
+} from 'src/app/services/directions.service';
+import {
+  LocationSearchService,
+  LocationSearchResult,
+} from 'src/app/services/location-search.service';
 import { CarbonCalculatorService } from 'src/app/services/carbon-calculator.service';
 import { DataService } from 'src/app/services/data.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { GamificationUiService } from 'src/app/services/gamification-ui.service';
+import { firstValueFrom } from 'rxjs';
+import { ModalController } from '@ionic/angular/standalone';
+import {
+  getCurrentLevel,
+} from 'src/app/constants/leveling.constant';
+import { BadgeService } from 'src/app/services/badge.service';
 
 export interface ComparisonItem {
   mode: TransportMode;
@@ -49,8 +68,16 @@ export interface ComparisonItem {
   templateUrl: './route-planner.page.html',
   styleUrls: ['./route-planner.page.scss'],
   imports: [
-    IonHeader, IonToolbar, IonTitle, IonButtons,
-    IonContent, IonIcon, IonButton, IonSpinner, IonInput, FormsModule,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonContent,
+    IonIcon,
+    IonButton,
+    IonSpinner,
+    IonInput,
+    FormsModule,
   ],
 })
 export class RoutePlannerPage implements OnInit, OnDestroy {
@@ -59,6 +86,7 @@ export class RoutePlannerPage implements OnInit, OnDestroy {
   private calcService = inject(CarbonCalculatorService);
   private dataService = inject(DataService);
   private authService = inject(AuthService);
+  private gamificationUiService = inject(GamificationUiService);
   private toastController = inject(ToastController);
   private location = inject(Location);
 
@@ -81,17 +109,24 @@ export class RoutePlannerPage implements OnInit, OnDestroy {
   private toSearch$ = new Subject<string>();
   private subs: Subscription[] = [];
 
-  readonly modeConfig: Record<TransportMode, { label: string; icon: string }> = {
-    car: { label: 'Autó', icon: '🚗' },
-    motorbike: { label: 'Motor', icon: '🏍️' },
-    bus: { label: 'Tömegközlekedés', icon: '🚌' },
-    train: { label: 'Vonat', icon: '🚆' },
-    bicycling: { label: 'Bicikli', icon: '🚲' },
-    walking: { label: 'Gyalog', icon: '🚶' },
-  };
+  readonly modeConfig: Record<TransportMode, { label: string; icon: string }> =
+    {
+      car: { label: 'Autó', icon: '🚗' },
+      motorbike: { label: 'Motor', icon: '🏍️' },
+      bus: { label: 'Tömegközlekedés', icon: '🚌' },
+      train: { label: 'Vonat', icon: '🚆' },
+      bicycling: { label: 'Bicikli', icon: '🚲' },
+      walking: { label: 'Gyalog', icon: '🚶' },
+    };
 
   constructor() {
-    addIcons({ locationOutline, navigateOutline, checkmarkCircleOutline, swapVerticalOutline, arrowBackOutline });
+    addIcons({
+      locationOutline,
+      navigateOutline,
+      checkmarkCircleOutline,
+      swapVerticalOutline,
+      arrowBackOutline,
+    });
   }
 
   goBack(): void {
@@ -211,7 +246,8 @@ export class RoutePlannerPage implements OnInit, OnDestroy {
 
       if (!routes || routes.length === 0) {
         const toast = await this.toastController.create({
-          message: 'Nem találtunk útvonalat. Ellenőrizd a megadott helyszíneket!',
+          message:
+            'Nem találtunk útvonalat. Ellenőrizd a megadott helyszíneket!',
           duration: 3000,
           color: 'warning',
           position: 'top',
@@ -228,7 +264,10 @@ export class RoutePlannerPage implements OnInit, OnDestroy {
           icon: cfg.icon,
           distanceKm: r.distanceKm,
           durationMin: r.durationMin,
-          emissionKg: this.calcService.calculateTravelEmission(r.distanceKm, r.mode),
+          emissionKg: this.calcService.calculateTravelEmission(
+            r.distanceKm,
+            r.mode,
+          ),
           isGreenest: false,
           isFastest: false,
           polyline: r.polyline,
@@ -238,12 +277,17 @@ export class RoutePlannerPage implements OnInit, OnDestroy {
       const minDuration = Math.min(...items.map((i) => i.durationMin));
       items.forEach((i) => (i.isFastest = i.durationMin === minDuration));
 
-      const nonZeroEmissions = items.filter((i) => i.emissionKg > 0).map((i) => i.emissionKg);
+      const nonZeroEmissions = items
+        .filter((i) => i.emissionKg > 0)
+        .map((i) => i.emissionKg);
       if (nonZeroEmissions.length === 0) {
         items.forEach((i) => (i.isGreenest = true));
       } else {
         const minEmission = Math.min(...nonZeroEmissions);
-        items.forEach((i) => (i.isGreenest = i.emissionKg === minEmission || i.emissionKg === 0));
+        items.forEach(
+          (i) =>
+            (i.isGreenest = i.emissionKg === minEmission || i.emissionKg === 0),
+        );
       }
 
       items.sort((a, b) => {
@@ -277,7 +321,8 @@ export class RoutePlannerPage implements OnInit, OnDestroy {
   }
 
   showRouteMap(): void {
-    if (!this.selectedItem?.polyline || !this.fromCoords || !this.toCoords) return;
+    if (!this.selectedItem?.polyline || !this.fromCoords || !this.toCoords)
+      return;
     const key = environment.googleMapsApiKey;
     const polyline = this.selectedItem.polyline;
     this.staticMapUrl =
@@ -292,9 +337,12 @@ export class RoutePlannerPage implements OnInit, OnDestroy {
   openInGoogleMaps(): void {
     if (!this.selectedItem || !this.fromCoords || !this.toCoords) return;
     const modeMap: Record<TransportMode, string> = {
-      car: 'driving', motorbike: 'driving',
-      bus: 'transit', train: 'transit',
-      bicycling: 'bicycling', walking: 'walking',
+      car: 'driving',
+      motorbike: 'driving',
+      bus: 'transit',
+      train: 'transit',
+      bicycling: 'bicycling',
+      walking: 'walking',
     };
     const url =
       `https://www.google.com/maps/dir/?api=1` +
@@ -309,25 +357,47 @@ export class RoutePlannerPage implements OnInit, OnDestroy {
     if (!user || !this.selectedItem) return;
 
     this.isSaving = true;
+
     try {
-      await this.dataService.saveTravelActivity(
-        user.uid,
-        this.selectedItem.mode,
-        this.selectedItem.distanceKm,
-        this.selectedItem.durationMin,
-        this.selectedItem.emissionKg,
-        this.fromQuery,
-        this.toQuery,
+      const userProfile = await firstValueFrom(
+        this.authService.currentUserProfile$,
       );
+      const xpBefore = userProfile?.allXP ?? 0;
+      const oldLevel = getCurrentLevel(xpBefore);
+
+      const { completedGoals, completedChallenges, earnedXp, earnedBadges } =
+        await this.dataService.saveTravelActivity(
+          user.uid,
+          this.selectedItem.mode,
+          this.selectedItem.distanceKm,
+          this.selectedItem.durationMin,
+          this.selectedItem.emissionKg,
+          this.fromQuery,
+          this.toQuery,
+        );
 
       const toast = await this.toastController.create({
-        message: `Utazás rögzítve! +${this.selectedItem.emissionKg} kg CO₂ adódott a lábnyomodhoz.`,
+        message: `Utazás rögzítve! +${this.selectedItem.emissionKg} kg CO₂, +${earnedXp} XP szerzett.`,
         duration: 3000,
         color: 'success',
         icon: 'checkmark-circle-outline',
         position: 'top',
       });
       await toast.present();
+
+      const newLevel = getCurrentLevel(xpBefore + earnedXp);
+
+      // Előny: Nem kell egy külön oldal komponensbe becsatolni egy tucat modalt és azok importjait.
+      // Hátrány: Nem módosítja a működést, csak a fejlesztői élményt javítja.
+      // Melyik a legjobb éles (production) környezetben?: Ez a legbiztonságosabb és legolvashatóbb módszer a production kód karbantartásához.
+      await this.gamificationUiService.showCelebrations(
+        completedGoals,
+        completedChallenges,
+        earnedBadges,
+        oldLevel,
+        newLevel,
+        earnedXp,
+      );
 
       this.comparisonItems = [];
       this.selectedItem = null;

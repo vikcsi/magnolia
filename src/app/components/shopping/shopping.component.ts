@@ -25,10 +25,9 @@ import {
   IonSelect,
   IonSelectOption,
 } from '@ionic/angular/standalone';
-import { LevelUpModalComponent } from 'src/app/components/level-up-modal/level-up-modal.component';
-import { GoalCompletedModalComponent } from 'src/app/components/goal-completed-modal/goal-completed-modal.component';
-import { ChallengeCompletedModalComponent } from 'src/app/components/challenge-completed-modal/challenge-completed-modal.component';
-import { getCurrentLevel, LevelDefinition } from 'src/app/constants/leveling.constant';
+import {
+  getCurrentLevel,
+} from 'src/app/constants/leveling.constant';
 import { CapacitorBarcodeScanner } from '@capacitor/barcode-scanner';
 import {
   OpenFoodFactsService,
@@ -37,6 +36,8 @@ import {
 import { CarbonCalculatorService } from 'src/app/services/carbon-calculator.service';
 import { DataService } from 'src/app/services/data.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { BadgeService } from 'src/app/services/badge.service';
+import { GamificationUiService } from 'src/app/services/gamification-ui.service';
 import {
   alertCircleOutline,
   cameraOutline,
@@ -82,20 +83,20 @@ export class ShoppingComponent implements OnInit, OnDestroy {
   private dataService = inject(DataService);
   private authService = inject(AuthService);
   private toastController = inject(ToastController);
-  private modalCtrl = inject(ModalController);
   private platform = inject(Platform);
+  private gamificationUiService = inject(GamificationUiService);
+
   isWebScannerActive = false;
   private html5QrcodeScanner: Html5QrcodeScanner | null = null;
 
   activeMode: 'scan' | 'manual' = 'scan';
   isLoading = false;
   isSaving = false;
-
   scannedProduct: OffProduct | null = null;
   pendingProducts: ShoppingItem[] = [];
   recentProducts$: Observable<any[]> = of([]);
-
   scannedForm = { weight: 1, category: 'other' };
+
   manualProduct = {
     barcode: '',
     name: '',
@@ -346,7 +347,9 @@ export class ShoppingComponent implements OnInit, OnDestroy {
     this.isSaving = true;
 
     try {
-      const userProfile = await firstValueFrom(this.authService.currentUserProfile$);
+      const userProfile = await firstValueFrom(
+        this.authService.currentUserProfile$,
+      );
       const xpBefore = userProfile?.allXP ?? 0;
       const oldLevel = getCurrentLevel(xpBefore);
 
@@ -356,11 +359,12 @@ export class ShoppingComponent implements OnInit, OnDestroy {
           .toFixed(2),
       );
 
-      const { completedGoals, completedChallenges, earnedXp } = await this.dataService.saveShoppingActivity(
-        user.uid,
-        totalEmission,
-        this.pendingProducts,
-      );
+      const { completedGoals, completedChallenges, earnedXp, earnedBadges } =
+        await this.dataService.saveShoppingActivity(
+          user.uid,
+          totalEmission,
+          this.pendingProducts,
+        );
 
       const toast = await this.toastController.create({
         message: `Vásárlás rögzítve! +${totalEmission} kg CO₂, +${earnedXp} XP szerzett.`,
@@ -370,36 +374,16 @@ export class ShoppingComponent implements OnInit, OnDestroy {
       });
       await toast.present();
 
-      if (completedGoals && completedGoals.length > 0) {
-        for (const goal of completedGoals) {
-          const modal = await this.modalCtrl.create({
-            component: GoalCompletedModalComponent,
-            componentProps: { goal },
-            cssClass: 'celebration-modal',
-            backdropDismiss: true,
-          });
-          await modal.present();
-          await modal.onDidDismiss();
-        }
-      }
-
-      if (completedChallenges && completedChallenges.length > 0) {
-        for (const challenge of completedChallenges) {
-          const modal = await this.modalCtrl.create({
-            component: ChallengeCompletedModalComponent,
-            componentProps: { challenge },
-            cssClass: 'celebration-modal',
-            backdropDismiss: true,
-          });
-          await modal.present();
-          await modal.onDidDismiss();
-        }
-      }
-
       const newLevel = getCurrentLevel(xpBefore + earnedXp);
-      if (newLevel.level > oldLevel.level) {
-        await this.showLevelUpModal(oldLevel, newLevel, earnedXp);
-      }
+
+      await this.gamificationUiService.showCelebrations(
+        completedGoals,
+        completedChallenges,
+        earnedBadges,
+        oldLevel,
+        newLevel,
+        earnedXp,
+      );
 
       this.pendingProducts = [];
     } catch (error) {
@@ -413,20 +397,5 @@ export class ShoppingComponent implements OnInit, OnDestroy {
     } finally {
       this.isSaving = false;
     }
-  }
-
-  private async showLevelUpModal(
-    oldLevel: LevelDefinition,
-    newLevel: LevelDefinition,
-    earnedXp: number,
-  ): Promise<void> {
-    const modal = await this.modalCtrl.create({
-      component: LevelUpModalComponent,
-      componentProps: { oldLevel, newLevel, earnedXp },
-      cssClass: 'celebration-modal',
-      backdropDismiss: true,
-    });
-    await modal.present();
-    await modal.onDidDismiss();
   }
 }

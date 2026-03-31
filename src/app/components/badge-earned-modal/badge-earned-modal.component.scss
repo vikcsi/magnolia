@@ -1,0 +1,169 @@
+.badge-modal-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 24px;
+}
+
+.modal-card {
+  background: var(--ion-background-color, #fff);
+  border-radius: 28px;
+  padding: 36px 28px 28px;
+  text-align: center;
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  animation: pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.icon-ring {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+
+  ion-icon {
+    font-size: 3.5rem;
+  }
+
+  &.common {
+    background: linear-gradient(
+      135deg,
+      rgba(158, 158, 158, 0.3) 0%,
+      #bdbdbd 100%
+    );
+    box-shadow:
+      0 0 0 10px rgba(158, 158, 158, 0.2),
+      0 0 0 20px rgba(158, 158, 158, 0.08);
+    ion-icon {
+      color: #616161;
+    }
+  }
+
+  &.rare {
+    background: linear-gradient(
+      135deg,
+      rgba(0, 102, 255, 0.4) 0%,
+      #0077ff 100%
+    );
+    box-shadow:
+      0 0 0 10px rgba(0, 119, 255, 0.3),
+      0 0 0 20px rgba(0, 110, 255, 0.1);
+    ion-icon {
+      color: #0b5cb8;
+    }
+  }
+
+  &.epic {
+    background: linear-gradient(
+      135deg,
+      rgba(156, 39, 176, 0.3) 0%,
+      #ab47bc 100%
+    );
+    box-shadow:
+      0 0 0 10px rgba(156, 39, 176, 0.25),
+      0 0 0 20px rgba(156, 39, 176, 0.1);
+    ion-icon {
+      color: #4a148c;
+    }
+  }
+
+  &.legendary {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 215, 0, 0.4) 0%,
+      #ffd700 100%
+    );
+    box-shadow:
+      0 0 0 10px rgba(255, 215, 0, 0.3),
+      0 0 0 20px rgba(255, 215, 0, 0.1);
+    ion-icon {
+      color: #b8860b;
+    }
+  }
+}
+
+.rarity-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 3px 12px;
+  border-radius: 10px;
+
+  &.common {
+    background: #f5f5f5;
+    color: #757575;
+  }
+  &.rare {
+    background: var(--ion-color-secondary);
+    color: var(--ion-color-primary);
+  }
+  &.epic {
+    background: #f3e5f5;
+    color: #7b1fa2;
+  }
+  &.legendary {
+    background: #fff8e1;
+    color: #f57f17;
+  }
+}
+
+.label-badge {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ion-color-primary);
+  margin: 0;
+}
+
+.badge-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ion-color-secondary-shade);
+  margin: 0;
+}
+
+.congrats-text {
+  font-size: 14px;
+  color: var(--ion-color-medium);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.xp-badge {
+  background: linear-gradient(135deg, #fff9c4, #fff176);
+  border-radius: 20px;
+  padding: 6px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #f57f17;
+  letter-spacing: 0.3px;
+}
+
+.continue-btn {
+  width: 100%;
+  margin-top: 8px;
+  --background: var(--ion-color-primary);
+  --border-radius: 14px;
+  font-weight: 700;
+}

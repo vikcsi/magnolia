@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { switchMap, tap, map, catchError } from 'rxjs/operators';
 import { User } from 'src/app/models/user.model';
 import { Activity } from 'src/app/models/activity.model';
 import { AuthService } from 'src/app/services/auth.service';
@@ -44,9 +45,11 @@ import {
   IonList,
   IonItem,
   IonFooter,
+  ViewWillEnter,
+  ViewWillLeave,
 } from '@ionic/angular/standalone';
 import { FirestoreDatePipe } from 'src/app/pipes/firestore-date.pipe';
-import { Observable, map } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import {
   getCurrentLevel,
   getNextLevel,
@@ -84,16 +87,17 @@ export interface UserViewData extends User {
     RouterLink,
   ],
 })
-export class HomePage implements OnInit, OnDestroy {
+export class HomePage
+  implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave
+{
   private authService = inject(AuthService);
   private dataService = inject(DataService);
   private statsService = inject(StatsService);
 
-  private sub?: Subscription;
+  private activitiesSub?: Subscription;
 
   userData$!: Observable<UserViewData | null>;
   recentActivities: Activity[] = [];
-
   todayEmission = 0;
   weeklyStreak = 0;
   magnoliaState: MagnoliaState = 'bloom';
@@ -101,7 +105,6 @@ export class HomePage implements OnInit, OnDestroy {
     type: 'success',
     text: 'Rögzítsd az első mai tevékenységedet!',
   };
-
   readonly DAILY_LIMIT = this.statsService.DAILY_LIMIT_KG;
 
   constructor() {
@@ -127,59 +130,86 @@ export class HomePage implements OnInit, OnDestroy {
     this.userData$ = this.authService.currentUserProfile$.pipe(
       map((user) => {
         if (!user) return null;
-
         const currentLevel = getCurrentLevel(user.allXP);
         const nextLevel = getNextLevel(user.allXP);
         let levelProgress = 1;
-
         if (nextLevel) {
           const xpRange = nextLevel.requiredXp - currentLevel.requiredXp;
           const xpGainedInLevel = user.allXP - currentLevel.requiredXp;
           levelProgress = xpGainedInLevel / xpRange;
         }
-
-        return {
-          ...user,
-          currentLevel,
-          nextLevel,
-          levelProgress,
-        };
+        return { ...user, currentLevel, nextLevel, levelProgress };
       }),
     );
+  }
 
-    const firebaseUser = this.authService.currentUser;
-    if (firebaseUser) {
-      this.sub = this.dataService
-        .getUserActivities(firebaseUser.uid)
-        .subscribe((acts) => {
-          const sorted = [...acts].sort((a, b) => {
-            const ta =
-              a.timestamp instanceof Date
-                ? a.timestamp.getTime()
-                : ((a.timestamp as any)?.toMillis?.() ?? 0);
-            const tb =
-              b.timestamp instanceof Date
-                ? b.timestamp.getTime()
-                : ((b.timestamp as any)?.toMillis?.() ?? 0);
-            return tb - ta;
-          });
+  ionViewWillEnter() {
+    this.subscribeToActivities();
+  }
 
-          this.recentActivities = sorted.slice(0, 5);
-          this.todayEmission = this.statsService.computeTodayEmission(acts);
-          this.weeklyStreak = this.statsService.getWeeklyStreak(acts);
-          this.magnoliaState = this.statsService.getTodayMagnoliaState(
-            this.todayEmission,
-          );
-          this.insight = this.statsService.getTodayInsight(
-            acts,
-            this.weeklyStreak,
-          );
-        });
-    }
+  ionViewWillLeave() {
+    this.unsubscribeFromActivities();
   }
 
   ngOnDestroy() {
-    this.sub?.unsubscribe();
+    this.unsubscribeFromActivities();
+  }
+
+  private subscribeToActivities() {
+    this.unsubscribeFromActivities();
+
+    this.activitiesSub = this.authService.user$
+      .pipe(
+        switchMap((firebaseUser) => {
+          if (!firebaseUser) {
+            return of([]);
+          }
+          return this.dataService.getUserActivities(firebaseUser.uid).pipe(
+            catchError(() => of([])),
+          );
+        }),
+      )
+      .subscribe((acts) => {
+        if (acts.length === 0) {
+          this.recentActivities = [];
+          this.todayEmission = 0;
+          this.weeklyStreak = 0;
+          this.magnoliaState = 'bloom';
+          this.insight = {
+            type: 'success',
+            text: 'Rögzítsd az első mai tevékenységedet!',
+          };
+          return;
+        }
+
+        const sorted = [...acts].sort((a, b) => {
+          const ta =
+            a.timestamp instanceof Date
+              ? a.timestamp.getTime()
+              : ((a.timestamp as any)?.toMillis?.() ?? 0);
+          const tb =
+            b.timestamp instanceof Date
+              ? b.timestamp.getTime()
+              : ((b.timestamp as any)?.toMillis?.() ?? 0);
+          return tb - ta;
+        });
+
+        this.recentActivities = sorted.slice(0, 5);
+        this.todayEmission = this.statsService.computeTodayEmission(acts);
+        this.weeklyStreak = this.statsService.getWeeklyStreak(acts);
+        this.magnoliaState = this.statsService.getTodayMagnoliaState(
+          this.todayEmission,
+        );
+        this.insight = this.statsService.getTodayInsight(
+          acts,
+          this.weeklyStreak,
+        );
+      });
+  }
+
+  private unsubscribeFromActivities() {
+    this.activitiesSub?.unsubscribe();
+    this.activitiesSub = undefined;
   }
 
   getDailyProgressValue(): number {

@@ -57,16 +57,23 @@ export class FriendsComponent implements OnInit {
   currentUserId: string | undefined;
   isProcessing: Record<string, boolean> = {};
 
-  searchEmail: string = '';
-  searchResult$: Observable<User | null> | null = null;
+  searchUsername: string = '';
+  searchResults$: Observable<User[]> | null = null; 
   hasSearched: boolean = false;
 
   constructor() {
-    addIcons({ searchOutline, chevronForward, checkmarkOutline, closeOutline, personAddOutline });
+    addIcons({
+      searchOutline,
+      chevronForward,
+      checkmarkOutline,
+      closeOutline,
+      personAddOutline,
+    });
   }
 
   ngOnInit() {
     this.currentUserId = this.authService.currentUser?.uid;
+
     if (this.currentUserId) {
       const uid = this.currentUserId;
 
@@ -75,7 +82,6 @@ export class FriendsComponent implements OnInit {
         .pipe(
           switchMap((requests) => {
             if (requests.length === 0) return of([]);
-
             const combined$ = requests.map((req) =>
               this.dataService
                 .getUserData(req.requesterId)
@@ -90,11 +96,9 @@ export class FriendsComponent implements OnInit {
         .pipe(
           switchMap((friendships) => {
             if (friendships.length === 0) return of([]);
-
             const combined$ = friendships.map((friendship) => {
               const otherUserId =
                 friendship.user1 === uid ? friendship.user2 : friendship.user1;
-
               return this.dataService
                 .getUserData(otherUserId)
                 .pipe(map((user) => ({ friendship, user: user as User })));
@@ -103,42 +107,37 @@ export class FriendsComponent implements OnInit {
           }),
         );
 
-      this.friendshipStatusMap$ = this.dataService
-        .getAllFriendships(uid)
-        .pipe(
-          map((friendships) => {
-            const statusMap = new Map<string, 'pending' | 'accepted'>();
-            friendships.forEach((f) => {
-              const otherId = f.user1 === uid ? f.user2 : f.user1;
-              statusMap.set(otherId, f.status);
-            });
-            return statusMap;
-          }),
-        );
+      this.friendshipStatusMap$ = this.dataService.getAllFriendships(uid).pipe(
+        map((friendships) => {
+          const statusMap = new Map<string, 'pending' | 'accepted'>();
+          friendships.forEach((f) => {
+            const otherId = f.user1 === uid ? f.user2 : f.user1;
+            statusMap.set(otherId, f.status);
+          });
+          return statusMap;
+        }),
+      );
     }
   }
 
   handleSearch() {
-    const email = this.searchEmail.trim();
-    if (!email) {
-      this.searchResult$ = null;
+    const username = this.searchUsername.trim();
+    if (!username) {
+      this.searchResults$ = null;
       this.hasSearched = false;
       return;
     }
 
     this.hasSearched = true;
-    this.searchResult$ = this.dataService.searchUserByEmail(email);
+    this.searchResults$ = this.dataService.searchUsersByUsername(username);
   }
 
   async sendRequest(receiverId: string) {
     if (!this.currentUserId) return;
-
     this.isProcessing[receiverId] = true;
     try {
       await this.dataService.sendFriendRequest(this.currentUserId, receiverId);
-      this.searchEmail = '';
-      this.searchResult$ = null;
-      this.hasSearched = false;
+      this.handleSearch();
     } catch (error) {
       console.error('Hiba a barátkérés küldésekor:', error);
     } finally {

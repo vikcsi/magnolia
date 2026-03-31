@@ -10,10 +10,9 @@ import {
   ModalController,
 } from '@ionic/angular/standalone';
 import { Subscription, firstValueFrom } from 'rxjs';
-import { LevelUpModalComponent } from 'src/app/components/level-up-modal/level-up-modal.component';
-import { ChallengeCompletedModalComponent } from 'src/app/components/challenge-completed-modal/challenge-completed-modal.component';
-import { GoalCompletedModalComponent } from 'src/app/components/goal-completed-modal/goal-completed-modal.component';
-import { getCurrentLevel, LevelDefinition } from 'src/app/constants/leveling.constant';
+import {
+  getCurrentLevel
+} from 'src/app/constants/leveling.constant';
 import { addIcons } from 'ionicons';
 import {
   checkmarkCircleOutline,
@@ -26,6 +25,8 @@ import { TransportMode } from 'src/app/services/directions.service';
 import { CarbonCalculatorService } from 'src/app/services/carbon-calculator.service';
 import { DataService } from 'src/app/services/data.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { BadgeService } from 'src/app/services/badge.service';
+import { GamificationUiService } from 'src/app/services/gamification-ui.service';
 import {
   TrackingService,
   TrackingState,
@@ -43,11 +44,10 @@ export class TransportComponent implements OnInit, OnDestroy {
   private dataService = inject(DataService);
   private authService = inject(AuthService);
   private toastController = inject(ToastController);
-  private modalCtrl = inject(ModalController);
   readonly trackingService = inject(TrackingService);
+  private gamificationUiService = inject(GamificationUiService);
 
   activeTab: 'manual' | 'tracking' = 'tracking';
-
   manualMode: TransportMode = 'car';
   manualDistanceKm: number = 1;
   manualEmission: number | null = null;
@@ -62,6 +62,7 @@ export class TransportComponent implements OnInit, OnDestroy {
   showModeModal = false;
   selectedTrackingMode: TransportMode = 'car';
   isSavingTrip = false;
+
   private trackingSub?: Subscription;
 
   readonly modeConfig: Record<TransportMode, { label: string; icon: string }> =
@@ -81,6 +82,7 @@ export class TransportComponent implements OnInit, OnDestroy {
     'bicycling',
     'walking',
   ];
+
   readonly trackingModes: TransportMode[] = [
     'car',
     'motorbike',
@@ -136,19 +138,22 @@ export class TransportComponent implements OnInit, OnDestroy {
     this.isSavingManual = true;
 
     try {
-      const userProfile = await firstValueFrom(this.authService.currentUserProfile$);
+      const userProfile = await firstValueFrom(
+        this.authService.currentUserProfile$,
+      );
       const xpBefore = userProfile?.allXP ?? 0;
       const oldLevel = getCurrentLevel(xpBefore);
 
-      const { completedGoals, completedChallenges, earnedXp } = await this.dataService.saveTravelActivity(
-        user.uid,
-        this.manualMode,
-        this.manualDistanceKm,
-        0,
-        this.manualEmission,
-        '',
-        '',
-      );
+      const { completedGoals, completedChallenges, earnedXp, earnedBadges } =
+        await this.dataService.saveTravelActivity(
+          user.uid,
+          this.manualMode,
+          this.manualDistanceKm,
+          0,
+          this.manualEmission,
+          '',
+          '',
+        );
 
       const toast = await this.toastController.create({
         message: `Utazás rögzítve! +${this.manualEmission} kg CO₂, +${earnedXp} XP szerzett.`,
@@ -159,49 +164,26 @@ export class TransportComponent implements OnInit, OnDestroy {
       });
       await toast.present();
 
-      if (completedGoals && completedGoals.length > 0) {
-        for (const goal of completedGoals) {
-          const modal = await this.modalCtrl.create({
-            component: GoalCompletedModalComponent,
-            componentProps: { goal },
-            cssClass: 'celebration-modal',
-            backdropDismiss: true,
-          });
-          await modal.present();
-          await modal.onDidDismiss();
-        }
-      }
-
-      if (completedChallenges && completedChallenges.length > 0) {
-        for (const challenge of completedChallenges) {
-          const modal = await this.modalCtrl.create({
-            component: ChallengeCompletedModalComponent,
-            componentProps: { challenge },
-            cssClass: 'celebration-modal',
-            backdropDismiss: true,
-          });
-          await modal.present();
-          await modal.onDidDismiss();
-        }
-      }
-
       const newLevel = getCurrentLevel(xpBefore + earnedXp);
-      if (newLevel.level > oldLevel.level) {
-        await this.showLevelUpModal(oldLevel, newLevel, earnedXp);
-      }
 
-      this.manualDistanceKm = 1;
-      this.manualEmission = null;
-    } catch (error) {
-      const errorToast = await this.toastController.create({
+      await this.gamificationUiService.showCelebrations(
+        completedGoals,
+        completedChallenges,
+        earnedBadges,
+        oldLevel,
+        newLevel,
+        earnedXp,
+      );
+    } catch {
+      const toast = await this.toastController.create({
         message: 'Hiba történt a mentés során.',
         duration: 3000,
         color: 'danger',
         position: 'top',
       });
-      await errorToast.present();
+      await toast.present();
     } finally {
-      this.isSavingManual = false;
+      this.isSavingTrip = false;
     }
   }
 
@@ -221,13 +203,15 @@ export class TransportComponent implements OnInit, OnDestroy {
   async saveTrip(): Promise<void> {
     this.isSavingTrip = true;
     try {
-      const userProfile = await firstValueFrom(this.authService.currentUserProfile$);
+      const userProfile = await firstValueFrom(
+        this.authService.currentUserProfile$,
+      );
       const xpBefore = userProfile?.allXP ?? 0;
       const oldLevel = getCurrentLevel(xpBefore);
 
-      const { completedGoals, completedChallenges, earnedXp } = await this.trackingService.saveTrip(
-        this.selectedTrackingMode,
-      );
+      const { completedGoals, completedChallenges, earnedXp, earnedBadges } =
+        await this.trackingService.saveTrip(this.selectedTrackingMode);
+
       this.showModeModal = false;
 
       const toast = await this.toastController.create({
@@ -239,36 +223,16 @@ export class TransportComponent implements OnInit, OnDestroy {
       });
       await toast.present();
 
-      if (completedGoals && completedGoals.length > 0) {
-        for (const goal of completedGoals) {
-          const modal = await this.modalCtrl.create({
-            component: GoalCompletedModalComponent,
-            componentProps: { goal },
-            cssClass: 'celebration-modal',
-            backdropDismiss: true,
-          });
-          await modal.present();
-          await modal.onDidDismiss();
-        }
-      }
-
-      if (completedChallenges && completedChallenges.length > 0) {
-        for (const challenge of completedChallenges) {
-          const modal = await this.modalCtrl.create({
-            component: ChallengeCompletedModalComponent,
-            componentProps: { challenge },
-            cssClass: 'celebration-modal',
-            backdropDismiss: true,
-          });
-          await modal.present();
-          await modal.onDidDismiss();
-        }
-      }
-
       const newLevel = getCurrentLevel(xpBefore + earnedXp);
-      if (newLevel.level > oldLevel.level) {
-        await this.showLevelUpModal(oldLevel, newLevel, earnedXp);
-      }
+
+      await this.gamificationUiService.showCelebrations(
+        completedGoals,
+        completedChallenges,
+        earnedBadges,
+        oldLevel,
+        newLevel,
+        earnedXp,
+      );
     } catch {
       const toast = await this.toastController.create({
         message: 'Hiba történt a mentés során.',
@@ -280,21 +244,6 @@ export class TransportComponent implements OnInit, OnDestroy {
     } finally {
       this.isSavingTrip = false;
     }
-  }
-
-  private async showLevelUpModal(
-    oldLevel: LevelDefinition,
-    newLevel: LevelDefinition,
-    earnedXp: number,
-  ): Promise<void> {
-    const modal = await this.modalCtrl.create({
-      component: LevelUpModalComponent,
-      componentProps: { oldLevel, newLevel, earnedXp },
-      cssClass: 'celebration-modal',
-      backdropDismiss: true,
-    });
-    await modal.present();
-    await modal.onDidDismiss();
   }
 
   discardTrip(): void {

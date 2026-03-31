@@ -1,0 +1,46 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar mode="md">
+    <ion-title>Kitűző Galéria</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="gallery-summary">
+    <p>
+      Megszerzett kitűzők:
+      <strong>{{ earnedBadgeIds.length }} / {{ totalBadges }}</strong>
+    </p>
+  </div>
+
+  @for (group of groupedBadges; track group.category) {
+    <div class="category-section">
+      <h3 class="category-title">{{ group.title }}</h3>
+
+      <div class="badges-grid">
+        @for (badge of group.badges; track badge.id) {
+          <div class="badge-card" [class.locked]="!badge.isEarned">
+            <div class="badge-icon-wrapper" [ngClass]="badge.rarity">
+              @if (badge.isEarned) {
+                <ion-icon [name]="badge.icon"></ion-icon>
+              } @else {
+                <ion-icon name="lock-closed"></ion-icon>
+              }
+            </div>
+            <div class="badge-info">
+              <h4>{{ badge.name }}</h4>
+              <p>{{ badge.description }}</p>
+              @if (!badge.isEarned) {
+                <span class="xp-reward">+{{ badge.xpReward }} XP</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</ion-content>

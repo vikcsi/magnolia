@@ -1,12 +1,10 @@
 <div class="tab-content">
-
-  <!-- KERESÉS -->
   <div class="search-section">
     <div class="search-input-wrapper">
       <ion-input
-        type="email"
-        placeholder="Barát keresése e-mail alapján..."
-        [(ngModel)]="searchEmail"
+        type="text"
+        placeholder="Barát keresése felhasználónév alapján..."
+        [(ngModel)]="searchUsername"
         (keyup.enter)="handleSearch()"
       ></ion-input>
       <ion-button fill="clear" (click)="handleSearch()">
@@ -15,47 +13,57 @@
     </div>
   </div>
 
-  @if (searchResult$ | async; as foundUser) {
+  @if (searchResults$ | async; as foundUsers) {
     @if (friendshipStatusMap$ | async; as statusMap) {
-      <div class="result-card">
-        <div class="friend-avatar">
-          {{ foundUser.username.charAt(0).toUpperCase() }}
-        </div>
-        <div class="friend-info">
-          <p class="friend-name">{{ foundUser.username }}</p>
-          <p class="friend-email">{{ foundUser.email }}</p>
-        </div>
-        <div class="friend-actions">
-          @if (foundUser.id === currentUserId) {
-            <span class="self-label">Ez te vagy</span>
-          } @else if (statusMap.get(foundUser.id) === 'accepted') {
-            <span class="connected-label">Már barátod</span>
-          } @else if (statusMap.get(foundUser.id) === 'pending') {
-            <span class="pending-label">Kérés elküldve</span>
-          } @else {
-            <ion-button
-              size="small"
-              (click)="sendRequest(foundUser.id)"
-              [disabled]="isProcessing[foundUser.id]"
-            >
-              @if (isProcessing[foundUser.id]) {
-                <ion-spinner name="crescent"></ion-spinner>
-              } @else {
-                <ion-icon name="person-add-outline" slot="start"></ion-icon>
-                Jelölés
-              }
-            </ion-button>
+      @if (foundUsers.length > 0) {
+        <div class="search-results">
+          @for (foundUser of foundUsers; track foundUser.id) {
+            <div class="result-card">
+              <div class="friend-avatar">
+                {{ foundUser.username.charAt(0).toUpperCase() }}
+              </div>
+              <div class="friend-info">
+                <p class="friend-name">{{ foundUser.username }}</p>
+                <p class="friend-email">{{ foundUser.email }}</p>
+              </div>
+              <div class="friend-actions">
+                @if (foundUser.id === currentUserId) {
+                  <span class="self-label">Ez te vagy</span>
+                } @else if (statusMap.get(foundUser.id) === "accepted") {
+                  <span class="connected-label">Már barátod</span>
+                } @else if (statusMap.get(foundUser.id) === "pending") {
+                  <span class="pending-label">Kérés elküldve</span>
+                } @else {
+                  <ion-button
+                    size="small"
+                    (click)="sendRequest(foundUser.id)"
+                    [disabled]="isProcessing[foundUser.id]"
+                  >
+                    @if (isProcessing[foundUser.id]) {
+                      <ion-spinner name="crescent"></ion-spinner>
+                    } @else {
+                      <ion-icon
+                        name="person-add-outline"
+                        slot="start"
+                      ></ion-icon>
+                      Jelölés
+                    }
+                  </ion-button>
+                }
+              </div>
+            </div>
           }
         </div>
-      </div>
+      } @else if (hasSearched) {
+        <p class="empty-state-text">
+          Nem található felhasználó ezzel a névvel.
+        </p>
+      }
     }
   } @else if (hasSearched) {
-    <p class="empty-state-text">
-      Nem található felhasználó ezzel az e-mail címmel.
-    </p>
+    <p class="empty-state-text">Nem található felhasználó ezzel a névvel.</p>
   }
 
-  <!-- BEJÖVŐ KÉRÉSEK -->
   @if (pendingRequestsDisplay$ | async; as displayRequests) {
     @if (displayRequests.length > 0) {
       <div class="section-header">
@@ -79,7 +87,10 @@
                 [disabled]="isProcessing[item.request.id!]"
               >
                 @if (isProcessing[item.request.id!]) {
-                  <ion-spinner name="crescent" style="width:16px;height:16px;"></ion-spinner>
+                  <ion-spinner
+                    name="crescent"
+                    style="width: 16px; height: 16px"
+                  ></ion-spinner>
                 } @else {
                   <ion-icon name="checkmark-outline"></ion-icon>
                 }
@@ -98,11 +109,9 @@
     }
   }
 
-  <!-- BARÁTAIM -->
   <div class="section-header">
     <h3>Barátaim</h3>
   </div>
-
   @if (acceptedFriendsDisplay$ | async; as displayFriends) {
     @if (displayFriends.length > 0) {
       <div class="friends-list">
@@ -125,9 +134,8 @@
       </div>
     } @else {
       <p class="empty-state-text">
-        Még nincs egyetlen barátod sem. Keress rájuk e-mail cím alapján!
+        Még nincs egyetlen barátod sem. Keress rájuk felhasználónév alapján!
       </p>
     }
   }
-
 </div>

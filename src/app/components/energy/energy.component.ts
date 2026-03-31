@@ -10,19 +10,20 @@ import {
   IonButton,
   ToastController,
   ModalController,
-  IonDatetime, 
-  IonDatetimeButton, 
-  IonModal
+  IonDatetime,
+  IonDatetimeButton,
+  IonModal,
 } from '@ionic/angular/standalone';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline } from 'ionicons/icons';
 import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
-import { getCurrentLevel, LevelDefinition } from 'src/app/constants/leveling.constant';
-import { LevelUpModalComponent } from 'src/app/components/level-up-modal/level-up-modal.component';
-import { GoalCompletedModalComponent } from 'src/app/components/goal-completed-modal/goal-completed-modal.component';
-import { ChallengeCompletedModalComponent } from 'src/app/components/challenge-completed-modal/challenge-completed-modal.component';
+import { BadgeService } from 'src/app/services/badge.service';
+import { GamificationUiService } from 'src/app/services/gamification-ui.service';
+import {
+  getCurrentLevel
+} from 'src/app/constants/leveling.constant';
 import { Activity, Energy } from 'src/app/models/activity.model';
 
 @Component({
@@ -40,14 +41,14 @@ import { Activity, Energy } from 'src/app/models/activity.model';
     FormsModule,
     IonDatetime,
     IonDatetimeButton,
-    IonModal
+    IonModal,
   ],
 })
 export class EnergyComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private dataService = inject(DataService);
   private toastController = inject(ToastController);
-  private modalCtrl = inject(ModalController);
+  private gamificationUiService = inject(GamificationUiService);
 
   typeEnergy: 'electricity' | 'gas' | 'water' = 'electricity';
   amount: number = 0;
@@ -142,19 +143,22 @@ export class EnergyComponent implements OnInit, OnDestroy {
     this.isSaving = true;
 
     try {
-      const userProfile = await firstValueFrom(this.authService.currentUserProfile$);
+      const userProfile = await firstValueFrom(
+        this.authService.currentUserProfile$,
+      );
       const xpBefore = userProfile?.allXP ?? 0;
       const oldLevel = getCurrentLevel(xpBefore);
       const billingDate = new Date(this.selectedDate);
 
-      const { completedGoals, completedChallenges, earnedXp } = await this.dataService.saveEnergyActivity(
-        user.uid,
-        this.typeEnergy,
-        this.amount,
-        this.period,
-        this.calculatedEmission,
-        billingDate
-      );
+      const { completedGoals, completedChallenges, earnedXp, earnedBadges } =
+        await this.dataService.saveEnergyActivity(
+          user.uid,
+          this.typeEnergy,
+          this.amount,
+          this.period,
+          this.calculatedEmission,
+          billingDate,
+        );
 
       const toast = await this.toastController.create({
         message: `Fogyasztás rögzítve! +${this.calculatedEmission} kg CO₂, +${earnedXp} XP szerzett.`,
@@ -165,36 +169,16 @@ export class EnergyComponent implements OnInit, OnDestroy {
       });
       await toast.present();
 
-      if (completedGoals && completedGoals.length > 0) {
-        for (const goal of completedGoals) {
-          const modal = await this.modalCtrl.create({
-            component: GoalCompletedModalComponent,
-            componentProps: { goal },
-            cssClass: 'celebration-modal',
-            backdropDismiss: true,
-          });
-          await modal.present();
-          await modal.onDidDismiss();
-        }
-      }
-
-      if (completedChallenges && completedChallenges.length > 0) {
-        for (const challenge of completedChallenges) {
-          const modal = await this.modalCtrl.create({
-            component: ChallengeCompletedModalComponent,
-            componentProps: { challenge },
-            cssClass: 'celebration-modal',
-            backdropDismiss: true,
-          });
-          await modal.present();
-          await modal.onDidDismiss();
-        }
-      }
-
       const newLevel = getCurrentLevel(xpBefore + earnedXp);
-      if (newLevel.level > oldLevel.level) {
-        await this.showLevelUpModal(oldLevel, newLevel, earnedXp);
-      }
+
+      await this.gamificationUiService.showCelebrations(
+        completedGoals,
+        completedChallenges,
+        earnedBadges,
+        oldLevel,
+        newLevel,
+        earnedXp,
+      );
 
       this.amount = 0;
       this.calculatedEmission = null;
@@ -209,21 +193,6 @@ export class EnergyComponent implements OnInit, OnDestroy {
     } finally {
       this.isSaving = false;
     }
-  }
-
-  private async showLevelUpModal(
-    oldLevel: LevelDefinition,
-    newLevel: LevelDefinition,
-    earnedXp: number,
-  ): Promise<void> {
-    const modal = await this.modalCtrl.create({
-      component: LevelUpModalComponent,
-      componentProps: { oldLevel, newLevel, earnedXp },
-      cssClass: 'celebration-modal',
-      backdropDismiss: true,
-    });
-    await modal.present();
-    await modal.onDidDismiss();
   }
 
   getDetails(activity: Activity): Energy {

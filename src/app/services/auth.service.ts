@@ -12,7 +12,7 @@ import {
   User as FirebaseUser,
   createUserWithEmailAndPassword,
 } from '@angular/fire/auth';
-import { Observable, of } from 'rxjs';
+import { Observable, of, BehaviorSubject } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { DataService } from './data.service';
 import { User } from '../models/user.model';
@@ -25,25 +25,43 @@ export class AuthService {
   private dataService = inject(DataService);
   private injector = inject(Injector);
 
-  public user$: Observable<FirebaseUser | null> = authState(this.auth);
+  private isAuthenticated$ = new BehaviorSubject<boolean>(true);
 
-  public currentUserProfile$: Observable<User | null> = this.user$.pipe(
-    switchMap((firebaseUser) => {
-      if (firebaseUser) {
-        return this.dataService.getUserData(firebaseUser.uid);
-      } else {
+  public user$!: Observable<FirebaseUser | null>;
+  public currentUserProfile$!: Observable<User | null>;
+
+  constructor() {
+    const authState$ = runInInjectionContext(this.injector, () =>
+      authState(this.auth),
+    );
+
+    this.user$ = this.isAuthenticated$.pipe(
+      switchMap((isAuth) => {
+        if (!isAuth) return of(null);
+        return authState$;
+      }),
+    );
+
+    this.currentUserProfile$ = this.user$.pipe(
+      switchMap((firebaseUser) => {
+        if (firebaseUser) {
+          return this.dataService.getUserData(firebaseUser.uid);
+        }
         return of(null);
-      }
-    }),
-  );
+      }),
+    );
+  }
 
   async login(email: string, password: string): Promise<void> {
     return runInInjectionContext(this.injector, async () => {
       await signInWithEmailAndPassword(this.auth, email, password);
+      this.isAuthenticated$.next(true);
     });
   }
 
   async logout(): Promise<void> {
+    this.isAuthenticated$.next(false);
+    await new Promise((resolve) => setTimeout(resolve, 100));
     return runInInjectionContext(this.injector, async () => {
       await signOut(this.auth);
     });
@@ -51,7 +69,12 @@ export class AuthService {
 
   async register(email: string, password: string): Promise<FirebaseUser> {
     return runInInjectionContext(this.injector, async () => {
-      const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        this.auth,
+        email,
+        password,
+      );
+      this.isAuthenticated$.next(true);
       return userCredential.user;
     });
   }

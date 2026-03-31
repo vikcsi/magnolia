@@ -32,17 +32,21 @@ import { Activity } from '../models/activity.model';
 import { Challenge, UserChallenge } from '../models/challenge.model';
 import { Friendship } from '../models/friendship.model';
 import { FIXED_GOALS } from '../constants/goals.constant';
+import { BadgeDefinition } from '../models/badge.model';
+import { BadgeService, BadgeCheckContext } from './badge.service';
 
 export interface ActivitySaveResult {
   completedGoals: Goal[];
   completedChallenges: Challenge[];
   earnedXp: number;
+  earnedBadges: BadgeDefinition[];
 }
 
 @Injectable({ providedIn: 'root' })
 export class DataService {
   private firestore: Firestore = inject(Firestore);
   private injector: Injector = inject(Injector);
+  private badgeService = inject(BadgeService);
 
   getUserData(uid: string): Observable<User> {
     return runInInjectionContext(this.injector, () => {
@@ -166,6 +170,7 @@ export class DataService {
   ): Promise<ActivitySaveResult> {
     const activityRef = collection(this.firestore, 'activities');
     const userRef = doc(this.firestore, `users/${userId}`);
+
     let earnedXp = 10;
     products.forEach((p) => {
       if (
@@ -219,7 +224,14 @@ export class DataService {
       },
     );
 
-    return { completedGoals, completedChallenges, earnedXp };
+    const earnedBadges = await this.checkBadgesAfterActivity(
+      userId,
+      'shopping',
+      completedGoals,
+      completedChallenges,
+    );
+
+    return { completedGoals, completedChallenges, earnedXp, earnedBadges };
   }
 
   async saveTravelActivity(
@@ -233,6 +245,7 @@ export class DataService {
   ): Promise<ActivitySaveResult> {
     const activityRef = collection(this.firestore, 'activities');
     const userRef = doc(this.firestore, `users/${userId}`);
+
     let earnedXp = 5;
     if (mode === 'bicycling' || mode === 'walking') {
       earnedXp += Math.round(distanceKm * 5);
@@ -240,8 +253,8 @@ export class DataService {
       earnedXp += Math.round(distanceKm * 2);
     }
     earnedXp = Math.min(earnedXp, 300);
-    const now = new Date();
 
+    const now = new Date();
     const departedAt = new Date(now.getTime() - durationMin * 60 * 1000);
 
     await addDoc(activityRef, {
@@ -282,7 +295,14 @@ export class DataService {
       },
     );
 
-    return { completedGoals, completedChallenges, earnedXp };
+    const earnedBadges = await this.checkBadgesAfterActivity(
+      userId,
+      'travel',
+      completedGoals,
+      completedChallenges,
+    );
+
+    return { completedGoals, completedChallenges, earnedXp, earnedBadges };
   }
 
   async saveEnergyActivity(
@@ -295,6 +315,7 @@ export class DataService {
   ): Promise<ActivitySaveResult> {
     const activityRef = collection(this.firestore, 'activities');
     const userRef = doc(this.firestore, `users/${userId}`);
+
     const earnedXp = 25;
 
     await addDoc(activityRef, {
@@ -313,6 +334,7 @@ export class DataService {
 
     const periodDays = period === 'month' ? 30 : 365;
     const dailyEmission = Math.round((emission / periodDays) * 10) / 10;
+
     await this.updateMonthlyStats(
       userId,
       dailyEmission * 30,
@@ -331,7 +353,14 @@ export class DataService {
       },
     );
 
-    return { completedGoals, completedChallenges, earnedXp };
+    const earnedBadges = await this.checkBadgesAfterActivity(
+      userId,
+      'energy',
+      completedGoals,
+      completedChallenges,
+    );
+
+    return { completedGoals, completedChallenges, earnedXp, earnedBadges };
   }
 
   async saveCommunityProducts(products: any[]): Promise<void> {
@@ -362,6 +391,38 @@ export class DataService {
     } catch (error) {
       console.error('Hiba a közösségi termékek mentésekor:', error);
     }
+  }
+
+  private async checkBadgesAfterActivity(
+    userId: string,
+    activityType: 'travel' | 'shopping' | 'energy',
+    completedGoals: Goal[],
+    completedChallenges: Challenge[],
+  ): Promise<BadgeDefinition[]> {
+    const allBadges: BadgeDefinition[] = [];
+
+    const activityBadges = await this.badgeService.checkAndAwardBadges(userId, {
+      trigger: 'activity_saved',
+      activityType,
+    });
+    allBadges.push(...activityBadges);
+
+    for (const goal of completedGoals) {
+      const badges = await this.badgeService.checkAndAwardBadges(userId, {
+        trigger: 'goal_completed',
+        completedGoalId: goal.id,
+      });
+      allBadges.push(...badges);
+    }
+
+    for (const challenge of completedChallenges) {
+      const badges = await this.badgeService.checkAndAwardBadges(userId, {
+        trigger: 'challenge_completed',
+      });
+      allBadges.push(...badges);
+    }
+
+    return allBadges;
   }
 
   private async updateMonthlyStats(
@@ -650,14 +711,12 @@ export class DataService {
       await setDoc(userRef, {
         id: uid,
         username: username,
+        usernameLower: username.toLowerCase(),
         email: email,
         allXP: 0,
         emission: 0,
-        streak: 0,
-        friends: [],
         badges: [],
       });
-
       for (const goalId of selectedGoalIds) {
         await this.startNewGoal(uid, goalId);
       }
@@ -678,7 +737,9 @@ export class DataService {
 
       const existing = await getDoc(friendshipRef);
       if (existing.exists()) {
-        throw new Error('Már létezik barátság vagy függőben lévő kérés ezzel a felhasználóval.');
+        throw new Error(
+          'Már létezik barátság vagy függőben lévő kérés ezzel a felhasználóval.',
+        );
       }
 
       await setDoc(friendshipRef, {
@@ -720,6 +781,26 @@ export class DataService {
       );
       return collectionData(q, { idField: 'id' }).pipe(
         map((users) => (users.length > 0 ? (users[0] as User) : null)),
+      );
+    });
+  }
+
+  searchUsersByUsername(searchTerm: string): Observable<User[]> {
+    return runInInjectionContext(this.injector, () => {
+      const usersRef = collection(this.firestore, 'users');
+
+      const searchLower = searchTerm.toLowerCase();
+      const searchUpper = searchLower + '\uf8ff';
+
+      const q = query(
+        usersRef,
+        where('usernameLower', '>=', searchLower),
+        where('usernameLower', '<=', searchUpper),
+        limit(10),
+      );
+
+      return collectionData(q, { idField: 'id' }).pipe(
+        map((users) => users as User[]),
       );
     });
   }

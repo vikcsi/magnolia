@@ -1,0 +1,20 @@
+<div class="badge-modal-wrapper">
+  <div class="modal-card">
+    <div class="icon-ring" [ngClass]="badge.rarity">
+      <ion-icon [name]="badge.icon"></ion-icon>
+    </div>
+
+    <div class="rarity-label" [ngClass]="badge.rarity">
+      {{ rarityLabel }}
+    </div>
+
+    <p class="label-badge">Új kitűző szerzett!</p>
+    <h2 class="badge-name">{{ badge.name }}</h2>
+    <p class="congrats-text">{{ badge.description }}</p>
+    <div class="xp-badge">+{{ badge.xpReward }} XP</div>
+
+    <ion-button expand="block" class="continue-btn" (click)="close()">
+      Szuper!
+    </ion-button>
+  </div>
+</div>

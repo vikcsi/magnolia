@@ -21,7 +21,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { DataService } from 'src/app/services/data.service';
 import { StatsService } from 'src/app/services/stats.service';
-import { Observable, Subscription, map } from 'rxjs';
+import { Observable, Subscription, of, map, switchMap, catchError } from 'rxjs';
 import { User } from 'src/app/models/user.model';
 import { FIXED_GOALS } from 'src/app/constants/goals.constant';
 import {
@@ -35,6 +35,8 @@ import {
   IonProgressBar,
   IonFooter,
   ModalController,
+  ViewWillEnter,
+  ViewWillLeave,
 } from '@ionic/angular/standalone';
 import { GoalSelectorModalComponent } from 'src/app/components/goal-selector-modal/goal-selector-modal.component';
 import {
@@ -42,6 +44,10 @@ import {
   getNextLevel,
   LevelDefinition,
 } from 'src/app/constants/leveling.constant';
+import { BadgeGalleryModalComponent } from 'src/app/components/badge-gallery-modal/badge-gallery-modal.component';
+import { BADGES } from 'src/app/constants/badges.constant';
+import { BadgeDefinition } from 'src/app/models/badge.model';
+import { firstValueFrom } from 'rxjs';
 
 export interface UserViewData extends User {
   currentLevel: LevelDefinition;
@@ -68,7 +74,9 @@ export interface UserViewData extends User {
     CommonModule,
   ],
 })
-export class ProfilePage implements OnInit, OnDestroy {
+export class ProfilePage
+  implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave
+{
   private dataService = inject(DataService);
   private authService = inject(AuthService);
   private statsService = inject(StatsService);
@@ -79,6 +87,8 @@ export class ProfilePage implements OnInit, OnDestroy {
 
   userData$!: Observable<UserViewData | null>;
   activeGoalsDisplay$!: Observable<any[]>;
+  friendsCount$!: Observable<number>;
+  recentBadges: BadgeDefinition[] = [];
   weeklyStreak = 0;
 
   constructor() {
@@ -103,90 +113,142 @@ export class ProfilePage implements OnInit, OnDestroy {
     this.userData$ = this.authService.currentUserProfile$.pipe(
       map((user) => {
         if (!user) return null;
-
         const currentLevel = getCurrentLevel(user.allXP);
         const nextLevel = getNextLevel(user.allXP);
         let levelProgress = 1;
-
         if (nextLevel) {
           const xpRange = nextLevel.requiredXp - currentLevel.requiredXp;
           const xpGainedInLevel = user.allXP - currentLevel.requiredXp;
           levelProgress = xpGainedInLevel / xpRange;
         }
-
-        return {
-          ...user,
-          currentLevel,
-          nextLevel,
-          levelProgress,
-        };
+        const earnedDefs = (user.badges || [])
+          .sort((a, b) => {
+            const timeA = a.earnedAt instanceof Date ? a.earnedAt.getTime() : (a.earnedAt as any).toDate().getTime();
+            const timeB = b.earnedAt instanceof Date ? b.earnedAt.getTime() : (b.earnedAt as any).toDate().getTime();
+            return timeB - timeA;
+          })
+          .slice(0, 4)
+          .map(ub => BADGES.find(b => b.id === ub.id))
+          .filter(Boolean) as BadgeDefinition[];
+          
+        this.recentBadges = earnedDefs;
+        return { ...user, currentLevel, nextLevel, levelProgress };
       }),
     );
 
-    const user = this.authService.currentUser;
-    if (user) {
-      this.loadActiveGoals(user.uid);
-      this.activitySub = this.dataService
-        .getUserActivities(user.uid)
-        .subscribe((acts) => {
-          this.weeklyStreak = this.statsService.getWeeklyStreak(acts);
-        });
+    const currentUid = this.authService.currentUser?.uid;
+    if (currentUid) {
+      this.friendsCount$ = this.dataService
+        .getAcceptedFriends(currentUid)
+        .pipe(map((friendships) => friendships.length));
     }
-  }
 
-  ngOnDestroy() {
-    this.activitySub?.unsubscribe();
-  }
-
-  private loadActiveGoals(uid: string) {
-    this.activeGoalsDisplay$ = this.dataService.getUserGoals(uid).pipe(
+    this.activeGoalsDisplay$ = this.authService.user$.pipe(
+      switchMap((firebaseUser) => {
+        if (!firebaseUser) return of([]);
+        return this.dataService
+          .getUserGoals(firebaseUser.uid)
+          .pipe(catchError(() => of([])));
+      }),
       map((userGoals) => {
         const now = new Date().getTime();
-
         return userGoals
           .filter((ug) => ug.status === 'active')
           .map((ug) => {
             const details = FIXED_GOALS.find((g) => g.id === ug.goalId);
-
             const startDate =
               ug.startDate instanceof Date
                 ? ug.startDate
                 : (ug.startDate as any)?.toDate?.() || new Date(ug.startDate);
-
             let remainingDays = 0;
             if (details) {
               const elapsedMs = now - startDate.getTime();
               const elapsedDays = Math.floor(elapsedMs / (1000 * 60 * 60 * 24));
               remainingDays = Math.max(0, details.durationDays - elapsedDays);
             }
-
             return {
               userGoal: ug,
-              details: details,
+              details,
               progressPercent: details ? ug.progress / details.targetValue : 0,
-              remainingDays: remainingDays,
+              remainingDays,
             };
           });
       }),
     );
+
+
+  }
+
+  ionViewWillEnter() {
+    this.subscribeToActivities();
+  }
+
+  ionViewWillLeave() {
+    this.unsubscribeFromActivities();
+  }
+
+  ngOnDestroy() {
+    this.unsubscribeFromActivities();
+  }
+
+  private subscribeToActivities() {
+    this.unsubscribeFromActivities();
+
+    this.activitySub = this.authService.user$
+      .pipe(
+        switchMap((firebaseUser) => {
+          if (!firebaseUser) return of([]);
+          return this.dataService.getUserActivities(firebaseUser.uid).pipe(
+            catchError(() => of([])), // Firestore permission error kezelése logout közben
+          );
+        }),
+      )
+      .subscribe((acts) => {
+        if (acts.length === 0) {
+          this.weeklyStreak = 0;
+          return;
+        }
+        this.weeklyStreak = this.statsService.getWeeklyStreak(acts);
+      });
+  }
+
+  private unsubscribeFromActivities() {
+    this.activitySub?.unsubscribe();
+    this.activitySub = undefined;
   }
 
   async openGoalSelector() {
     const routerOutlet = document.querySelector('ion-router-outlet');
-
     const modal = await this.modalCtrl.create({
       component: GoalSelectorModalComponent,
       presentingElement: routerOutlet || undefined,
       canDismiss: true,
       cssClass: 'rounded-card-modal',
     });
-
     await modal.present();
     await modal.onDidDismiss();
   }
 
   async logout() {
-    await this.router.navigate(['/login']);
     await this.authService.logout();
+    await this.router.navigate(['/login']);
+  }
+
+  async openBadgeGallery() {
+    const user = await firstValueFrom(this.userData$);
+    if (!user) return;
+
+    const routerOutlet = document.querySelector('ion-router-outlet');
+    const modal = await this.modalCtrl.create({
+      component: BadgeGalleryModalComponent,
+      componentProps: { 
+        earnedBadgeIds: (user.badges || []).map(b => b.id) 
+      },
+      presentingElement: routerOutlet || undefined,
+      canDismiss: true,
+      cssClass: 'rounded-card-modal',
+    });
+    
+    await modal.present();
   }
 }

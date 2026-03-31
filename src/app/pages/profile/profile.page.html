@@ -60,7 +60,7 @@
         <div class="stat-icon">
           <ion-icon name="people"></ion-icon>
         </div>
-        <h3>{{ user.friends.length }}</h3>
+        <h3>{{ (friendsCount$ | async) ?? 0 }}</h3>
         <p>Barát</p>
       </div>
     </div>
@@ -120,37 +120,25 @@
         <ion-icon name="leaf"></ion-icon>
         <h3>Legutóbbi kitűzők</h3>
       </div>
-      <a class="see-all">Összes</a>
+      <a class="see-all" (click)="openBadgeGallery()">Összes</a>
     </div>
 
     <div class="badges-grid">
+      @for (badge of recentBadges; track badge.id) {
       <div class="badge-item">
-        <div class="badge-icon green">
-          <ion-icon name="leaf"></ion-icon>
+        <div class="badge-icon" [ngClass]="badge.rarity">
+          <ion-icon [name]="badge.icon"></ion-icon>
         </div>
-        <p>Eco Harcos</p>
+        <p>{{ badge.name }}</p>
       </div>
-
-      <div class="badge-item">
-        <div class="badge-icon light-green">
-          <ion-icon name="trophy"></ion-icon>
-        </div>
-        <p>Bajnok</p>
-      </div>
-
-      <div class="badge-item">
-        <div class="badge-icon medium-green">
-          <ion-icon name="star"></ion-icon>
-        </div>
-        <p>Sztár</p>
-      </div>
-
-      <div class="badge-item">
-        <div class="badge-icon pale-green">
-          <ion-icon name="person"></ion-icon>
-        </div>
-        <p>Szintlépő</p>
-      </div>
+      } @if (recentBadges.length === 0) {
+      <p
+        class="empty-state-text"
+        style="grid-column: span 4; text-align: center"
+      >
+        Még nem szereztél kitűzőt.
+      </p>
+      }
     </div>
 
     <ion-button
