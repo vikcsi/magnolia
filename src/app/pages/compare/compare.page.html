@@ -1,0 +1,144 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar mode="md">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" color="primary">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Összehasonlítás</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (isLoading) {
+  <div class="loading-state">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Adatok szinkronizálása...</p>
+  </div>
+  } @else if (currentUser && friendUser && currentStats && friendStats) {
+
+  <div class="compare-header">
+    <div class="user-profile">
+      <div class="avatar you">
+        {{ currentUser.username.charAt(0).toUpperCase() }}
+      </div>
+      <h3>Te</h3>
+    </div>
+
+    <div class="vs-badge">VS</div>
+
+    <div class="user-profile">
+      <div class="avatar friend">
+        {{ friendUser.username.charAt(0).toUpperCase() }}
+      </div>
+      <h3>{{ friendUser.username }}</h3>
+    </div>
+  </div>
+
+  <div class="metrics-card">
+    <div class="metric-row">
+      <div
+        class="metric-val"
+        [class.winner]="currentUser.allXP > friendUser.allXP"
+      >
+        {{ getCurrentLevelNumber(currentUser.allXP) }}. szint<br />
+        <small>{{ getCurrentLevelName(currentUser.allXP) }}</small>
+      </div>
+      <div class="metric-icon"><ion-icon name="trophy-outline"></ion-icon></div>
+      <div
+        class="metric-val"
+        [class.winner]="friendUser.allXP > currentUser.allXP"
+      >
+        {{ getCurrentLevelNumber(friendUser.allXP) }}. szint<br />
+        <small>{{ getCurrentLevelName(friendUser.allXP) }}</small>
+      </div>
+    </div>
+
+    <div class="metric-row">
+      <div
+        class="metric-val"
+        [class.winner]="currentStats.allXP > friendStats.allXP"
+      >
+        {{ currentStats.allXP }}
+      </div>
+      <div class="metric-icon"><ion-icon name="flash-outline"></ion-icon></div>
+      <div
+        class="metric-val"
+        [class.winner]="friendStats.allXP > currentStats.allXP"
+      >
+        {{ friendStats.allXP }}
+      </div>
+    </div>
+
+    <div class="metric-row">
+      <div
+        class="metric-val"
+        [class.winner]="currentStats.emission < friendStats.emission"
+      >
+        {{ currentStats.emission | number:'1.0-1' }} kg
+      </div>
+      <div class="metric-icon"><ion-icon name="leaf-outline"></ion-icon></div>
+      <div
+        class="metric-val"
+        [class.winner]="friendStats.emission < currentStats.emission"
+      >
+        {{ friendStats.emission | number:'1.0-1' }} kg
+      </div>
+    </div>
+
+    <div class="metric-row">
+      <div
+        class="metric-val"
+        [class.winner]="currentStats.completedGoals > friendStats.completedGoals"
+      >
+        {{ currentStats.completedGoals }}
+      </div>
+      <div class="metric-icon" title="Teljesített célok">
+        <ion-icon name="flag-outline"></ion-icon>
+      </div>
+      <div
+        class="metric-val"
+        [class.winner]="friendStats.completedGoals > currentStats.completedGoals"
+      >
+        {{ friendStats.completedGoals }}
+      </div>
+    </div>
+
+    <div class="metric-row">
+      <div
+        class="metric-val"
+        [class.winner]="currentStats.completedChallenges > friendStats.completedChallenges"
+      >
+        {{ currentStats.completedChallenges }}
+      </div>
+      <div class="metric-icon" title="Teljesített kihívások">
+        <ion-icon name="ribbon-outline"></ion-icon>
+      </div>
+      <div
+        class="metric-val"
+        [class.winner]="friendStats.completedChallenges > currentStats.completedChallenges"
+      >
+        {{ friendStats.completedChallenges }}
+      </div>
+    </div>
+
+    <div class="metric-row">
+      <div
+        class="metric-val"
+        [class.winner]="currentStats.currentStreak > friendStats.currentStreak"
+      >
+        {{ currentStats.currentStreak }}
+      </div>
+      <div class="metric-icon" title="Sorozat (nap)">
+        <ion-icon name="flame-outline"></ion-icon>
+      </div>
+      <div
+        class="metric-val"
+        [class.winner]="friendStats.currentStreak > currentStats.currentStreak"
+      >
+        {{ friendStats.currentStreak }}
+      </div>
+    </div>
+  </div>
+  }
+</ion-content>

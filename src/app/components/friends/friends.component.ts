@@ -7,6 +7,7 @@ import {
   IonButton,
   IonInput,
 } from '@ionic/angular/standalone';
+import { Router } from '@angular/router';
 import { Observable, combineLatest, of } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
@@ -49,6 +50,7 @@ export interface FriendDisplay {
 export class FriendsComponent implements OnInit {
   private authService = inject(AuthService);
   private dataService = inject(DataService);
+  private router = inject(Router);
 
   pendingRequestsDisplay$!: Observable<FriendRequestDisplay[]>;
   acceptedFriendsDisplay$!: Observable<FriendDisplay[]>;
@@ -173,5 +175,9 @@ export class FriendsComponent implements OnInit {
     } finally {
       this.isProcessing[friendship.id] = false;
     }
+  }
+
+  navigateToCompare(friendId: string) {
+    this.router.navigate(['/compare', friendId]);
   }
 }

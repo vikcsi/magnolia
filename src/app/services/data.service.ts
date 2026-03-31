@@ -24,6 +24,8 @@ import {
   writeBatch,
   deleteDoc,
   serverTimestamp,
+  orderBy,
+  getCountFromServer,
 } from '@angular/fire/firestore';
 import { Observable, map } from 'rxjs';
 import { User } from '../models/user.model';
@@ -33,7 +35,8 @@ import { Challenge, UserChallenge } from '../models/challenge.model';
 import { Friendship } from '../models/friendship.model';
 import { FIXED_GOALS } from '../constants/goals.constant';
 import { BadgeDefinition } from '../models/badge.model';
-import { BadgeService, BadgeCheckContext } from './badge.service';
+import { BadgeService } from './badge.service';
+import { StatsService } from './stats.service';
 
 export interface ActivitySaveResult {
   completedGoals: Goal[];
@@ -47,6 +50,7 @@ export class DataService {
   private firestore: Firestore = inject(Firestore);
   private injector: Injector = inject(Injector);
   private badgeService = inject(BadgeService);
+  private statsService = inject(StatsService);
 
   getUserData(uid: string): Observable<User> {
     return runInInjectionContext(this.injector, () => {
@@ -160,6 +164,58 @@ export class DataService {
         or(where('user1', '==', userId), where('user2', '==', userId)),
       );
       return collectionData(q, { idField: 'id' }) as Observable<Friendship[]>;
+    });
+  }
+
+  getGlobalLeaderboard(limitCount: number = 100): Observable<User[]> {
+    return runInInjectionContext(this.injector, () => {
+      const usersRef = collection(this.firestore, 'users');
+      const q = query(usersRef, orderBy('allXP', 'desc'), limit(limitCount));
+      return collectionData(q, { idField: 'id' }) as Observable<User[]>;
+    });
+  }
+
+  async getUserComparisonStats(userId: string): Promise<{
+    emission: number;
+    allXP: number;
+    completedGoals: number;
+    completedChallenges: number;
+    currentStreak: number;
+  }> {
+    return runInInjectionContext(this.injector, async () => {
+      const userRef = doc(this.firestore, `users/${userId}`);
+      const userSnap = await getDoc(userRef);
+      const userData = userSnap.data() as User;
+
+      const goalsRef = collection(this.firestore, 'user_goals');
+      const qGoals = query(
+        goalsRef,
+        where('userId', '==', userId),
+        where('status', '==', 'completed'),
+      );
+      const goalsCountSnap = await getCountFromServer(qGoals);
+
+      const challengesRef = collection(this.firestore, 'user_challenges');
+      const qChallenges = query(
+        challengesRef,
+        where('userId', '==', userId),
+        where('status', '==', 'completed'),
+      );
+      const challengesCountSnap = await getCountFromServer(qChallenges);
+
+      const activitiesRef = collection(this.firestore, 'activities');
+      const qActivities = query(activitiesRef, where('userId', '==', userId));
+      const activitiesSnap = await getDocs(qActivities);
+      const activities = activitiesSnap.docs.map((d) => d.data() as Activity);
+      const currentStreak = this.statsService.getWeeklyStreak(activities);
+
+      return {
+        emission: userData?.emission || 0,
+        allXP: userData?.allXP || 0,
+        completedGoals: goalsCountSnap.data().count,
+        completedChallenges: challengesCountSnap.data().count,
+        currentStreak: currentStreak,
+      };
     });
   }
 

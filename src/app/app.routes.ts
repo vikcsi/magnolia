@@ -33,6 +33,11 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'compare/:id',
+    loadComponent: () => import('./pages/compare/compare.page').then(m => m.ComparePage),
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'login',
     loadComponent: () => import('./pages/login/login.page').then(m => m.LoginPage)
   },

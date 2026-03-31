@@ -116,12 +116,13 @@
     @if (displayFriends.length > 0) {
       <div class="friends-list">
         @for (item of displayFriends; track item.friendship.id) {
-          <div class="friend-item">
+          <div class="friend-item" (click)="navigateToCompare(item.user.id)">
             <div class="friend-avatar-wrapper">
               <div class="friend-avatar">
                 {{ item.user.username.charAt(0).toUpperCase() }}
               </div>
             </div>
+
             <div class="friend-info">
               <p class="friend-name">{{ item.user.username }}</p>
               <div class="friend-stats">

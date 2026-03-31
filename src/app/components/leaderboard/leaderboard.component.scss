@@ -1,3 +1,38 @@
+.leaderboard-segment {
+    margin-bottom: 24px;
+    --background: var(--ion-color-medli);
+    border-radius: 12px;
+    
+    ion-segment-button {
+        --color: var(--ion-color-primary);
+        --color-checked: var(--ion-color-medli);
+        --indicator-color: var(--ion-color-primary);
+        font-weight: 600;
+        font-size: 0.9rem;
+        padding: 4px 0;
+    }
+}
+
+.loading-state, .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 16px;
+    gap: 16px;
+
+    p {
+        color: var(--ion-color-medium);
+        font-size: 0.95rem;
+        margin: 0;
+    }
+    
+    ion-spinner {
+        color: var(--ion-color-primary);
+    }
+}
+
+
 .position-card {
     background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-primary-tint) 100%);
     border-radius: 20px;
