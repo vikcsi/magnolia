@@ -13,7 +13,12 @@
     <div class="form-group">
       <ion-label>Fogyasztás típusa</ion-label>
       <div class="input-wrapper">
-        <ion-select [(ngModel)]="typeEnergy" (ngModelChange)="onTypeChange()" placeholder="Válassz" interface="action-sheet">
+        <ion-select
+          [(ngModel)]="typeEnergy"
+          (ngModelChange)="onTypeChange()"
+          placeholder="Válassz"
+          interface="action-sheet"
+        >
           <ion-select-option value="electricity">Villany</ion-select-option>
           <ion-select-option value="gas">Gáz</ion-select-option>
           <ion-select-option value="water">Víz</ion-select-option>
@@ -24,7 +29,13 @@
     <div class="form-group">
       <ion-label>Mennyiség</ion-label>
       <div class="input-with-unit input-wrapper">
-        <ion-input type="number" [(ngModel)]="amount" (ngModelChange)="calculatedEmission = null" placeholder="0" min="0"></ion-input>
+        <ion-input
+          type="number"
+          [(ngModel)]="amount"
+          (ngModelChange)="calculatedEmission = null"
+          placeholder="0"
+          min="0"
+        ></ion-input>
         <span class="unit">{{ unit }}</span>
       </div>
     </div>
@@ -32,11 +43,35 @@
     <div class="form-group">
       <ion-label>Időszak</ion-label>
       <div class="input-wrapper">
-        <ion-select [(ngModel)]="period" placeholder="Válassz" interface="action-sheet">
-          <ion-select-option value="week">Ez a hét</ion-select-option>
+        <ion-select
+          [(ngModel)]="period"
+          placeholder="Válassz"
+          interface="action-sheet"
+        >
           <ion-select-option value="month">Ez a hónap</ion-select-option>
           <ion-select-option value="year">Ez az év</ion-select-option>
         </ion-select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <ion-label>Számlázási időszak</ion-label>
+      <div class="input-wrapper datetime-wrapper">
+        <ion-datetime-button datetime="billing-datetime"></ion-datetime-button>
+        <ion-modal [keepContentsMounted]="true">
+          <ng-template>
+            <ion-datetime
+              id="billing-datetime"
+              [presentation]="period === 'year' ? 'year' : 'month-year'"
+              [(ngModel)]="selectedDate"
+              [max]="maxDate"
+              doneText="Kész"
+              cancelText="Mégse"
+              [showDefaultButtons]="true"
+            >
+            </ion-datetime>
+          </ng-template>
+        </ion-modal>
       </div>
     </div>
   </div>
@@ -47,12 +82,23 @@
     </div>
   }
 
-  <ion-button expand="block" fill="outline" class="calculate-button" (click)="calculateEmission()" [disabled]="amount <= 0">
+  <ion-button
+    expand="block"
+    fill="outline"
+    class="calculate-button"
+    (click)="calculateEmission()"
+    [disabled]="amount <= 0"
+  >
     Kiszámít
   </ion-button>
 
-  <ion-button expand="block" class="save-button" (click)="save()" [disabled]="isSaving || amount <= 0">
-    {{ isSaving ? 'Mentés...' : 'Mentés' }}
+  <ion-button
+    expand="block"
+    class="save-button"
+    (click)="save()"
+    [disabled]="isSaving || amount <= 0"
+  >
+    {{ isSaving ? "Mentés..." : "Mentés" }}
   </ion-button>
 
   @if (recentEnergyActivities.length > 0) {
@@ -62,11 +108,14 @@
       @for (activity of recentEnergyActivities; track activity.id) {
         <div class="energy-item">
           <div class="energy-info">
-            <h4>{{ typeLabels[getDetails(activity).typeEnergy] }} fogyasztás</h4>
+            <h4>
+              {{ typeLabels[getDetails(activity).typeEnergy] }} fogyasztás
+            </h4>
             <p>
-              {{ getDetails(activity).amount }} {{ unitLabels[getDetails(activity).typeEnergy] }}
+              {{ getDetails(activity).amount }}
+              {{ unitLabels[getDetails(activity).typeEnergy] }}
               <span class="separator">•</span>
-              {{ periodLabels[getDetails(activity).period] }}
+              {{ formatBillingDate(getDetails(activity)) }}
             </p>
           </div>
           <div class="energy-impact">+{{ activity.emission }} kg</div>

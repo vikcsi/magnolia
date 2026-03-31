@@ -10,6 +10,7 @@ import {
   signOut,
   authState,
   User as FirebaseUser,
+  createUserWithEmailAndPassword,
 } from '@angular/fire/auth';
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -45,6 +46,13 @@ export class AuthService {
   async logout(): Promise<void> {
     return runInInjectionContext(this.injector, async () => {
       await signOut(this.auth);
+    });
+  }
+
+  async register(email: string, password: string): Promise<FirebaseUser> {
+    return runInInjectionContext(this.injector, async () => {
+      const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
+      return userCredential.user;
     });
   }
 

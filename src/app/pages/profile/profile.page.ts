@@ -185,8 +185,8 @@ export class ProfilePage implements OnInit, OnDestroy {
     await modal.onDidDismiss();
   }
 
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
+  async logout() {
+    await this.router.navigate(['/login']);
+    await this.authService.logout();
   }
 }

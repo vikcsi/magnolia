@@ -12,6 +12,9 @@ import {
   collectionData,
   query,
   where,
+  limit,
+  and,
+  or,
   addDoc,
   updateDoc,
   increment,
@@ -19,12 +22,15 @@ import {
   getDoc,
   getDocs,
   writeBatch,
+  deleteDoc,
+  serverTimestamp,
 } from '@angular/fire/firestore';
 import { Observable, map } from 'rxjs';
 import { User } from '../models/user.model';
 import { Goal, UserGoal } from '../models/goal.model';
 import { Activity } from '../models/activity.model';
 import { Challenge, UserChallenge } from '../models/challenge.model';
+import { Friendship } from '../models/friendship.model';
 import { FIXED_GOALS } from '../constants/goals.constant';
 
 export interface ActivitySaveResult {
@@ -113,6 +119,46 @@ export class DataService {
     });
   }
 
+  getPendingRequests(userId: string): Observable<Friendship[]> {
+    return runInInjectionContext(this.injector, () => {
+      const friendshipsRef = collection(this.firestore, 'friendships');
+      const q = query(
+        friendshipsRef,
+        and(
+          or(where('user1', '==', userId), where('user2', '==', userId)),
+          where('status', '==', 'pending'),
+          where('requesterId', '!=', userId),
+        ),
+      );
+      return collectionData(q, { idField: 'id' }) as Observable<Friendship[]>;
+    });
+  }
+
+  getAcceptedFriends(userId: string): Observable<Friendship[]> {
+    return runInInjectionContext(this.injector, () => {
+      const friendshipsRef = collection(this.firestore, 'friendships');
+      const q = query(
+        friendshipsRef,
+        and(
+          or(where('user1', '==', userId), where('user2', '==', userId)),
+          where('status', '==', 'accepted'),
+        ),
+      );
+      return collectionData(q, { idField: 'id' }) as Observable<Friendship[]>;
+    });
+  }
+
+  getAllFriendships(userId: string): Observable<Friendship[]> {
+    return runInInjectionContext(this.injector, () => {
+      const friendshipsRef = collection(this.firestore, 'friendships');
+      const q = query(
+        friendshipsRef,
+        or(where('user1', '==', userId), where('user2', '==', userId)),
+      );
+      return collectionData(q, { idField: 'id' }) as Observable<Friendship[]>;
+    });
+  }
+
   async saveShoppingActivity(
     userId: string,
     totalEmission: number,
@@ -163,12 +209,15 @@ export class DataService {
       isMeatless: isMeatless,
     });
 
-    const completedChallenges = await this.processActivityForChallenges(userId, {
-      type: 'shopping',
-      isMeatless: isMeatless,
-      productCount: products.length,
-      totalEmission: totalEmission
-    });
+    const completedChallenges = await this.processActivityForChallenges(
+      userId,
+      {
+        type: 'shopping',
+        isMeatless: isMeatless,
+        productCount: products.length,
+        totalEmission: totalEmission,
+      },
+    );
 
     return { completedGoals, completedChallenges, earnedXp };
   }
@@ -224,11 +273,14 @@ export class DataService {
       mode: mode,
     });
 
-    const completedChallenges = await this.processActivityForChallenges(userId, {
-      type: 'travel',
-      distance: distanceKm,
-      mode: mode,
-    });
+    const completedChallenges = await this.processActivityForChallenges(
+      userId,
+      {
+        type: 'travel',
+        distance: distanceKm,
+        mode: mode,
+      },
+    );
 
     return { completedGoals, completedChallenges, earnedXp };
   }
@@ -237,8 +289,9 @@ export class DataService {
     userId: string,
     typeEnergy: 'water' | 'gas' | 'electricity',
     amount: number,
-    period: 'week' | 'month' | 'year',
+    period: 'month' | 'year',
     emission: number,
+    billingDate: Date = new Date(),
   ): Promise<ActivitySaveResult> {
     const activityRef = collection(this.firestore, 'activities');
     const userRef = doc(this.firestore, `users/${userId}`);
@@ -248,9 +301,9 @@ export class DataService {
       userId,
       xp: earnedXp,
       emission,
-      timestamp: new Date(),
+      timestamp: billingDate,
       type: 'energy',
-      details: { typeEnergy, amount, period },
+      details: { typeEnergy, amount, period, billingDate },
     });
 
     await updateDoc(userRef, {
@@ -258,17 +311,25 @@ export class DataService {
       allXP: increment(earnedXp),
     });
 
-    const periodDays = period === 'week' ? 7 : period === 'month' ? 30 : 365;
+    const periodDays = period === 'month' ? 30 : 365;
     const dailyEmission = Math.round((emission / periodDays) * 10) / 10;
-    await this.updateMonthlyStats(userId, dailyEmission * 30, 'energy');
+    await this.updateMonthlyStats(
+      userId,
+      dailyEmission * 30,
+      'energy',
+      billingDate,
+    );
 
     const completedGoals = await this.processActivityForGoals(userId, {
       type: 'energy',
     });
 
-    const completedChallenges = await this.processActivityForChallenges(userId, {
-      type: 'energy',
-    });
+    const completedChallenges = await this.processActivityForChallenges(
+      userId,
+      {
+        type: 'energy',
+      },
+    );
 
     return { completedGoals, completedChallenges, earnedXp };
   }
@@ -307,17 +368,17 @@ export class DataService {
     userId: string,
     emission: number,
     type: 'travel' | 'shopping' | 'energy',
+    targetDate: Date = new Date(),
   ): Promise<void> {
     try {
-      const now = new Date();
-      const key = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      const key = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, '0')}`;
       const statsRef = doc(this.firestore, `users/${userId}/stats/${key}`);
-      const day = now.getDate();
+      const day = targetDate.getDate();
       await setDoc(
         statsRef,
         {
-          year: now.getFullYear(),
-          month: now.getMonth() + 1,
+          year: targetDate.getFullYear(),
+          month: targetDate.getMonth() + 1,
           totalEmission: increment(emission),
           [`byCategory.${type}`]: increment(emission),
           [`dailyEmissions.${day}`]: increment(emission),
@@ -576,5 +637,90 @@ export class DataService {
 
     await batch.commit();
     return completedChallenges;
+  }
+
+  async createUserProfile(
+    uid: string,
+    username: string,
+    email: string,
+    selectedGoalIds: string[],
+  ): Promise<void> {
+    return runInInjectionContext(this.injector, async () => {
+      const userRef = doc(this.firestore, `users/${uid}`);
+      await setDoc(userRef, {
+        id: uid,
+        username: username,
+        email: email,
+        allXP: 0,
+        emission: 0,
+        streak: 0,
+        friends: [],
+        badges: [],
+      });
+
+      for (const goalId of selectedGoalIds) {
+        await this.startNewGoal(uid, goalId);
+      }
+    });
+  }
+
+  private getFriendshipId(uid1: string, uid2: string): string {
+    return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`;
+  }
+
+  async sendFriendRequest(
+    requesterId: string,
+    receiverId: string,
+  ): Promise<void> {
+    return runInInjectionContext(this.injector, async () => {
+      const friendshipId = this.getFriendshipId(requesterId, receiverId);
+      const friendshipRef = doc(this.firestore, `friendships/${friendshipId}`);
+
+      const existing = await getDoc(friendshipRef);
+      if (existing.exists()) {
+        throw new Error('Már létezik barátság vagy függőben lévő kérés ezzel a felhasználóval.');
+      }
+
+      await setDoc(friendshipRef, {
+        user1: requesterId < receiverId ? requesterId : receiverId,
+        user2: requesterId < receiverId ? receiverId : requesterId,
+        requesterId: requesterId,
+        status: 'pending',
+        createdAt: serverTimestamp(),
+      });
+    });
+  }
+
+  async acceptFriendRequest(
+    currentUserId: string,
+    requesterId: string,
+  ): Promise<void> {
+    const friendshipId = this.getFriendshipId(currentUserId, requesterId);
+    const friendshipRef = doc(this.firestore, `friendships/${friendshipId}`);
+
+    await updateDoc(friendshipRef, {
+      status: 'accepted',
+      updatedAt: serverTimestamp(),
+    });
+  }
+
+  async removeFriendOrCancelRequest(uid1: string, uid2: string): Promise<void> {
+    const friendshipId = this.getFriendshipId(uid1, uid2);
+    const friendshipRef = doc(this.firestore, `friendships/${friendshipId}`);
+    await deleteDoc(friendshipRef);
+  }
+
+  searchUserByEmail(email: string): Observable<User | null> {
+    return runInInjectionContext(this.injector, () => {
+      const usersRef = collection(this.firestore, 'users');
+      const q = query(
+        usersRef,
+        where('email', '==', email.toLowerCase()),
+        limit(1),
+      );
+      return collectionData(q, { idField: 'id' }).pipe(
+        map((users) => (users.length > 0 ? (users[0] as User) : null)),
+      );
+    });
   }
 }

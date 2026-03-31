@@ -1,25 +1,23 @@
 ion-content.login-content {
-  --background: var(--ion-color-primary); 
+  --background: var(--ion-color-primary);
 }
 
 .login-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 100%;
+  min-height: 100%;
   padding: 32px;
 }
 
 .header-section {
   margin-bottom: 32px;
-  
   h1 {
     font-size: 1.8rem;
     font-weight: 700;
     color: var(--ion-color-secondary);
     margin: 0 0 8px 0;
   }
-
   .subtitle {
     color: var(--ion-color-tertiary-shade);
     font-size: 0.95rem;
@@ -30,7 +28,7 @@ ion-content.login-content {
 .items {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   margin-bottom: 24px;
 }
 
@@ -38,7 +36,6 @@ ion-content.login-content {
   display: flex;
   flex-direction: column;
   width: 100%;
-
   .custom-label {
     color: var(--ion-color-secondary);
     font-size: 0.9rem;
@@ -46,7 +43,6 @@ ion-content.login-content {
     margin-bottom: 8px;
     padding-left: 4px;
   }
-
   .input-wrapper {
     background: var(--ion-color-tertiary-tint);
     border: 1px solid var(--ion-color-tertiary-shade);
@@ -56,13 +52,13 @@ ion-content.login-content {
     align-items: center;
     gap: 12px;
     width: 100%;
-
+    
     ion-icon {
       color: var(--ion-color-secondary-shade);
       font-size: 1.2rem;
       flex-shrink: 0;
     }
-
+    
     ion-input {
       --padding-start: 0;
       --padding-end: 0;
@@ -71,7 +67,7 @@ ion-content.login-content {
         color: var(--ion-color-primary-tint);
       }
     }
-
+    
     .toggle-password {
       background: none;
       border: none;
@@ -85,32 +81,71 @@ ion-content.login-content {
   }
 }
 
-.form-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 32px;
-
-  .remember-me {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    ion-checkbox {
-      --size: 18px;
-      --checkbox-background-checked: var(--ion-color-secondary);
-      --border-color: var(--ion-color-tertiary-shade);
-      --border-color-checked: var(--ion-color-secondary);
-      margin: 0;
-    }
-
-    label {
-      color: var(--ion-color-tertiary-shade);
-      font-size: 0.85rem;
-      cursor: pointer;
-    }
+.goals-section {
+  margin-bottom: 24px;
+  
+  .custom-label {
+    color: var(--ion-color-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 12px;
+    padding-left: 4px;
   }
 
+  .goals-scroll {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .goal-chip {
+    background: var(--ion-color-tertiary-tint);
+    border: 1px solid var(--ion-color-tertiary-shade);
+    border-radius: 20px;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    ion-icon {
+      color: var(--ion-color-primary-tint);
+      font-size: 1.1rem;
+    }
+
+    span {
+      color: var(--ion-color-primary);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    &.selected {
+      background: var(--ion-color-secondary);
+      border-color: var(--ion-color-secondary-shade);
+      transform: scale(1.05);
+      
+      ion-icon, span {
+        color: var(--ion-color-primary);
+      }
+    }
+  }
+}
+
+.error-msg {
+  color: #ff4d4d;
+  font-size: 0.85rem;
+  text-align: center;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+  
   .forgot-password {
     color: var(--ion-color-tertiary-shade);
     font-size: 0.85rem;
@@ -122,18 +157,9 @@ ion-content.login-content {
   }
 }
 
-.error-msg {
-  color: #e53935;
-  font-size: 0.85rem;
-  text-align: center;
-  margin-bottom: 16px;
-  font-weight: 500;
-}
-
 .login-button {
   --background: linear-gradient(135deg, var(--ion-color-secondary) 0%, var(--ion-color-tertiary) 100%);
   --background-hover: var(--ion-color-secondary);
-  --background-activated: var(--ion-color-secondary);
   --border-radius: 12px;
   --box-shadow: 0 4px 12px rgba(122, 90, 117, 0.3);
   color: var(--ion-color-primary);

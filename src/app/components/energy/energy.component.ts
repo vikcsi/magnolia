@@ -10,6 +10,9 @@ import {
   IonButton,
   ToastController,
   ModalController,
+  IonDatetime, 
+  IonDatetimeButton, 
+  IonModal
 } from '@ionic/angular/standalone';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { addIcons } from 'ionicons';
@@ -35,6 +38,9 @@ import { Activity, Energy } from 'src/app/models/activity.model';
     IonButton,
     CommonModule,
     FormsModule,
+    IonDatetime,
+    IonDatetimeButton,
+    IonModal
   ],
 })
 export class EnergyComponent implements OnInit, OnDestroy {
@@ -45,11 +51,14 @@ export class EnergyComponent implements OnInit, OnDestroy {
 
   typeEnergy: 'electricity' | 'gas' | 'water' = 'electricity';
   amount: number = 0;
-  period: 'week' | 'month' | 'year' = 'month';
+  period: 'month' | 'year' = 'month';
 
   calculatedEmission: number | null = null;
   isSaving = false;
   recentEnergyActivities: Activity[] = [];
+
+  selectedDate: string = new Date().toISOString();
+  maxDate: string = new Date().toISOString();
 
   private sub?: Subscription;
 
@@ -72,7 +81,6 @@ export class EnergyComponent implements OnInit, OnDestroy {
   };
 
   readonly periodLabels: Record<string, string> = {
-    week: 'Ez a hét',
     month: 'Ez a hónap',
     year: 'Ez az év',
   };
@@ -100,7 +108,7 @@ export class EnergyComponent implements OnInit, OnDestroy {
                   : ((b.timestamp as any)?.toMillis?.() ?? 0);
               return tb - ta;
             })
-            .slice(0, 5);
+            .slice(0, 2);
         });
     }
   }
@@ -137,6 +145,7 @@ export class EnergyComponent implements OnInit, OnDestroy {
       const userProfile = await firstValueFrom(this.authService.currentUserProfile$);
       const xpBefore = userProfile?.allXP ?? 0;
       const oldLevel = getCurrentLevel(xpBefore);
+      const billingDate = new Date(this.selectedDate);
 
       const { completedGoals, completedChallenges, earnedXp } = await this.dataService.saveEnergyActivity(
         user.uid,
@@ -144,6 +153,7 @@ export class EnergyComponent implements OnInit, OnDestroy {
         this.amount,
         this.period,
         this.calculatedEmission,
+        billingDate
       );
 
       const toast = await this.toastController.create({
@@ -218,5 +228,15 @@ export class EnergyComponent implements OnInit, OnDestroy {
 
   getDetails(activity: Activity): Energy {
     return activity.details as Energy;
+  }
+
+  formatBillingDate(energy: Energy): string {
+    const raw = energy.billingDate;
+    if (!raw) return '';
+    const d = raw instanceof Date ? raw : new Date((raw as any).seconds * 1000);
+    if (energy.period === 'year') {
+      return d.getFullYear().toString();
+    }
+    return d.toLocaleDateString('hu-HU', { year: 'numeric', month: 'long' });
   }
 }

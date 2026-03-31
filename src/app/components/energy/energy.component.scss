@@ -42,6 +42,24 @@
             }
         }
 
+        .datetime-wrapper {
+            padding: 8px 16px;
+
+            ion-datetime-button {
+                --background: transparent;
+
+                &::part(native) {
+                    background: transparent;
+                    color: var(--ion-color-secondary-shade);
+                    font-size: 0.95rem;
+                    font-weight: 500;
+                    padding: 4px 0;
+                    border: none;
+                    box-shadow: none;
+                }
+            }
+        }
+
         .input-with-unit {
             display: flex;
             align-items: center;

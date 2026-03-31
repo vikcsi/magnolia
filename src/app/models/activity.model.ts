@@ -31,7 +31,8 @@ export interface Product {
 export interface Energy {
     typeEnergy : 'water' | 'gas' | 'electricity',
     amount : number,
-    period : 'week' | 'month' | 'year'
+    period : 'month' | 'year',
+    billingDate?: Date
 }
 
 export interface Activity {

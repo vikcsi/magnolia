@@ -174,3 +174,28 @@ ion-modal.celebration-modal {
   --background: transparent;
   --box-shadow: none;
 }
+
+.switch-page-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+
+  .switch-page-text {
+    color: var(--ion-color-tertiary-shade);
+    font-size: 0.9rem;
+    margin: 0;
+
+    .highlight-link {
+      color: var(--ion-color-secondary);
+      font-weight: 600;
+      text-decoration: none;
+      margin-left: 4px;
+      transition: color 0.2s ease;
+
+      &:hover, &:active {
+        color: var(--ion-color-secondary-shade);
+        text-decoration: underline;
+      }
+    }
+  }
+}

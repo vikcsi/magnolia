@@ -115,7 +115,7 @@ export class StatsPage implements OnInit, OnDestroy {
   getLimitLabel(): string {
     switch (this.selectedPeriod) {
       case 'week':  return 'Heti limit: 70 kg';
-      case 'month': return 'Havi limit: 280 kg';
+      case 'month': return `Havi limit: ${this.stats ? Math.round(this.stats.periodLimitKg) : 280} kg`;
       case 'year':  return 'Éves limit: 3 650 kg';
     }
   }
@@ -135,13 +135,18 @@ export class StatsPage implements OnInit, OnDestroy {
 
   getDailyAvg(): number {
     if (!this.stats || this.stats.totalEmission === 0) return 0;
-    const days = this.selectedPeriod === 'week' ? 7 : this.selectedPeriod === 'month' ? 30 : 365;
+    const days = this.getActualPeriodDays();
     return Math.round((this.stats.totalEmission / days) * 10) / 10;
   }
 
   getHungarianAvg(): number {
-    const days = this.selectedPeriod === 'week' ? 7 : this.selectedPeriod === 'month' ? 30 : 365;
-    return Math.round(this.KSH_YEARLY_KG / 365 * days);
+    return Math.round(this.KSH_YEARLY_KG / 365 * this.getActualPeriodDays());
+  }
+
+  private getActualPeriodDays(): number {
+    if (this.selectedPeriod === 'week') return 7;
+    if (this.selectedPeriod === 'year') return 365;
+    return this.stats ? Math.round(this.stats.periodLimitKg / this.DAILY_LIMIT) : 30;
   }
 
   getMagnoliaStatusText(): string {
