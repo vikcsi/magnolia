@@ -1,0 +1,51 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar mode="md">
+    <ion-title>Utazás rögzítése</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <h3 class="modal-title" style="margin-top: 8px">Milyen eszközzel utaztál?</h3>
+
+  <div class="modal-stats">
+    <div class="modal-stat">
+      <span class="modal-stat-value">{{ formatDuration(elapsedSeconds) }}</span>
+      <span class="modal-stat-label">idő</span>
+    </div>
+    <div class="modal-stat">
+      <span class="modal-stat-value">{{ distanceKm }} km</span>
+      <span class="modal-stat-label">távolság</span>
+    </div>
+  </div>
+
+  <div class="transport-options">
+    @for (mode of trackingModes; track mode) {
+      <div
+        class="transport-option"
+        [class.active]="selectedMode === mode"
+        (click)="selectedMode = mode"
+      >
+        <div class="transport-icon">{{ modeConfig[mode].icon }}</div>
+        <ion-label>{{ modeConfig[mode].label }}</ion-label>
+      </div>
+    }
+  </div>
+
+  <ion-button
+    expand="block"
+    class="save-button"
+    [disabled]="isConfirming"
+    (click)="confirm()"
+    style="margin-top: 24px"
+  >
+    @if (isConfirming) {
+      <ion-spinner name="crescent" slot="start"></ion-spinner>
+    }
+    <span>{{ isConfirming ? "Mentés..." : "Mentés a naplóba" }}</span>
+  </ion-button>
+</ion-content>

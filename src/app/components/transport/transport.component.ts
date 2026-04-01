@@ -10,9 +10,7 @@ import {
   ModalController,
 } from '@ionic/angular/standalone';
 import { Subscription, firstValueFrom } from 'rxjs';
-import {
-  getCurrentLevel
-} from 'src/app/constants/leveling.constant';
+import { getCurrentLevel } from 'src/app/constants/leveling.constant';
 import { addIcons } from 'ionicons';
 import {
   checkmarkCircleOutline,
@@ -32,6 +30,7 @@ import {
   TrackingState,
 } from 'src/app/services/tracking.service';
 import { Capacitor } from '@capacitor/core';
+import { TransportModeModalComponent } from '../transport-mode-modal/transport-mode-modal.component';
 
 @Component({
   selector: 'app-transport',
@@ -43,6 +42,7 @@ export class TransportComponent implements OnInit, OnDestroy {
   private calcService = inject(CarbonCalculatorService);
   private dataService = inject(DataService);
   private authService = inject(AuthService);
+  private modalCtrl = inject(ModalController);
   private toastController = inject(ToastController);
   readonly trackingService = inject(TrackingService);
   private gamificationUiService = inject(GamificationUiService);
@@ -197,7 +197,29 @@ export class TransportComponent implements OnInit, OnDestroy {
 
   async stopTrackingManually(): Promise<void> {
     await this.trackingService.stop();
-    this.showModeModal = true;
+    await this.openTransportModeModal();
+  }
+
+  async openTransportModeModal() {
+    const modal = await this.modalCtrl.create({
+      component: TransportModeModalComponent,
+      componentProps: {
+        elapsedSeconds: this.trackingState.elapsedSeconds,
+        distanceKm: this.trackingState.distanceKm,
+      },
+      backdropDismiss: false,
+    });
+
+    await modal.present();
+
+    const { data, role } = await modal.onDidDismiss();
+
+    if (role === 'confirm' && data) {
+      this.selectedTrackingMode = data.mode;
+      await this.saveTrip();
+    } else {
+      this.discardTrip();
+    }
   }
 
   async saveTrip(): Promise<void> {
