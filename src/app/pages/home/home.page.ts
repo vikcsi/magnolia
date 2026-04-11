@@ -127,6 +127,23 @@ export class HomePage
   }
 
   ngOnInit() {
+    this.initUserData();
+  }
+
+  ionViewWillEnter() {
+    this.initUserData();
+    this.subscribeToActivities();
+  }
+
+  ionViewWillLeave() {
+    this.unsubscribeFromActivities();
+  }
+
+  ngOnDestroy() {
+    this.unsubscribeFromActivities();
+  }
+
+  private initUserData() {
     this.userData$ = this.authService.currentUserProfile$.pipe(
       map((user) => {
         if (!user) return null;
@@ -143,18 +160,6 @@ export class HomePage
     );
   }
 
-  ionViewWillEnter() {
-    this.subscribeToActivities();
-  }
-
-  ionViewWillLeave() {
-    this.unsubscribeFromActivities();
-  }
-
-  ngOnDestroy() {
-    this.unsubscribeFromActivities();
-  }
-
   private subscribeToActivities() {
     this.unsubscribeFromActivities();
 
@@ -164,9 +169,9 @@ export class HomePage
           if (!firebaseUser) {
             return of([]);
           }
-          return this.dataService.getUserActivities(firebaseUser.uid).pipe(
-            catchError(() => of([])),
-          );
+          return this.dataService
+            .getUserActivities(firebaseUser.uid)
+            .pipe(catchError(() => of([])));
         }),
       )
       .subscribe((acts) => {

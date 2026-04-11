@@ -8,7 +8,7 @@ import { FIXED_GOALS } from '../../constants/goals.constant';
 import { Goal } from '../../models/goal.model';
 import { addIcons } from 'ionicons';
 import { checkmark, leaf, mail, lockClosed, eye, eyeOff, person } from 'ionicons/icons';
-import { IonContent, IonInput, IonIcon, IonButton, IonSpinner } from '@ionic/angular/standalone';
+import { IonContent, IonInput, IonIcon, IonButton, IonSpinner, NavController } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-register',
@@ -31,6 +31,7 @@ export class RegisterPage implements OnInit {
   private authService = inject(AuthService);
   private dataService = inject(DataService);
   private router = inject(Router);
+  private navCtrl = inject(NavController);
 
   constructor() {
     addIcons({ checkmark, leaf, mail, lockClosed, eye, eyeOff, person });
@@ -83,7 +84,7 @@ export class RegisterPage implements OnInit {
       this.errorMessage = '';
       const user = await this.authService.register(email, password);
       await this.dataService.createUserProfile(user.uid, username, email, this.selectedGoalIds);
-      this.router.navigate(['/home']);
+      this.navCtrl.navigateRoot('/home', { animated: true, animationDirection: 'forward' });
     } catch (error: any) {
       switch (error.code) {
         case 'auth/email-already-in-use':

@@ -387,9 +387,6 @@ export class RoutePlannerPage implements OnInit, OnDestroy {
 
       const newLevel = getCurrentLevel(xpBefore + earnedXp);
 
-      // Előny: Nem kell egy külön oldal komponensbe becsatolni egy tucat modalt és azok importjait.
-      // Hátrány: Nem módosítja a működést, csak a fejlesztői élményt javítja.
-      // Melyik a legjobb éles (production) környezetben?: Ez a legbiztonságosabb és legolvashatóbb módszer a production kód karbantartásához.
       await this.gamificationUiService.showCelebrations(
         completedGoals,
         completedChallenges,

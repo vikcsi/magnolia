@@ -10,17 +10,23 @@
   </div>
 
   <div class="toggle-buttons">
-    <button class="toggle-btn" [class.active]="activeTab === 'tracking'" (click)="setTab('tracking')">
+    <button
+      class="toggle-btn"
+      [class.active]="activeTab === 'tracking'"
+      (click)="setTab('tracking')"
+    >
       Útvonalkövetés
     </button>
-    <button class="toggle-btn" [class.active]="activeTab === 'manual'" (click)="setTab('manual')">
+    <button
+      class="toggle-btn"
+      [class.active]="activeTab === 'manual'"
+      (click)="setTab('manual')"
+    >
       Manuális hozzáadás
     </button>
-  
   </div>
 
-  @if (activeTab === 'manual') {
-
+  @if (activeTab === "manual") {
     <p class="subsection-title">Közlekedési mód</p>
     <div class="transport-options">
       @for (mode of manualModes; track mode) {
@@ -68,8 +74,11 @@
           <div class="result-divider"></div>
           <div class="result-item">
             <span class="result-icon">🌿</span>
-            <span class="result-value" [class.zero-emission]="manualEmission === 0">
-              {{ manualEmission === 0 ? '0' : manualEmission }} kg
+            <span
+              class="result-value"
+              [class.zero-emission]="manualEmission === 0"
+            >
+              {{ manualEmission === 0 ? "0" : manualEmission }} kg
             </span>
             <span class="result-label">CO₂</span>
           </div>
@@ -84,26 +93,31 @@
           @if (isSavingManual) {
             <ion-spinner name="crescent" slot="start"></ion-spinner>
           }
-          <span>{{ isSavingManual ? 'Mentés...' : 'Mentés a naplóba' }}</span>
+          <span>{{ isSavingManual ? "Mentés..." : "Mentés a naplóba" }}</span>
         </ion-button>
       </div>
     }
   }
 
-  @if (activeTab === 'tracking') {
-
+  @if (activeTab === "tracking") {
     @if (!isNative) {
       <div class="tracking-unavailable">
         <span class="tracking-unavailable-icon">📱</span>
         <p>Az útvonalkövetés csak mobilon érhető el.</p>
       </div>
     } @else {
-
       @if (!trackingState.isTracking && !trackingState.stopped) {
         <div class="tracking-idle">
           <div class="tracking-idle-icon">🗺️</div>
-          <p>Indítsd el a követést, amikor útra kelsz.<br>Az app automatikusan érzékeli, ha megálltál.</p>
-          <ion-button expand="block" class="start-btn" (click)="startTracking()">
+          <p>
+            Indítsd el a követést, amikor útra kelsz.<br />Az app automatikusan
+            érzékeli, ha megálltál.
+          </p>
+          <ion-button
+            expand="block"
+            class="save-button"
+            (click)="startTracking()"
+          >
             <ion-icon name="play-circle-outline" slot="start"></ion-icon>
             Követés indítása
           </ion-button>
@@ -119,12 +133,16 @@
 
           <div class="tracking-stats">
             <div class="tracking-stat">
-              <span class="tracking-stat-value">{{ formatDuration(trackingState.elapsedSeconds) }}</span>
+              <span class="tracking-stat-value">{{
+                formatDuration(trackingState.elapsedSeconds)
+              }}</span>
               <span class="tracking-stat-label">eltelt idő</span>
             </div>
             <div class="tracking-stat-divider"></div>
             <div class="tracking-stat">
-              <span class="tracking-stat-value">{{ trackingState.distanceKm }} km</span>
+              <span class="tracking-stat-value"
+                >{{ trackingState.distanceKm }} km</span
+              >
               <span class="tracking-stat-label">megtett út</span>
             </div>
           </div>
@@ -132,8 +150,7 @@
           <ion-button
             expand="block"
             fill="outline"
-            color="danger"
-            class="stop-btn"
+            class="danger-btn"
             (click)="stopTrackingManually()"
           >
             <ion-icon name="stop-circle-outline" slot="start"></ion-icon>
@@ -143,7 +160,6 @@
       }
     }
   }
-
 </div>
 
 @if (showModeModal) {
@@ -155,11 +171,15 @@
 
       <div class="modal-stats">
         <div class="modal-stat">
-          <span class="modal-stat-value">{{ formatDuration(trackingState.elapsedSeconds) }}</span>
+          <span class="modal-stat-value">{{
+            formatDuration(trackingState.elapsedSeconds)
+          }}</span>
           <span class="modal-stat-label">idő</span>
         </div>
         <div class="modal-stat">
-          <span class="modal-stat-value">{{ trackingState.distanceKm }} km</span>
+          <span class="modal-stat-value"
+            >{{ trackingState.distanceKm }} km</span
+          >
           <span class="modal-stat-label">távolság</span>
         </div>
       </div>
@@ -186,7 +206,7 @@
         @if (isSavingTrip) {
           <ion-spinner name="crescent" slot="start"></ion-spinner>
         }
-        <span>{{ isSavingTrip ? 'Mentés...' : 'Mentés a naplóba' }}</span>
+        <span>{{ isSavingTrip ? "Mentés..." : "Mentés a naplóba" }}</span>
       </ion-button>
     </div>
   </div>

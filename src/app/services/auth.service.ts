@@ -60,11 +60,10 @@ export class AuthService {
   }
 
   async logout(): Promise<void> {
-    this.isAuthenticated$.next(false);
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    return runInInjectionContext(this.injector, async () => {
+    await runInInjectionContext(this.injector, async () => {
       await signOut(this.auth);
     });
+    this.isAuthenticated$.next(false);
   }
 
   async register(email: string, password: string): Promise<FirebaseUser> {

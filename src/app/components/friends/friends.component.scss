@@ -315,3 +315,17 @@
         }
     }
 }
+
+.friend-request-btn {
+  --background: var(--ion-color-primary);
+  --background-hover: var(--ion-color-medium);
+  --background-activated: var(--ion-color-primary-shade);
+  --border-radius: 12px;
+  --color: var(--ion-color-tertiary);
+  --padding-start: 12px;
+  --padding-end: 14px;
+  height: 36px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: none;
+}

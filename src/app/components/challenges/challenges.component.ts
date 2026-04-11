@@ -130,7 +130,16 @@ export class ChallengesComponent implements OnInit {
               isExpiringSoon: expiringSoon,
             };
           })
-          .filter((item) => item.details !== undefined);
+          .filter((item) => {
+            if (!item.details) return false;
+            const exp =
+              item.userChallenge.expiresAt instanceof Date
+                ? item.userChallenge.expiresAt.getTime()
+                : ((item.userChallenge.expiresAt as any)
+                    ?.toDate?.()
+                    ?.getTime() ?? 0);
+            return exp > new Date().getTime();
+          });
       }),
     );
 

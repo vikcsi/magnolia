@@ -37,6 +37,7 @@ import {
   ModalController,
   ViewWillEnter,
   ViewWillLeave,
+  NavController,
 } from '@ionic/angular/standalone';
 import { GoalSelectorModalComponent } from 'src/app/components/goal-selector-modal/goal-selector-modal.component';
 import {
@@ -82,6 +83,7 @@ export class ProfilePage
   private statsService = inject(StatsService);
   private router = inject(Router);
   private modalCtrl = inject(ModalController);
+  private navCtrl = inject(NavController);
 
   private activitySub?: Subscription;
 
@@ -110,76 +112,11 @@ export class ProfilePage
   }
 
   ngOnInit() {
-    this.userData$ = this.authService.currentUserProfile$.pipe(
-      map((user) => {
-        if (!user) return null;
-        const currentLevel = getCurrentLevel(user.allXP);
-        const nextLevel = getNextLevel(user.allXP);
-        let levelProgress = 1;
-        if (nextLevel) {
-          const xpRange = nextLevel.requiredXp - currentLevel.requiredXp;
-          const xpGainedInLevel = user.allXP - currentLevel.requiredXp;
-          levelProgress = xpGainedInLevel / xpRange;
-        }
-        const earnedDefs = (user.badges || [])
-          .sort((a, b) => {
-            const timeA = a.earnedAt instanceof Date ? a.earnedAt.getTime() : (a.earnedAt as any).toDate().getTime();
-            const timeB = b.earnedAt instanceof Date ? b.earnedAt.getTime() : (b.earnedAt as any).toDate().getTime();
-            return timeB - timeA;
-          })
-          .slice(0, 4)
-          .map(ub => BADGES.find(b => b.id === ub.id))
-          .filter(Boolean) as BadgeDefinition[];
-          
-        this.recentBadges = earnedDefs;
-        return { ...user, currentLevel, nextLevel, levelProgress };
-      }),
-    );
-
-    const currentUid = this.authService.currentUser?.uid;
-    if (currentUid) {
-      this.friendsCount$ = this.dataService
-        .getAcceptedFriends(currentUid)
-        .pipe(map((friendships) => friendships.length));
-    }
-
-    this.activeGoalsDisplay$ = this.authService.user$.pipe(
-      switchMap((firebaseUser) => {
-        if (!firebaseUser) return of([]);
-        return this.dataService
-          .getUserGoals(firebaseUser.uid)
-          .pipe(catchError(() => of([])));
-      }),
-      map((userGoals) => {
-        const now = new Date().getTime();
-        return userGoals
-          .filter((ug) => ug.status === 'active')
-          .map((ug) => {
-            const details = FIXED_GOALS.find((g) => g.id === ug.goalId);
-            const startDate =
-              ug.startDate instanceof Date
-                ? ug.startDate
-                : (ug.startDate as any)?.toDate?.() || new Date(ug.startDate);
-            let remainingDays = 0;
-            if (details) {
-              const elapsedMs = now - startDate.getTime();
-              const elapsedDays = Math.floor(elapsedMs / (1000 * 60 * 60 * 24));
-              remainingDays = Math.max(0, details.durationDays - elapsedDays);
-            }
-            return {
-              userGoal: ug,
-              details,
-              progressPercent: details ? ug.progress / details.targetValue : 0,
-              remainingDays,
-            };
-          });
-      }),
-    );
-
-
+    this.initProfileData();
   }
 
   ionViewWillEnter() {
+    this.initProfileData();
     this.subscribeToActivities();
   }
 
@@ -198,9 +135,9 @@ export class ProfilePage
       .pipe(
         switchMap((firebaseUser) => {
           if (!firebaseUser) return of([]);
-          return this.dataService.getUserActivities(firebaseUser.uid).pipe(
-            catchError(() => of([])), // Firestore permission error kezelése logout közben
-          );
+          return this.dataService
+            .getUserActivities(firebaseUser.uid)
+            .pipe(catchError(() => of([])));
         }),
       )
       .subscribe((acts) => {
@@ -231,7 +168,10 @@ export class ProfilePage
 
   async logout() {
     await this.authService.logout();
-    await this.router.navigate(['/login']);
+    this.navCtrl.navigateRoot('/login', {
+      animated: true,
+      animationDirection: 'back',
+    });
   }
 
   async openBadgeGallery() {
@@ -241,14 +181,104 @@ export class ProfilePage
     const routerOutlet = document.querySelector('ion-router-outlet');
     const modal = await this.modalCtrl.create({
       component: BadgeGalleryModalComponent,
-      componentProps: { 
-        earnedBadgeIds: (user.badges || []).map(b => b.id) 
+      componentProps: {
+        earnedBadgeIds: (user.badges || []).map((b) => b.id),
       },
       presentingElement: routerOutlet || undefined,
       canDismiss: true,
       cssClass: 'rounded-card-modal',
     });
-    
+
     await modal.present();
+  }
+
+  private initProfileData() {
+    this.userData$ = this.authService.currentUserProfile$.pipe(
+      map((user) => {
+        if (!user) return null;
+        const currentLevel = getCurrentLevel(user.allXP);
+        const nextLevel = getNextLevel(user.allXP);
+        let levelProgress = 1;
+        if (nextLevel) {
+          const xpRange = nextLevel.requiredXp - currentLevel.requiredXp;
+          const xpGainedInLevel = user.allXP - currentLevel.requiredXp;
+          levelProgress = xpGainedInLevel / xpRange;
+        }
+
+        const earnedDefs = (user.badges || [])
+          .sort((a, b) => {
+            const timeA =
+              a.earnedAt instanceof Date
+                ? a.earnedAt.getTime()
+                : (a.earnedAt as any).toDate().getTime();
+            const timeB =
+              b.earnedAt instanceof Date
+                ? b.earnedAt.getTime()
+                : (b.earnedAt as any).toDate().getTime();
+            return timeB - timeA;
+          })
+          .slice(0, 4)
+          .map((ub) => BADGES.find((b) => b.id === ub.id))
+          .filter(Boolean) as BadgeDefinition[];
+
+        this.recentBadges = earnedDefs;
+
+        return { ...user, currentLevel, nextLevel, levelProgress };
+      }),
+    );
+
+    const currentUid = this.authService.currentUser?.uid;
+    if (currentUid) {
+      this.friendsCount$ = this.dataService
+        .getAcceptedFriends(currentUid)
+        .pipe(map((friendships) => friendships.length));
+    }
+
+    this.activeGoalsDisplay$ = this.authService.user$.pipe(
+      switchMap((firebaseUser) => {
+        if (!firebaseUser) return of([]);
+        return this.dataService
+          .getUserGoals(firebaseUser.uid)
+          .pipe(catchError(() => of([])));
+      }),
+      map((userGoals) => {
+        const now = new Date().getTime();
+        return userGoals
+          .filter((ug) => {
+            if (ug.status !== 'active') return false;
+
+            const details = FIXED_GOALS.find((g) => g.id === ug.goalId);
+            if (!details) return false;
+
+            const startDate =
+              ug.startDate instanceof Date
+                ? ug.startDate
+                : (ug.startDate as any)?.toDate?.() || new Date(ug.startDate);
+            const deadlineMs =
+              startDate.getTime() + details.durationDays * 24 * 60 * 60 * 1000;
+
+            return new Date().getTime() <= deadlineMs;
+          })
+          .map((ug) => {
+            const details = FIXED_GOALS.find((g) => g.id === ug.goalId);
+            const startDate =
+              ug.startDate instanceof Date
+                ? ug.startDate
+                : (ug.startDate as any)?.toDate?.() || new Date(ug.startDate);
+            let remainingDays = 0;
+            if (details) {
+              const elapsedMs = now - startDate.getTime();
+              const elapsedDays = Math.floor(elapsedMs / (1000 * 60 * 60 * 24));
+              remainingDays = Math.max(0, details.durationDays - elapsedDays);
+            }
+            return {
+              userGoal: ug,
+              details,
+              progressPercent: details ? ug.progress / details.targetValue : 0,
+              remainingDays,
+            };
+          });
+      }),
+    );
   }
 }

@@ -1,17 +1,22 @@
 <div class="tabs-container">
   <div class="tab-button" [class.active]="isActive('/home')" (click)="navigate('/home')">
     <ion-icon name="home-outline"></ion-icon>
+    <span class="nav-label">Főoldal</span>
   </div>
   <div class="tab-button" [class.active]="isActive('/stats')" (click)="navigate('/stats')">
     <ion-icon name="bar-chart-outline"></ion-icon>
+    <span class="nav-label">Statisztika</span>
   </div>
   <div class="add-button" (click)="navigate('/activity')">
     <ion-icon name="add-outline"></ion-icon>
+    <span class="nav-label">Tevékenység hozzáadása</span>
   </div>
   <div class="tab-button" [class.active]="isActive('/social')" (click)="navigate('/social')">
     <ion-icon name="ribbon-outline"></ion-icon>
+    <span class="nav-label">Közösség</span>
   </div>
   <div class="tab-button" [class.active]="isActive('/profile')" (click)="navigate('/profile')">
     <ion-icon name="person-outline"></ion-icon>
+    <span class="nav-label">Profil</span>
   </div>
 </div>

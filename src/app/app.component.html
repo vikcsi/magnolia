@@ -1,3 +1,10 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <ion-split-pane contentId="main-content" when="(min-width: 768px)">
+    <ion-menu contentId="main-content" [swipeGesture]="false" [disabled]="isMenuDisabled">
+      <ion-content class="side-nav-content">
+        <app-navigation></app-navigation>
+      </ion-content>
+    </ion-menu>
+    <ion-router-outlet id="main-content"></ion-router-outlet>
+  </ion-split-pane>
 </ion-app>

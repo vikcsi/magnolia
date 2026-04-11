@@ -60,9 +60,9 @@ export class GoalSelectorModalComponent implements OnInit {
     this.goalsDisplay$ = this.authService.user$.pipe(
       switchMap((firebaseUser) => {
         if (!firebaseUser) return of([]);
-        return this.dataService.getUserGoals(firebaseUser.uid).pipe(
-          catchError(() => of([])),
-        );
+        return this.dataService
+          .getUserGoals(firebaseUser.uid)
+          .pipe(catchError(() => of([])));
       }),
       map((userGoals) => {
         const activeCount = userGoals.filter(
@@ -72,7 +72,19 @@ export class GoalSelectorModalComponent implements OnInit {
 
         const mappedGoals = FIXED_GOALS.map((goal) => {
           const userGoal = userGoals.find((ug) => ug.goalId === goal.id);
-          const isActive = userGoal?.status === 'active';
+          const isActive = (() => {
+            if (userGoal?.status !== 'active') return false;
+            const startDate =
+              userGoal.startDate instanceof Date
+                ? userGoal.startDate
+                : (userGoal.startDate as any)?.toDate?.();
+            if (startDate) {
+              const deadlineMs =
+                startDate.getTime() + goal.durationDays * 24 * 60 * 60 * 1000;
+              if (new Date().getTime() > deadlineMs) return false;
+            }
+            return true;
+          })();
           const isCompleted = userGoal?.status === 'completed';
           const isLocked = limitReached && !isActive && !isCompleted;
           return { ...goal, isActive, isCompleted, isLocked };

@@ -586,6 +586,22 @@ export class DataService {
       const goalDef = FIXED_GOALS.find((g) => g.id === userGoal.goalId);
       if (!goalDef) return;
 
+      const goalStartDate =
+        userGoal.startDate instanceof Date
+          ? userGoal.startDate
+          : (userGoal.startDate as any)?.toDate?.();
+
+      if (goalStartDate) {
+        const goalDeadline =
+          goalStartDate.getTime() + goalDef.durationDays * 24 * 60 * 60 * 1000;
+
+        if (now.getTime() > goalDeadline) {
+          const goalRef = doc(this.firestore, `user_goals/${docSnap.id}`);
+          batch.update(goalRef, { status: 'failed', failedAt: now });
+          return;
+        }
+      }
+
       let lastUpdate: Date | null = null;
       if (userGoal.lastUpdatedDate) {
         lastUpdate =

@@ -34,20 +34,22 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+@import "@ionic/angular/css/palettes/dark.system.css";
 
 @font-face {
-    font-family: 'josefin';
-    src: url('assets/fonts/Josefin_Sans/JosefinSans-VariableFont_wght.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+  font-family: "josefin";
+  src: url("assets/fonts/Josefin_Sans/JosefinSans-VariableFont_wght.ttf")
+    format("truetype");
+  font-weight: normal;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'abril';
-    src: url('assets/fonts/Abril_Fatface/AbrilFatface-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+  font-family: "abril";
+  src: url("assets/fonts/Abril_Fatface/AbrilFatface-Regular.ttf")
+    format("truetype");
+  font-weight: normal;
+  font-style: normal;
 }
 
 ion-header {
@@ -157,6 +159,21 @@ ion-header {
   margin-top: 8px;
 }
 
+.danger-btn {
+  --background: transparent;
+  --background-hover: rgba(var(--ion-color-danger-rgb), 0.08);
+  --background-activated: rgba(var(--ion-color-danger-rgb), 0.12);
+  --border-radius: 12px;
+  --border-width: 2px;
+  --border-style: solid;
+  --border-color: var(--ion-color-danger);
+  --color: var(--ion-color-danger);
+  height: 48px;
+  font-weight: 600;
+  text-transform: none;
+  margin-top: 8px;
+}
+
 ion-footer {
   background: transparent;
 }
@@ -192,10 +209,39 @@ ion-modal.celebration-modal {
       margin-left: 4px;
       transition: color 0.2s ease;
 
-      &:hover, &:active {
+      &:hover,
+      &:active {
         color: var(--ion-color-secondary-shade);
         text-decoration: underline;
       }
     }
+  }
+}
+
+ion-menu {
+  --background: linear-gradient(
+    180deg,
+    var(--ion-color-secondary-tint) 0%,
+    var(--ion-color-medli) 100%
+  );
+
+  ion-content {
+    --background: linear-gradient(
+      180deg,
+      var(--ion-color-secondary-tint) 0%,
+      var(--ion-color-medli) 100%
+    );
+  }
+}
+
+@media (min-width: 768px) {
+  ion-footer {
+    display: none !important;
+  }
+
+  ion-content .ion-padding {
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
   }
 }

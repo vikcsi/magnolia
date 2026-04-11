@@ -20,6 +20,7 @@ import {
   IonIcon,
   IonButton,
   IonSpinner,
+  NavController
 } from '@ionic/angular/standalone';
 
 @Component({
@@ -49,6 +50,7 @@ export class LoginPage {
 
   private authService = inject(AuthService);
   private router = inject(Router);
+  private navCtrl = inject(NavController);
 
   constructor() {
     addIcons({ checkmark, leaf, mail, lockClosed, eye, eyeOff, person });
@@ -71,7 +73,7 @@ export class LoginPage {
       this.isLoading = true;
       this.errorMessage = '';
       await this.authService.login(email, password);
-      this.router.navigate(['/home']);
+      this.navCtrl.navigateRoot('/home', { animated: true, animationDirection: 'forward' });
     } catch (error: any) {
       switch (error.code) {
         case 'auth/invalid-email':

@@ -38,6 +38,7 @@
                     size="small"
                     (click)="sendRequest(foundUser.id)"
                     [disabled]="isProcessing[foundUser.id]"
+                    class="friend-request-btn">
                   >
                     @if (isProcessing[foundUser.id]) {
                       <ion-spinner name="crescent"></ion-spinner>

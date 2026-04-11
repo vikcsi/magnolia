@@ -45,17 +45,15 @@ export class StatsService {
     'Júl', 'Aug', 'Szep', 'Okt', 'Nov', 'Dec',
   ];
 
-  // Returns the Monday of the week containing the given date
   private getMonday(date: Date): Date {
     const d = new Date(date);
     d.setHours(0, 0, 0, 0);
-    const day = d.getDay(); // 0=Sun, 1=Mon...6=Sat
+    const day = d.getDay();
     const diff = day === 0 ? -6 : 1 - day;
     d.setDate(d.getDate() + diff);
     return d;
   }
 
-  // Daily energy contribution from a monthly/yearly activity for a specific day
   private getEnergyForDay(activity: Activity, day: Date): number {
     const details = activity.details as Energy;
     const billingDate = this.toDate(activity.timestamp);
@@ -79,7 +77,6 @@ export class StatsService {
     return 0;
   }
 
-  // Energy contribution from a monthly/yearly activity for a specific calendar month
   private getEnergyForMonth(activity: Activity, year: number, month: number): number {
     const details = activity.details as Energy;
     const billingDate = this.toDate(activity.timestamp);
@@ -95,7 +92,6 @@ export class StatsService {
     return 0;
   }
 
-  // Week view: current Mon–Sun, previous Mon–Sun
   computeWeekStats(activities: Activity[]): PeriodStats {
     const today = new Date();
     const monday = this.getMonday(today);
@@ -131,7 +127,6 @@ export class StatsService {
       energy: bars.reduce((s, b) => s + b.energy, 0),
     };
 
-    // Previous week: Mon–Sun
     const prevMonday = new Date(monday);
     prevMonday.setDate(monday.getDate() - 7);
     let prevTotal = 0;
@@ -150,7 +145,6 @@ export class StatsService {
     return this.build(bars, totalEmission, byCategory, prevTotal, periodLimitKg, barLimitKg);
   }
 
-  // Month view: calendar weeks (1. hét, 2. hét…) of current month, previous month
   computeMonthStats(activities: Activity[]): PeriodStats {
     const today = new Date();
     const year = today.getFullYear();
@@ -204,7 +198,6 @@ export class StatsService {
       energy: bars.reduce((s, b) => s + b.energy, 0),
     };
 
-    // Previous month
     const prevYear = month === 0 ? year - 1 : year;
     const prevMonth = month === 0 ? 11 : month - 1;
     const prevFirstDay = new Date(prevYear, prevMonth, 1);
@@ -226,7 +219,6 @@ export class StatsService {
     return this.build(bars, totalEmission, byCategory, prevTotal, periodLimitKg, barLimitKg);
   }
 
-  // Year view: Jan–Dec of current year, previous year
   computeYearStats(activities: Activity[]): PeriodStats {
     const today = new Date();
     const year = today.getFullYear();
@@ -261,7 +253,6 @@ export class StatsService {
       energy: bars.reduce((s, b) => s + b.energy, 0),
     };
 
-    // Previous year
     const prevYear = year - 1;
     let prevTotal = 0;
     for (let m = 0; m < 12; m++) {

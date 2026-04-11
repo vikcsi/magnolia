@@ -169,3 +169,10 @@ ion-content.login-content {
   font-size: 1rem;
   margin: 0;
 }
+
+@media (min-width: 768px) {
+  .login-container {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+}
