@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { addIcons } from 'ionicons';
 import {
@@ -20,7 +20,8 @@ import {
   IonIcon,
   IonButton,
   IonSpinner,
-  NavController
+  NavController,
+  AlertController,
 } from '@ionic/angular/standalone';
 
 @Component({
@@ -49,8 +50,8 @@ export class LoginPage {
   isLoading: boolean = false;
 
   private authService = inject(AuthService);
-  private router = inject(Router);
   private navCtrl = inject(NavController);
+  private alertCtrl = inject(AlertController);
 
   constructor() {
     addIcons({ checkmark, leaf, mail, lockClosed, eye, eyeOff, person });
@@ -58,6 +59,49 @@ export class LoginPage {
 
   togglePassword() {
     this.showPassword = !this.showPassword;
+  }
+
+  async forgotPassword() {
+    const alert = await this.alertCtrl.create({
+      header: 'Jelszó visszaállítása',
+      message: 'Add meg az e-mail címed, és küldünk egy visszaállítási linket.',
+      inputs: [
+        {
+          name: 'email',
+          type: 'email',
+          placeholder: 'E-mail cím',
+          value: this.email,
+        },
+      ],
+      buttons: [
+        { text: 'Mégse', role: 'cancel' },
+        {
+          text: 'Küldés',
+          handler: async (data) => {
+            const email = data.email?.trim();
+            if (!email) return false;
+            try {
+              await this.authService.sendPasswordReset(email);
+              const confirm = await this.alertCtrl.create({
+                header: 'E-mail elküldve',
+                message: `Visszaállítási linket küldtünk a(z) ${email} címre.`,
+                buttons: ['OK'],
+              });
+              await confirm.present();
+            } catch {
+              const err = await this.alertCtrl.create({
+                header: 'Hiba',
+                message: 'Nem sikerült elküldeni az e-mailt. Ellenőrizd a megadott címet!',
+                buttons: ['OK'],
+              });
+              await err.present();
+            }
+            return true;
+          },
+        },
+      ],
+    });
+    await alert.present();
   }
 
   async login() {
@@ -72,7 +116,7 @@ export class LoginPage {
     try {
       this.isLoading = true;
       this.errorMessage = '';
-      await this.authService.login(email, password);
+      await this.authService.login(email, password, this.rememberMe);
       this.navCtrl.navigateRoot('/home', { animated: true, animationDirection: 'forward' });
     } catch (error: any) {
       switch (error.code) {
@@ -92,7 +136,6 @@ export class LoginPage {
           break;
         default:
           this.errorMessage = 'Váratlan hiba történt. Kérlek, próbáld újra!';
-          console.error(error);
       }
     } finally {
       this.isLoading = false;

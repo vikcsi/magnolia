@@ -46,56 +46,44 @@ export class BadgeService {
     userId: string,
     context: BadgeCheckContext,
   ): Promise<BadgeDefinition[]> {
-    return runInInjectionContext(this.injector, async () => {
-      const userRef = doc(this.firestore, `users/${userId}`);
-      const userSnap = await getDoc(userRef);
-      if (!userSnap.exists()) return [];
+    const userRef = doc(this.firestore, `users/${userId}`);
+    const [userSnap, stats] = await runInInjectionContext(this.injector, () =>
+      Promise.all([getDoc(userRef), this.gatherUserStats(userId)]),
+    );
 
-      const userData = userSnap.data();
-      const currentBadges: UserBadge[] = userData['badges'] || [];
-      const ownedBadgeIds = new Set(currentBadges.map((b) => b.id));
+    if (!userSnap.exists()) return [];
 
-      let stats: UserStats | null = null;
-      const getStats = async () => {
-        if (!stats) {
-          stats = await this.gatherUserStats(userId);
-        }
-        return stats;
-      };
+    const userData = userSnap.data();
+    const currentBadges: UserBadge[] = userData['badges'] || [];
+    const ownedBadgeIds = new Set(currentBadges.map((b) => b.id));
 
-      const newlyEarned: BadgeDefinition[] = [];
+    const newlyEarned: BadgeDefinition[] = [];
 
-      for (const badge of BADGES) {
-        if (ownedBadgeIds.has(badge.id)) continue;
-
-        if (!this.isRelevant(badge, context)) continue;
-
-        const s = await getStats();
-        if (this.evaluateCondition(badge, s, context)) {
-          newlyEarned.push(badge);
-        }
+    for (const badge of BADGES) {
+      if (ownedBadgeIds.has(badge.id)) continue;
+      if (!this.isRelevant(badge, context)) continue;
+      if (this.evaluateCondition(badge, stats, context)) {
+        newlyEarned.push(badge);
       }
+    }
 
-      if (newlyEarned.length > 0) {
-        const now = new Date();
-        const newBadgeEntries: UserBadge[] = newlyEarned.map((b) => ({
-          id: b.id,
-          earnedAt: now,
-        }));
+    if (newlyEarned.length > 0) {
+      const now = new Date();
+      const newBadgeEntries: UserBadge[] = newlyEarned.map((b) => ({
+        id: b.id,
+        earnedAt: now,
+      }));
+      const totalBadgeXp = newlyEarned.reduce((sum, b) => sum + b.xpReward, 0);
 
-        const totalBadgeXp = newlyEarned.reduce(
-          (sum, b) => sum + b.xpReward,
-          0,
-        );
-
-        await updateDoc(userRef, {
+      await runInInjectionContext(this.injector, () =>
+        updateDoc(userRef, {
           badges: [...currentBadges, ...newBadgeEntries],
           allXP: increment(totalBadgeXp),
-        });
-      }
+        }),
+      );
+    }
 
-      return newlyEarned;
-    });
+    return newlyEarned;
   }
 
   private isRelevant(badge: BadgeDefinition, ctx: BadgeCheckContext): boolean {
@@ -187,9 +175,28 @@ export class BadgeService {
   }
 
   private async gatherUserStats(userId: string): Promise<UserStats> {
-    const activitiesRef = collection(this.firestore, 'activities');
-    const activitiesQuery = query(activitiesRef, where('userId', '==', userId));
-    const activitiesSnap = await getDocs(activitiesQuery);
+    const [activitiesSnap, goalsSnap, challengesSnap] =
+      await runInInjectionContext(this.injector, () => {
+        const activitiesQuery = query(
+          collection(this.firestore, 'activities'),
+          where('userId', '==', userId),
+        );
+        const goalsQuery = query(
+          collection(this.firestore, 'user_goals'),
+          where('userId', '==', userId),
+          where('status', '==', 'completed'),
+        );
+        const challengesQuery = query(
+          collection(this.firestore, 'user_challenges'),
+          where('userId', '==', userId),
+          where('status', '==', 'completed'),
+        );
+        return Promise.all([
+          getDocs(activitiesQuery),
+          getDocs(goalsQuery),
+          getDocs(challengesQuery),
+        ]);
+      });
 
     const activities: Activity[] = [];
     let travelCount = 0;
@@ -199,32 +206,13 @@ export class BadgeService {
     activitiesSnap.forEach((d) => {
       const act = d.data() as Activity;
       activities.push(act);
-
-      const type = act.type;
-      if (type === 'travel') travelCount++;
-      else if (type === 'shopping') shoppingCount++;
-      else if (type === 'energy') energyCount++;
+      if (act.type === 'travel') travelCount++;
+      else if (act.type === 'shopping') shoppingCount++;
+      else if (act.type === 'energy') energyCount++;
     });
 
-    const currentStreak = this.statsService.getWeeklyStreak(activities);
-
-    const goalsRef = collection(this.firestore, 'user_goals');
-    const goalsQuery = query(
-      goalsRef,
-      where('userId', '==', userId),
-      where('status', '==', 'completed'),
-    );
-    const goalsSnap = await getDocs(goalsQuery);
     const completedGoalIds = new Set<string>();
     goalsSnap.forEach((d) => completedGoalIds.add(d.data()['goalId']));
-
-    const challengesRef = collection(this.firestore, 'user_challenges');
-    const challengesQuery = query(
-      challengesRef,
-      where('userId', '==', userId),
-      where('status', '==', 'completed'),
-    );
-    const challengesSnap = await getDocs(challengesQuery);
 
     return {
       totalActivities: travelCount + shoppingCount + energyCount,
@@ -234,7 +222,7 @@ export class BadgeService {
       completedGoalsCount: goalsSnap.size,
       completedGoalIds,
       completedChallengesCount: challengesSnap.size,
-      currentStreak: currentStreak,
+      currentStreak: this.statsService.getWeeklyStreak(activities),
     };
   }
 }

@@ -15,6 +15,7 @@ import {
 } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 import { FIXED_GOALS } from '../constants/goals.constant';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class CleanupService {
@@ -31,9 +32,9 @@ export class CleanupService {
         this.cleanupExpiredChallenges(userId),
         this.cleanupExpiredGoals(userId),
       ]);
-      console.log('[CleanupService] Lejárt elemek tisztítása kész.');
+      if (!environment.production) console.log('[CleanupService] Lejárt elemek tisztítása kész.');
     } catch (error) {
-      console.warn('[CleanupService] Cleanup hiba:', error);
+      if (!environment.production) console.warn('[CleanupService] Cleanup hiba:', error);
     }
   }
 
@@ -68,7 +69,7 @@ export class CleanupService {
 
       if (failedCount > 0) {
         await batch.commit();
-        console.log(`[CleanupService] ${failedCount} lejárt kihívás lezárva.`);
+        if (!environment.production) console.log(`[CleanupService] ${failedCount} lejárt kihívás lezárva.`);
       }
     });
   }
@@ -117,9 +118,7 @@ export class CleanupService {
 
       if (failedCount > 0) {
         await batch.commit();
-        console.log(
-          `[CleanupService] ${failedCount} lejárt célkitűzés lezárva.`,
-        );
+        if (!environment.production) console.log(`[CleanupService] ${failedCount} lejárt célkitűzés lezárva.`);
       }
     });
   }

@@ -11,9 +11,18 @@ import {
   authState,
   User as FirebaseUser,
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
+  deleteUser,
+  verifyBeforeUpdateEmail,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
 } from '@angular/fire/auth';
 import { Observable, of, BehaviorSubject } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, filter, take } from 'rxjs/operators';
 import { DataService } from './data.service';
 import { User } from '../models/user.model';
 
@@ -50,12 +59,43 @@ export class AuthService {
         return of(null);
       }),
     );
+
+    // Firebase Auth email és Firestore email szinkronizálása (pl. verifyBeforeUpdateEmail után).
+    // Root service → az app teljes élettartamán fut, unsubscribe nem szükséges.
+    this.user$.pipe(
+      filter((u): u is FirebaseUser => !!u),
+      switchMap((firebaseUser) =>
+        this.dataService.getUserData(firebaseUser.uid).pipe(
+          take(1),
+          switchMap((profile) => {
+            if (profile && firebaseUser.email && profile.email !== firebaseUser.email) {
+              return this.dataService.syncUserEmail(firebaseUser.uid, firebaseUser.email);
+            }
+            return of(undefined);
+          }),
+        ),
+      ),
+    ).subscribe();
   }
 
-  async login(email: string, password: string): Promise<void> {
+  async login(email: string, password: string, rememberMe: boolean = false): Promise<void> {
     return runInInjectionContext(this.injector, async () => {
+      try {
+        const persistence = rememberMe
+          ? browserLocalPersistence
+          : browserSessionPersistence;
+        await setPersistence(this.auth, persistence);
+      } catch {
+        // setPersistence nem elérhető natív (Capacitor) környezetben — figyelmen kívül hagyjuk
+      }
       await signInWithEmailAndPassword(this.auth, email, password);
       this.isAuthenticated$.next(true);
+    });
+  }
+
+  async sendPasswordReset(email: string): Promise<void> {
+    return runInInjectionContext(this.injector, async () => {
+      await sendPasswordResetEmail(this.auth, email);
     });
   }
 
@@ -75,6 +115,36 @@ export class AuthService {
       );
       this.isAuthenticated$.next(true);
       return userCredential.user;
+    });
+  }
+
+  async updateUserEmail(newEmail: string, currentPassword: string): Promise<void> {
+    return runInInjectionContext(this.injector, async () => {
+      const user = this.auth.currentUser;
+      if (!user || !user.email) throw new Error('Nincs bejelentkezett felhasználó.');
+      const credential = EmailAuthProvider.credential(user.email, currentPassword);
+      await reauthenticateWithCredential(user, credential);
+      await verifyBeforeUpdateEmail(user, newEmail);
+    });
+  }
+
+  async updateUserPassword(currentPassword: string, newPassword: string): Promise<void> {
+    return runInInjectionContext(this.injector, async () => {
+      const user = this.auth.currentUser;
+      if (!user || !user.email) throw new Error('Nincs bejelentkezett felhasználó.');
+      const credential = EmailAuthProvider.credential(user.email, currentPassword);
+      await reauthenticateWithCredential(user, credential);
+      await updatePassword(user, newPassword);
+    });
+  }
+
+  async deleteAccount(): Promise<void> {
+    return runInInjectionContext(this.injector, async () => {
+      const user = this.auth.currentUser;
+      if (!user) return;
+      await this.dataService.deleteUserData(user.uid);
+      await deleteUser(user);
+      this.isAuthenticated$.next(false);
     });
   }
 

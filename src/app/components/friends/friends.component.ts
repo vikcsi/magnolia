@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import {
@@ -8,12 +8,12 @@ import {
   IonInput,
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
-import { Observable, combineLatest, of } from 'rxjs';
+import { Observable, Subject, combineLatest, of } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
 import { Friendship } from 'src/app/models/friendship.model';
 import { User } from 'src/app/models/user.model';
-import { switchMap, map } from 'rxjs/operators';
+import { switchMap, map, takeUntil } from 'rxjs/operators';
 import {
   searchOutline,
   chevronForward,
@@ -47,10 +47,12 @@ export interface FriendDisplay {
     IonInput,
   ],
 })
-export class FriendsComponent implements OnInit {
+export class FriendsComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private dataService = inject(DataService);
   private router = inject(Router);
+
+  private destroy$ = new Subject<void>();
 
   pendingRequestsDisplay$!: Observable<FriendRequestDisplay[]>;
   acceptedFriendsDisplay$!: Observable<FriendDisplay[]>;
@@ -60,7 +62,7 @@ export class FriendsComponent implements OnInit {
   isProcessing: Record<string, boolean> = {};
 
   searchUsername: string = '';
-  searchResults$: Observable<User[]> | null = null; 
+  searchResults$: Observable<User[]> | null = null;
   hasSearched: boolean = false;
 
   constructor() {
@@ -82,6 +84,7 @@ export class FriendsComponent implements OnInit {
       this.pendingRequestsDisplay$ = this.dataService
         .getPendingRequests(uid)
         .pipe(
+          takeUntil(this.destroy$),
           switchMap((requests) => {
             if (requests.length === 0) return of([]);
             const combined$ = requests.map((req) =>
@@ -96,6 +99,7 @@ export class FriendsComponent implements OnInit {
       this.acceptedFriendsDisplay$ = this.dataService
         .getAcceptedFriends(uid)
         .pipe(
+          takeUntil(this.destroy$),
           switchMap((friendships) => {
             if (friendships.length === 0) return of([]);
             const combined$ = friendships.map((friendship) => {
@@ -110,6 +114,7 @@ export class FriendsComponent implements OnInit {
         );
 
       this.friendshipStatusMap$ = this.dataService.getAllFriendships(uid).pipe(
+        takeUntil(this.destroy$),
         map((friendships) => {
           const statusMap = new Map<string, 'pending' | 'accepted'>();
           friendships.forEach((f) => {
@@ -120,6 +125,11 @@ export class FriendsComponent implements OnInit {
         }),
       );
     }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   handleSearch() {

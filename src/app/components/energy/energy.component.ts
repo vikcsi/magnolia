@@ -109,7 +109,7 @@ export class EnergyComponent implements OnInit, OnDestroy {
                   : ((b.timestamp as any)?.toMillis?.() ?? 0);
               return tb - ta;
             })
-            .slice(0, 2);
+            .slice(0, 5);
         });
     }
   }
@@ -124,6 +124,15 @@ export class EnergyComponent implements OnInit, OnDestroy {
 
   onTypeChange(): void {
     this.calculatedEmission = null;
+  }
+
+  onPeriodChange(): void {
+    const d = new Date();
+    if (this.period === 'year') {
+      this.selectedDate = new Date(d.getFullYear(), 0, 1).toISOString();
+    } else {
+      this.selectedDate = new Date(d.getFullYear(), d.getMonth(), 1).toISOString();
+    }
   }
 
   calculateEmission(): void {

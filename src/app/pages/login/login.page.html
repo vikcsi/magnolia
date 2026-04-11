@@ -45,7 +45,7 @@
         <ion-checkbox [(ngModel)]="rememberMe"></ion-checkbox>
         <label>Emlékezz rám</label>
       </div>
-      <a class="forgot-password">Elfelejtett jelszó?</a>
+      <a class="forgot-password" (click)="forgotPassword()">Elfelejtett jelszó?</a>
     </div>
 
     @if (errorMessage) {

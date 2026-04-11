@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { CapacitorHttp, HttpResponse } from '@capacitor/core';
 
 export interface OffProduct {
   barcode: string;
@@ -19,13 +20,22 @@ export class OpenFoodFactsService {
 
   async getProductByBarcode(barcode: string): Promise<OffProduct | null> {
     try {
-      const response = await fetch(`${this.baseUrl}/${barcode}.json?fields=product_name,brands,image_front_url,ecoscore_grade,ecoscore_data,categories_tags`);
-      const data = await response.json();
+      const response: HttpResponse = await CapacitorHttp.get({
+        url: `${this.baseUrl}/${barcode}.json`,
+        params: {
+          fields: 'product_name,brands,image_front_url,ecoscore_grade,ecoscore_data,categories_tags',
+        },
+      });
+      const data = response.data;
 
       if (data.status === 1 && data.product) {
         let co2Value: number | undefined = undefined;
         if (data.product.ecoscore_data && data.product.ecoscore_data.agribalyse) {
-          co2Value = data.product.ecoscore_data.agribalyse.co2_total;
+          const raw = data.product.ecoscore_data.agribalyse.co2_total;
+          // Csak reális értéket fogadunk el (0.01–50 kg CO₂/kg)
+          if (typeof raw === 'number' && raw >= 0.01 && raw <= 50) {
+            co2Value = raw;
+          }
         }
 
         return {
@@ -35,7 +45,7 @@ export class OpenFoodFactsService {
           imageUrl: data.product.image_front_url,
           ecoScore: data.product.ecoscore_grade,
           exactCo2: co2Value,
-          offCategories: data.product.categories_tags || []
+          offCategories: data.product.categories_tags || [],
         };
       }
       return null;

@@ -1,0 +1,232 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar mode="md">
+    <ion-buttons slot="start">
+      <ion-button fill="clear" color="dark" (click)="goBack()">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Beállítások</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="ion-padding">
+
+    <!-- ── FIÓK ADATOK ── -->
+    <div class="section-header">
+      <div class="section-icon">
+        <ion-icon name="person-outline"></ion-icon>
+      </div>
+      <div>
+        <h3>Fiók adatok</h3>
+        <p>E-mail cím és jelszó kezelése</p>
+      </div>
+    </div>
+
+    <!-- Email módosítás -->
+    <div class="settings-card">
+      <button class="card-row" (click)="toggleEmailForm()">
+        <div class="row-left">
+          <div class="row-icon">
+            <ion-icon name="mail-outline"></ion-icon>
+          </div>
+          <div class="row-text">
+            <span class="row-title">E-mail cím módosítása</span>
+            <span class="row-subtitle">{{ currentEmail }}</span>
+          </div>
+        </div>
+        <ion-icon [name]="showEmailForm ? 'chevron-up-outline' : 'chevron-down-outline'" class="expand-icon"></ion-icon>
+      </button>
+
+      @if (showEmailForm) {
+        <div class="form-body">
+          <div class="input-group">
+            <label>Új e-mail cím</label>
+            <div class="input-wrapper">
+              <ion-input type="email" placeholder="uj@email.com" [(ngModel)]="newEmail" autocomplete="email"></ion-input>
+            </div>
+          </div>
+          <div class="input-group">
+            <label>Jelenlegi jelszó megerősítése</label>
+            <div class="input-wrapper">
+              <ion-input type="password" placeholder="Jelszó" [(ngModel)]="emailPassword" autocomplete="current-password"></ion-input>
+            </div>
+          </div>
+          @if (emailError) { <p class="form-error">{{ emailError }}</p> }
+          @if (emailSuccess) { <p class="form-success">{{ emailSuccess }}</p> }
+          <ion-button expand="block" class="save-button" (click)="saveEmailChange()" [disabled]="emailLoading">
+            @if (emailLoading) { <ion-spinner name="crescent"></ion-spinner> } @else { Mentés }
+          </ion-button>
+        </div>
+      }
+    </div>
+
+    <!-- Jelszó módosítás -->
+    <div class="settings-card">
+      <button class="card-row" (click)="togglePasswordForm()">
+        <div class="row-left">
+          <div class="row-icon">
+            <ion-icon name="lock-closed-outline"></ion-icon>
+          </div>
+          <div class="row-text">
+            <span class="row-title">Jelszó megváltoztatása</span>
+            <span class="row-subtitle">Biztonságos jelszó beállítása</span>
+          </div>
+        </div>
+        <ion-icon [name]="showPasswordForm ? 'chevron-up-outline' : 'chevron-down-outline'" class="expand-icon"></ion-icon>
+      </button>
+
+      @if (showPasswordForm) {
+        <div class="form-body">
+          <div class="input-group">
+            <label>Jelenlegi jelszó</label>
+            <div class="input-wrapper">
+              <ion-input [type]="showCurrentPw ? 'text' : 'password'" placeholder="Jelenlegi jelszó" [(ngModel)]="currentPassword"></ion-input>
+              <button class="pw-toggle" (click)="showCurrentPw = !showCurrentPw">
+                <ion-icon [name]="showCurrentPw ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              </button>
+            </div>
+          </div>
+          <div class="input-group">
+            <label>Új jelszó</label>
+            <div class="input-wrapper">
+              <ion-input [type]="showNewPw ? 'text' : 'password'" placeholder="Új jelszó (min. 6 karakter)" [(ngModel)]="newPassword"></ion-input>
+              <button class="pw-toggle" (click)="showNewPw = !showNewPw">
+                <ion-icon [name]="showNewPw ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              </button>
+            </div>
+          </div>
+          <div class="input-group">
+            <label>Új jelszó megerősítése</label>
+            <div class="input-wrapper">
+              <ion-input [type]="showConfirmPw ? 'text' : 'password'" placeholder="Jelszó még egyszer" [(ngModel)]="confirmPassword"></ion-input>
+              <button class="pw-toggle" (click)="showConfirmPw = !showConfirmPw">
+                <ion-icon [name]="showConfirmPw ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              </button>
+            </div>
+          </div>
+          @if (passwordError) { <p class="form-error">{{ passwordError }}</p> }
+          @if (passwordSuccess) { <p class="form-success">{{ passwordSuccess }}</p> }
+          <ion-button expand="block" class="save-button" (click)="savePasswordChange()" [disabled]="passwordLoading">
+            @if (passwordLoading) { <ion-spinner name="crescent"></ion-spinner> } @else { Mentés }
+          </ion-button>
+        </div>
+      }
+    </div>
+
+    <!-- ── TEVÉKENYSÉGEK ── -->
+    <div class="section-header">
+      <div class="section-icon">
+        <ion-icon name="leaf-outline"></ion-icon>
+      </div>
+      <div>
+        <h3>Tevékenységek</h3>
+        <p>Rögzített adatok kezelése</p>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <button class="card-row" (click)="toggleActivities()">
+        <div class="row-left">
+          <div class="row-icon">
+            <ion-icon name="trash-outline"></ion-icon>
+          </div>
+          <div class="row-text">
+            <span class="row-title">Tevékenységeim törlése</span>
+            <span class="row-subtitle">Kiválasztott bejegyzések eltávolítása</span>
+          </div>
+        </div>
+        <ion-icon [name]="showActivities ? 'chevron-up-outline' : 'chevron-down-outline'" class="expand-icon"></ion-icon>
+      </button>
+
+      @if (showActivities) {
+        <div class="activities-body">
+          @if (allActivities.length > 0) {
+
+            <div class="select-all-row" (click)="toggleSelectAll()">
+              <ion-icon [name]="currentPageAllSelected ? 'checkbox-outline' : 'square-outline'" class="check-icon"></ion-icon>
+              <span>Az oldal összes kijelölése</span>
+              @if (selectedIds.size > 0) {
+                <span class="selected-badge">{{ selectedIds.size }} kijelölve</span>
+              }
+            </div>
+
+            <div class="activity-list">
+              @for (activity of pagedActivities; track activity.id) {
+                <div class="activity-item" [class.selected]="selectedIds.has(activity.id)" (click)="toggleSelect(activity.id)">
+                  <ion-icon [name]="selectedIds.has(activity.id) ? 'checkbox-outline' : 'square-outline'" class="check-icon"></ion-icon>
+                  <div class="activity-icon-wrap">
+                    <ion-icon [name]="getActivityIcon(activity)"></ion-icon>
+                  </div>
+                  <div class="activity-info">
+                    <span class="activity-type">{{ getActivityLabel(activity) }}</span>
+                    <span class="activity-date">{{ getActivityDate(activity) | date:'yyyy. MM. dd.' }}</span>
+                  </div>
+                  <span class="activity-emission">{{ activity.emission | number:'1.1-1' }} kg</span>
+                </div>
+              }
+            </div>
+
+            <!-- Lapozó -->
+            <div class="pagination">
+              <button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 0">
+                <ion-icon name="chevron-back-outline"></ion-icon>
+              </button>
+              <span class="page-info">{{ currentPage + 1 }} / {{ totalPages }}</span>
+              <button class="page-btn" (click)="nextPage()" [disabled]="currentPage >= totalPages - 1">
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+              </button>
+            </div>
+
+            @if (selectedIds.size > 0) {
+              <ion-button expand="block" class="delete-btn" (click)="deleteSelected()" [disabled]="activitiesLoading">
+                @if (activitiesLoading) {
+                  <ion-spinner name="crescent"></ion-spinner>
+                } @else {
+                  <ion-icon name="trash-outline" slot="start"></ion-icon>
+                  {{ selectedIds.size }} tétel törlése
+                }
+              </ion-button>
+            }
+
+          } @else {
+            <p class="empty-state">Még nem rögzítettél tevékenységet.</p>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ── MUNKAMENET ── -->
+    <div class="section-header">
+      <div class="section-icon">
+        <ion-icon name="shield-outline"></ion-icon>
+      </div>
+      <div>
+        <h3>Munkamenet</h3>
+        <p>Bejelentkezés kezelése</p>
+      </div>
+    </div>
+
+    <ion-button expand="block" fill="outline" class="outline-btn" (click)="logout()">
+      <ion-icon name="log-out-outline" slot="start"></ion-icon>
+      Kijelentkezés
+    </ion-button>
+
+    <!-- ── VESZÉLYES ZÓNA ── -->
+    <div class="section-header danger-section-header">
+      <div class="section-icon danger-icon">
+        <ion-icon name="warning-outline"></ion-icon>
+      </div>
+      <div>
+        <h3>Veszélyes zóna</h3>
+        <p>Visszafordíthatatlan műveletek</p>
+      </div>
+    </div>
+
+    <ion-button expand="block" class="danger-btn" (click)="deleteAccount()">
+      <ion-icon name="trash-outline" slot="start"></ion-icon>
+      Fiók törlése
+    </ion-button>
+
+  </div>
+</ion-content>

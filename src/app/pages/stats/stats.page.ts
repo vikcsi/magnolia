@@ -7,7 +7,7 @@ import { DataService } from 'src/app/services/data.service';
 import { StatsService, PeriodStats, DayBar, MagnoliaState } from 'src/app/services/stats.service';
 import { NavigationComponent } from 'src/app/components/navigation/navigation.component';
 import {
-  IonHeader, IonToolbar, IonTitle, IonContent, IonFooter, IonIcon,
+  IonHeader, IonToolbar, IonTitle, IonContent, IonFooter, IonIcon, IonSkeletonText,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -25,7 +25,7 @@ export type Period = 'week' | 'month' | 'year';
   imports: [
     CommonModule,
     NavigationComponent,
-    IonHeader, IonToolbar, IonTitle, IonContent, IonFooter, IonIcon,
+    IonHeader, IonToolbar, IonTitle, IonContent, IonFooter, IonIcon, IonSkeletonText,
   ],
 })
 export class StatsPage implements OnInit, OnDestroy {
@@ -40,6 +40,7 @@ export class StatsPage implements OnInit, OnDestroy {
 
   selectedPeriod: Period = 'week';
   stats: PeriodStats | null = null;
+  isLoading = true;
 
   readonly CHART_HEIGHT = 120;
   readonly DAILY_LIMIT = this.statsService.DAILY_LIMIT_KG;
@@ -58,6 +59,7 @@ export class StatsPage implements OnInit, OnDestroy {
       this.sub = this.dataService.getUserActivities(user.uid).subscribe(acts => {
         this.activities = acts;
         this.compute();
+        this.isLoading = false;
       });
     }
   }

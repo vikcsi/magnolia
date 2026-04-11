@@ -59,6 +59,13 @@ export class DataService {
     });
   }
 
+  async syncUserEmail(uid: string, email: string): Promise<void> {
+    return runInInjectionContext(this.injector, async () => {
+      const userRef = doc(this.firestore, `users/${uid}`);
+      await updateDoc(userRef, { email });
+    });
+  }
+
   getUserActivities(uid: string): Observable<Activity[]> {
     return runInInjectionContext(this.injector, () => {
       const activitiesRef = collection(this.firestore, 'activities');
@@ -175,48 +182,63 @@ export class DataService {
     });
   }
 
-  async getUserComparisonStats(userId: string): Promise<{
+  async isFriend(currentUserId: string, targetUserId: string): Promise<boolean> {
+    return runInInjectionContext(this.injector, async () => {
+      const friendshipId = this.getFriendshipId(currentUserId, targetUserId);
+      const friendshipRef = doc(this.firestore, `friendships/${friendshipId}`);
+      const snap = await getDoc(friendshipRef);
+      return snap.exists() && snap.data()?.['status'] === 'accepted';
+    });
+  }
+
+  async getUserComparisonStats(userId: string, currentUserId: string): Promise<{
     emission: number;
     allXP: number;
     completedGoals: number;
     completedChallenges: number;
     currentStreak: number;
   }> {
-    return runInInjectionContext(this.injector, async () => {
-      const userRef = doc(this.firestore, `users/${userId}`);
-      const userSnap = await getDoc(userRef);
-      const userData = userSnap.data() as User;
+    if (currentUserId !== userId) {
+      const friendshipOk = await this.isFriend(currentUserId, userId);
+      if (!friendshipOk) throw new Error('Csak barátok adatait tekintheted meg.');
+    }
 
-      const goalsRef = collection(this.firestore, 'user_goals');
-      const qGoals = query(
-        goalsRef,
-        where('userId', '==', userId),
-        where('status', '==', 'completed'),
-      );
-      const goalsCountSnap = await getCountFromServer(qGoals);
+    const [userSnap, goalsCountSnap, challengesCountSnap, activitiesSnap] =
+      await runInInjectionContext(this.injector, () => {
+        const userRef = doc(this.firestore, `users/${userId}`);
+        const goalsRef = collection(this.firestore, 'user_goals');
+        const qGoals = query(
+          goalsRef,
+          where('userId', '==', userId),
+          where('status', '==', 'completed'),
+        );
+        const challengesRef = collection(this.firestore, 'user_challenges');
+        const qChallenges = query(
+          challengesRef,
+          where('userId', '==', userId),
+          where('status', '==', 'completed'),
+        );
+        const activitiesRef = collection(this.firestore, 'activities');
+        const qActivities = query(activitiesRef, where('userId', '==', userId));
+        return Promise.all([
+          getDoc(userRef),
+          getCountFromServer(qGoals),
+          getCountFromServer(qChallenges),
+          getDocs(qActivities),
+        ]);
+      });
 
-      const challengesRef = collection(this.firestore, 'user_challenges');
-      const qChallenges = query(
-        challengesRef,
-        where('userId', '==', userId),
-        where('status', '==', 'completed'),
-      );
-      const challengesCountSnap = await getCountFromServer(qChallenges);
+    const userData = userSnap.data() as User;
+    const activities = activitiesSnap.docs.map((d) => d.data() as Activity);
+    const currentStreak = this.statsService.getWeeklyStreak(activities);
 
-      const activitiesRef = collection(this.firestore, 'activities');
-      const qActivities = query(activitiesRef, where('userId', '==', userId));
-      const activitiesSnap = await getDocs(qActivities);
-      const activities = activitiesSnap.docs.map((d) => d.data() as Activity);
-      const currentStreak = this.statsService.getWeeklyStreak(activities);
-
-      return {
-        emission: userData?.emission || 0,
-        allXP: userData?.allXP || 0,
-        completedGoals: goalsCountSnap.data().count,
-        completedChallenges: challengesCountSnap.data().count,
-        currentStreak: currentStreak,
-      };
-    });
+    return {
+      emission: userData?.emission || 0,
+      allXP: userData?.allXP || 0,
+      completedGoals: goalsCountSnap.data().count,
+      completedChallenges: challengesCountSnap.data().count,
+      currentStreak: currentStreak,
+    };
   }
 
   async saveShoppingActivity(
@@ -265,9 +287,11 @@ export class DataService {
       (p) => p.category.startsWith('meat_') || p.category === 'fish',
     );
 
+    const todayTotalEmission = await this.getTodayTotalEmission(userId);
     const completedGoals = await this.processActivityForGoals(userId, {
       type: 'shopping',
       isMeatless: isMeatless,
+      todayTotalEmission,
     });
 
     const completedChallenges = await this.processActivityForChallenges(
@@ -336,10 +360,12 @@ export class DataService {
 
     await this.updateMonthlyStats(userId, emission, 'travel');
 
+    const todayTotalEmission = await this.getTodayTotalEmission(userId);
     const completedGoals = await this.processActivityForGoals(userId, {
       type: 'travel',
       distance: distanceKm,
       mode: mode,
+      todayTotalEmission,
     });
 
     const completedChallenges = await this.processActivityForChallenges(
@@ -398,8 +424,10 @@ export class DataService {
       billingDate,
     );
 
+    const todayTotalEmission = await this.getTodayTotalEmission(userId);
     const completedGoals = await this.processActivityForGoals(userId, {
       type: 'energy',
+      todayTotalEmission,
     });
 
     const completedChallenges = await this.processActivityForChallenges(
@@ -503,7 +531,9 @@ export class DataService {
         },
         { merge: true },
       );
-    } catch {}
+    } catch (err) {
+      console.error('[DataService] updateMonthlyStats hiba:', err);
+    }
   }
 
   async startNewGoal(userId: string, goalId: string): Promise<void> {
@@ -560,6 +590,16 @@ export class DataService {
     );
   }
 
+  private async getTodayTotalEmission(userId: string): Promise<number> {
+    return runInInjectionContext(this.injector, async () => {
+      const activitiesRef = collection(this.firestore, 'activities');
+      const q = query(activitiesRef, where('userId', '==', userId));
+      const snap = await getDocs(q);
+      const activities = snap.docs.map((d) => d.data() as Activity);
+      return this.statsService.computeTodayEmission(activities);
+    });
+  }
+
   async processActivityForGoals(
     userId: string,
     metrics: {
@@ -567,6 +607,7 @@ export class DataService {
       distance?: number;
       mode?: string;
       isMeatless?: boolean;
+      todayTotalEmission?: number;
     },
   ): Promise<Goal[]> {
     const goalsRef = collection(this.firestore, 'user_goals');
@@ -620,13 +661,15 @@ export class DataService {
         metrics.type === 'travel' &&
         (metrics.mode === 'walking' || metrics.mode === 'bicycling')
       ) {
+        // Minden egyes km hozzáadódik, nincs napi limit
         progressIncrement = metrics.distance || 0;
       } else if (
         goalDef.id === 'goal_public_transport' &&
         metrics.type === 'travel' &&
         (metrics.mode === 'bus' || metrics.mode === 'train')
       ) {
-        if (!alreadyUpdatedToday) progressIncrement = 1;
+        // Minden egyes utazás számít (nincs napi limit)
+        progressIncrement = 1;
       } else if (goalDef.id === 'goal_consistent') {
         if (!alreadyUpdatedToday) progressIncrement = 1;
       } else if (
@@ -635,6 +678,16 @@ export class DataService {
         metrics.isMeatless
       ) {
         if (!alreadyUpdatedToday) progressIncrement = 1;
+      } else if (goalDef.id === 'goal_co2_reduction') {
+        // Akkor számít, ha ezen a napon még nem volt jóváírás,
+        // és az aznapi összes emisszió a Párizsi limit alatt van
+        if (
+          !alreadyUpdatedToday &&
+          metrics.todayTotalEmission !== undefined &&
+          metrics.todayTotalEmission <= this.statsService.DAILY_LIMIT_KG
+        ) {
+          progressIncrement = 1;
+        }
       }
 
       if (progressIncrement > 0) {
@@ -714,38 +767,43 @@ export class DataService {
 
       let progressIncrement = 0;
 
-      if (
-        challengeDef.category === 'travel' ||
-        challengeDef.category === 'mixed'
-      ) {
-        const modeMatch =
-          !challengeDef.targetCondition ||
-          (metrics.mode && challengeDef.targetCondition.includes(metrics.mode));
+      if (challengeDef.category === 'travel') {
+        if (metrics.type === 'travel') {
+          const modeMatch =
+            !challengeDef.targetCondition ||
+            challengeDef.targetCondition.length === 0 ||
+            (metrics.mode !== undefined &&
+              challengeDef.targetCondition.includes(metrics.mode));
 
-        if (metrics.type === 'travel' && modeMatch) {
-          if (challengeDef.metric === 'distance')
-            progressIncrement = metrics.distance || 0;
+          if (modeMatch) {
+            if (challengeDef.metric === 'distance')
+              progressIncrement = metrics.distance || 0;
+            if (challengeDef.metric === 'count') progressIncrement = 1;
+          }
+        }
+      } else if (challengeDef.category === 'mixed') {
+        // mixed: bármilyen rögzített aktivitás számít (utazás, vásárlás, energia)
+        if (challengeDef.metric === 'count') progressIncrement = 1;
+        else if (challengeDef.metric === 'distance' && metrics.type === 'travel')
+          progressIncrement = metrics.distance || 0;
+      } else if (challengeDef.category === 'shopping') {
+        if (metrics.type === 'shopping') {
+          if (challengeDef.metric === 'meatless_shopping' && metrics.isMeatless) {
+            progressIncrement = 1;
+          }
+          if (
+            challengeDef.metric === 'low_carbon_shopping' &&
+            metrics.productCount !== undefined &&
+            metrics.productCount >= 5 &&
+            metrics.totalEmission !== undefined
+          ) {
+            const avgEmission = metrics.totalEmission / metrics.productCount;
+            if (avgEmission < 1.0) progressIncrement = 1;
+          }
+        }
+      } else if (challengeDef.category === 'energy') {
+        if (metrics.type === 'energy') {
           if (challengeDef.metric === 'count') progressIncrement = 1;
-        } else if (
-          challengeDef.category === 'mixed' &&
-          challengeDef.metric === 'count'
-        ) {
-          progressIncrement = 1;
-        }
-      }
-
-      if (metrics.type === 'shopping' && challengeDef.category === 'shopping') {
-        if (challengeDef.metric === 'meatless_shopping' && metrics.isMeatless) {
-          progressIncrement = 1;
-        }
-        if (
-          challengeDef.metric === 'low_carbon_shopping' &&
-          metrics.productCount &&
-          metrics.productCount >= 5 &&
-          metrics.totalEmission !== undefined
-        ) {
-          const avgEmission = metrics.totalEmission / metrics.productCount;
-          if (avgEmission < 1.0) progressIncrement = 1;
         }
       }
 
@@ -843,17 +901,51 @@ export class DataService {
     await deleteDoc(friendshipRef);
   }
 
-  searchUserByEmail(email: string): Observable<User | null> {
-    return runInInjectionContext(this.injector, () => {
-      const usersRef = collection(this.firestore, 'users');
-      const q = query(
-        usersRef,
-        where('email', '==', email.toLowerCase()),
-        limit(1),
+  async deleteActivities(activityIds: string[]): Promise<void> {
+    return runInInjectionContext(this.injector, async () => {
+      const batch = writeBatch(this.firestore);
+      activityIds.forEach((id) => {
+        batch.delete(doc(this.firestore, `activities/${id}`));
+      });
+      await batch.commit();
+    });
+  }
+
+  async deleteUserData(uid: string): Promise<void> {
+    return runInInjectionContext(this.injector, async () => {
+      const batch = writeBatch(this.firestore);
+
+      const activitiesSnap = await getDocs(
+        query(collection(this.firestore, 'activities'), where('userId', '==', uid)),
       );
-      return collectionData(q, { idField: 'id' }).pipe(
-        map((users) => (users.length > 0 ? (users[0] as User) : null)),
+      activitiesSnap.forEach((d) => batch.delete(d.ref));
+
+      const goalsSnap = await getDocs(
+        query(collection(this.firestore, 'user_goals'), where('userId', '==', uid)),
       );
+      goalsSnap.forEach((d) => batch.delete(d.ref));
+
+      const challengesSnap = await getDocs(
+        query(collection(this.firestore, 'user_challenges'), where('userId', '==', uid)),
+      );
+      challengesSnap.forEach((d) => batch.delete(d.ref));
+
+      const statsSnap = await getDocs(
+        query(collection(this.firestore, 'monthly_stats'), where('userId', '==', uid)),
+      );
+      statsSnap.forEach((d) => batch.delete(d.ref));
+
+      const friendshipsSnap = await getDocs(
+        query(
+          collection(this.firestore, 'friendships'),
+          or(where('user1', '==', uid), where('user2', '==', uid)),
+        ),
+      );
+      friendshipsSnap.forEach((d) => batch.delete(d.ref));
+
+      batch.delete(doc(this.firestore, `users/${uid}`));
+
+      await batch.commit();
     });
   }
 

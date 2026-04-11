@@ -1,4 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, Injector, OnInit } from '@angular/core';
+import { runInInjectionContext } from '@angular/core';
 import {
   IonApp,
   IonRouterOutlet,
@@ -11,6 +12,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { addIcons } from 'ionicons';
 import { CleanupService } from './services/cleanup.service';
+import { NotificationService } from './services/notification.service';
 import {
   footsteps,
   navigate,
@@ -57,8 +59,10 @@ import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 })
 export class AppComponent {
   private auth = inject(Auth);
+  private injector = inject(Injector);
   private navCtrl = inject(NavController);
   private cleanupService = inject(CleanupService);
+  private notificationService = inject(NotificationService);
   private router = inject(Router);
   private previousUid: string | null = null;
 
@@ -106,22 +110,25 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    onAuthStateChanged(this.auth, (user) => {
-      const currentUid = user?.uid ?? null;
-      if (user) {
-        this.cleanupService.cleanupExpiredItems();
-      }
-      if (
-        this.previousUid !== null &&
-        currentUid !== null &&
-        this.previousUid !== currentUid
-      ) {
-        this.navCtrl.navigateRoot('/home');
-      }
-      if (this.previousUid !== null && currentUid === null) {
-        this.navCtrl.navigateRoot('/login');
-      }
-      this.previousUid = currentUid;
+    runInInjectionContext(this.injector, () => {
+      onAuthStateChanged(this.auth, (user) => {
+        const currentUid = user?.uid ?? null;
+        if (user) {
+          this.cleanupService.cleanupExpiredItems();
+          this.notificationService.scheduleExpiryNotifications(user.uid);
+        }
+        if (
+          this.previousUid !== null &&
+          currentUid !== null &&
+          this.previousUid !== currentUid
+        ) {
+          this.navCtrl.navigateRoot('/home');
+        }
+        if (this.previousUid !== null && currentUid === null) {
+          this.navCtrl.navigateRoot('/login');
+        }
+        this.previousUid = currentUid;
+      });
     });
   }
 }

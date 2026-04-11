@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+import { AlertController, IonicModule } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import {
   arrowBackOutline,
@@ -37,6 +37,7 @@ export class ComparePage implements OnInit {
   private authService = inject(AuthService);
   private dataService = inject(DataService);
   private location = inject(Location);
+  private alertController = inject(AlertController);
 
   isLoading = true;
   currentUser: User | null = null;
@@ -75,16 +76,25 @@ export class ComparePage implements OnInit {
           new Promise<User>((resolve) =>
             this.dataService.getUserData(friendId).subscribe(resolve),
           ),
-          this.dataService.getUserComparisonStats(currentId),
-          this.dataService.getUserComparisonStats(friendId),
+          this.dataService.getUserComparisonStats(currentId, currentId),
+          this.dataService.getUserComparisonStats(friendId, currentId),
         ]);
 
       this.currentUser = currentUserDoc;
       this.friendUser = friendUserDoc;
       this.currentStats = currentUserStats;
       this.friendStats = friendUserStats;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Hiba az adatok betöltésekor', error);
+      if (error?.message === 'Csak barátok adatait tekintheted meg.') {
+        const alert = await this.alertController.create({
+          header: 'Hozzáférés megtagadva',
+          message: 'Csak elfogadott barátaid adatait tekintheted meg az összehasonlításban.',
+          buttons: ['OK'],
+        });
+        await alert.present();
+        await alert.onDidDismiss();
+      }
       this.goBack();
     } finally {
       this.isLoading = false;

@@ -17,7 +17,6 @@ import {
   chevronForwardOutline,
   timeOutline,
 } from 'ionicons/icons';
-import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { DataService } from 'src/app/services/data.service';
 import { StatsService } from 'src/app/services/stats.service';
@@ -34,6 +33,7 @@ import {
   IonContent,
   IonProgressBar,
   IonFooter,
+  IonSkeletonText,
   ModalController,
   ViewWillEnter,
   ViewWillLeave,
@@ -71,6 +71,7 @@ export interface UserViewData extends User {
     IonContent,
     IonProgressBar,
     IonFooter,
+    IonSkeletonText,
     NavigationComponent,
     CommonModule,
   ],
@@ -81,7 +82,6 @@ export class ProfilePage
   private dataService = inject(DataService);
   private authService = inject(AuthService);
   private statsService = inject(StatsService);
-  private router = inject(Router);
   private modalCtrl = inject(ModalController);
   private navCtrl = inject(NavController);
 
@@ -166,12 +166,8 @@ export class ProfilePage
     await modal.onDidDismiss();
   }
 
-  async logout() {
-    await this.authService.logout();
-    this.navCtrl.navigateRoot('/login', {
-      animated: true,
-      animationDirection: 'back',
-    });
+  openSettings() {
+    this.navCtrl.navigateForward('/settings');
   }
 
   async openBadgeGallery() {

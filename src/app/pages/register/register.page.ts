@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { DataService } from '../../services/data.service';
 import { FIXED_GOALS } from '../../constants/goals.constant';
@@ -30,7 +30,6 @@ export class RegisterPage implements OnInit {
 
   private authService = inject(AuthService);
   private dataService = inject(DataService);
-  private router = inject(Router);
   private navCtrl = inject(NavController);
 
   constructor() {
@@ -101,7 +100,6 @@ export class RegisterPage implements OnInit {
           break;
         default:
           this.errorMessage = 'Váratlan hiba történt. Kérlek, próbáld újra!';
-          console.error('Registration error:', error);
       }
     } finally {
       this.isLoading = false;

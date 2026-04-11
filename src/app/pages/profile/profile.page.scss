@@ -381,3 +381,18 @@ ion-content {
 ion-footer {
   background: transparent;
 }
+
+.skeleton-wrap {
+  .skeleton-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 24px;
+    margin: 0 auto 16px;
+    display: block;
+  }
+
+  .skeleton-stat-card {
+    height: 110px;
+    border-radius: 16px;
+  }
+}

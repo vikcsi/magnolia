@@ -32,12 +32,6 @@
     ion-icon {
       font-size: 1.6rem;
       color: var(--ion-color-primary);
-      transition: color 0.2s;
-    }
-
-    &:hover ion-icon,
-    &.active ion-icon {
-      color: var(--ion-color-tertiary);
     }
   }
 
@@ -99,6 +93,7 @@
 
         ion-icon {
           color: var(--ion-color-tertiary);
+          transition: color 0.2s;
         }
       }
 

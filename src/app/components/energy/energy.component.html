@@ -45,6 +45,7 @@
       <div class="input-wrapper">
         <ion-select
           [(ngModel)]="period"
+          (ngModelChange)="onPeriodChange()"
           placeholder="Válassz"
           interface="action-sheet"
         >
@@ -57,21 +58,37 @@
     <div class="form-group">
       <ion-label>Számlázási időszak</ion-label>
       <div class="input-wrapper datetime-wrapper">
-        <ion-datetime-button datetime="billing-datetime"></ion-datetime-button>
-        <ion-modal [keepContentsMounted]="true">
-          <ng-template>
-            <ion-datetime
-              id="billing-datetime"
-              [presentation]="period === 'year' ? 'year' : 'month-year'"
-              [(ngModel)]="selectedDate"
-              [max]="maxDate"
-              doneText="Kész"
-              cancelText="Mégse"
-              [showDefaultButtons]="true"
-            >
-            </ion-datetime>
-          </ng-template>
-        </ion-modal>
+        @if (period === 'year') {
+          <ion-datetime-button datetime="billing-year"></ion-datetime-button>
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime
+                id="billing-year"
+                presentation="year"
+                [(ngModel)]="selectedDate"
+                [max]="maxDate"
+                doneText="Kész"
+                cancelText="Mégse"
+                [showDefaultButtons]="true"
+              ></ion-datetime>
+            </ng-template>
+          </ion-modal>
+        } @else {
+          <ion-datetime-button datetime="billing-month"></ion-datetime-button>
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime
+                id="billing-month"
+                presentation="month-year"
+                [(ngModel)]="selectedDate"
+                [max]="maxDate"
+                doneText="Kész"
+                cancelText="Mégse"
+                [showDefaultButtons]="true"
+              ></ion-datetime>
+            </ng-template>
+          </ion-modal>
+        }
       </div>
     </div>
   </div>

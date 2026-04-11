@@ -56,7 +56,7 @@ export class StatsService {
 
   private getEnergyForDay(activity: Activity, day: Date): number {
     const details = activity.details as Energy;
-    const billingDate = this.toDate(activity.timestamp);
+    const billingDate = this.toDate(details.billingDate ?? activity.timestamp);
     if (details.period === 'month') {
       if (
         billingDate.getFullYear() === day.getFullYear() &&
@@ -79,7 +79,7 @@ export class StatsService {
 
   private getEnergyForMonth(activity: Activity, year: number, month: number): number {
     const details = activity.details as Energy;
-    const billingDate = this.toDate(activity.timestamp);
+    const billingDate = this.toDate(details.billingDate ?? activity.timestamp);
     if (details.period === 'month') {
       if (billingDate.getFullYear() === year && billingDate.getMonth() === month) {
         return activity.emission;
