@@ -60,8 +60,6 @@ export class AuthService {
       }),
     );
 
-    // Firebase Auth email és Firestore email szinkronizálása (pl. verifyBeforeUpdateEmail után).
-    // Root service → az app teljes élettartamán fut, unsubscribe nem szükséges.
     this.user$.pipe(
       filter((u): u is FirebaseUser => !!u),
       switchMap((firebaseUser) =>
@@ -86,7 +84,6 @@ export class AuthService {
           : browserSessionPersistence;
         await setPersistence(this.auth, persistence);
       } catch {
-        // setPersistence nem elérhető natív (Capacitor) környezetben — figyelmen kívül hagyjuk
       }
       await signInWithEmailAndPassword(this.auth, email, password);
       this.isAuthenticated$.next(true);

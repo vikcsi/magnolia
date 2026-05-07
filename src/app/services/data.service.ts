@@ -464,6 +464,8 @@ export class DataService {
               name: product.name,
               brands: product.brands || '',
               category: product.category || 'other',
+              ecoScore: product.ecoScore ?? null,
+              emissionPerKg: product.emissionPerKg ?? null,
               addedAt: new Date(),
             },
             { merge: true },
@@ -661,14 +663,12 @@ export class DataService {
         metrics.type === 'travel' &&
         (metrics.mode === 'walking' || metrics.mode === 'bicycling')
       ) {
-        // Minden egyes km hozzáadódik, nincs napi limit
         progressIncrement = metrics.distance || 0;
       } else if (
         goalDef.id === 'goal_public_transport' &&
         metrics.type === 'travel' &&
         (metrics.mode === 'bus' || metrics.mode === 'train')
       ) {
-        // Minden egyes utazás számít (nincs napi limit)
         progressIncrement = 1;
       } else if (goalDef.id === 'goal_consistent') {
         if (!alreadyUpdatedToday) progressIncrement = 1;
@@ -679,8 +679,6 @@ export class DataService {
       ) {
         if (!alreadyUpdatedToday) progressIncrement = 1;
       } else if (goalDef.id === 'goal_co2_reduction') {
-        // Akkor számít, ha ezen a napon még nem volt jóváírás,
-        // és az aznapi összes emisszió a Párizsi limit alatt van
         if (
           !alreadyUpdatedToday &&
           metrics.todayTotalEmission !== undefined &&
@@ -782,7 +780,6 @@ export class DataService {
           }
         }
       } else if (challengeDef.category === 'mixed') {
-        // mixed: bármilyen rögzített aktivitás számít (utazás, vásárlás, energia)
         if (challengeDef.metric === 'count') progressIncrement = 1;
         else if (challengeDef.metric === 'distance' && metrics.type === 'travel')
           progressIncrement = metrics.distance || 0;

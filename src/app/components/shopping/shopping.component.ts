@@ -21,7 +21,6 @@ import {
   ToastController,
   ModalController,
   IonInput,
-  IonLabel,
   IonSelect,
   IonSelectOption,
 } from '@ionic/angular/standalone';
@@ -68,7 +67,6 @@ export interface ShoppingItem {
     IonButton,
     IonSpinner,
     IonInput,
-    IonLabel,
     IonSelect,
     IonSelectOption,
     CommonModule,
@@ -93,6 +91,8 @@ export class ShoppingComponent implements OnInit, OnDestroy {
   isLoading = false;
   isSaving = false;
   scannedProduct: OffProduct | null = null;
+  needsCategorySelection = false;
+  private isFromOff = false;
   pendingProducts: ShoppingItem[] = [];
   recentProducts$: Observable<any[]> = of([]);
   scannedForm = { weight: 1, category: 'other' };
@@ -104,6 +104,56 @@ export class ShoppingComponent implements OnInit, OnDestroy {
     weight: 1,
     category: '',
   };
+
+  readonly categoryLabels: Record<string, string> = {
+    meat_beef: 'Marha, Bárány',
+    meat_pork: 'Sertés, Felvágott',
+    meat_poultry: 'Baromfi',
+    fish: 'Hal, Tenger gyümölcsei',
+    egg: 'Tojás',
+    dairy_cheese: 'Sajt',
+    dairy_milk: 'Tej, Joghurt, Vaj',
+    fruit: 'Gyümölcs',
+    vegetable: 'Zöldség',
+    bakery: 'Pékáru, Tészta',
+    drink_water: 'Ásványvíz',
+    drink_soda: 'Üdítő, Szénsavas ital',
+    drink_juice: 'Gyümölcslé',
+    drink_alcohol: 'Alkohol (Sör, Bor)',
+    snack_sweet: 'Csokoládé, Édesség',
+    snack_salty: 'Chips, Sós snack',
+    rice: 'Rizs',
+    legumes: 'Hüvelyesek (Bab, Lencse)',
+    nuts: 'Dió, Olajos magvak',
+    coffee: 'Kávé, Kávétermékek',
+    other: 'Egyéb',
+  };
+
+  private readonly validEcoGrades = ['a', 'b', 'c', 'd', 'e'];
+
+  ecoScoreClass(score: string | undefined): string {
+    if (!score || !this.validEcoGrades.includes(score.toLowerCase())) {
+      return 'eco-unknown';
+    }
+    return `eco-${score.toLowerCase()}`;
+  }
+
+  ecoScoreLabel(score: string | undefined): string {
+    if (!score || !this.validEcoGrades.includes(score.toLowerCase())) {
+      return 'Ismeretlen';
+    }
+    return score.toUpperCase();
+  }
+
+  get previewEmission(): number {
+    if (!this.scannedProduct || this.scannedForm.weight <= 0) return 0;
+    return this.calcService.calculateEmission(
+      this.scannedForm.weight,
+      this.scannedForm.category,
+      this.scannedProduct.ecoScore,
+      this.scannedProduct.exactCo2,
+    );
+  }
 
   constructor() {
     addIcons({
@@ -226,20 +276,36 @@ export class ShoppingComponent implements OnInit, OnDestroy {
     this.isLoading = true;
 
     try {
-      let product = await this.offService.getProductByBarcode(barcode);
+      const [offProduct, communityProd] = await Promise.all([
+        this.offService.getProductByBarcode(barcode),
+        this.dataService.getCommunityProduct(barcode),
+      ]);
 
-      if (!product) {
-        const communityProd =
-          await this.dataService.getCommunityProduct(barcode);
+      let product: OffProduct | null = null;
 
-        if (communityProd) {
-          product = {
-            barcode: communityProd.barcode,
-            name: communityProd.name,
-            brands: communityProd.brands,
-            category: communityProd.category,
-          };
+      if (offProduct) {
+        product = { ...offProduct };
+        // Prefer stored community category/factor over freshly derived values
+        if (communityProd?.category && communityProd.category !== 'other') {
+          (product as any).category = communityProd.category;
         }
+        if (communityProd?.emissionPerKg) {
+          product.exactCo2 = communityProd.emissionPerKg;
+        }
+        // Only re-save to community if we don't yet have a complete record
+        this.isFromOff = !communityProd?.emissionPerKg;
+      } else if (communityProd) {
+        product = {
+          barcode: communityProd.barcode,
+          name: communityProd.name,
+          brands: communityProd.brands,
+          category: communityProd.category,
+          ecoScore: communityProd.ecoScore ?? undefined,
+          exactCo2: communityProd.emissionPerKg ?? undefined,
+        };
+        this.isFromOff = false;
+      } else {
+        this.isFromOff = false;
       }
 
       if (product) {
@@ -253,6 +319,9 @@ export class ShoppingComponent implements OnInit, OnDestroy {
             product.offCategories,
           );
         }
+
+        this.needsCategorySelection =
+          finalCategory === 'other' && !product.exactCo2;
 
         this.scannedForm = {
           weight: 1,
@@ -286,6 +355,24 @@ export class ShoppingComponent implements OnInit, OnDestroy {
         this.scannedProduct.exactCo2,
       );
 
+      if (this.isFromOff) {
+        const emissionPerKg = this.calcService.calculateEmission(
+          1,
+          this.scannedForm.category,
+          this.scannedProduct.ecoScore,
+          this.scannedProduct.exactCo2,
+        );
+        this.dataService.saveCommunityProducts([{
+          barcode: this.scannedProduct.barcode,
+          name: this.scannedProduct.name,
+          brands: this.scannedProduct.brands || '',
+          category: this.scannedForm.category,
+          ecoScore: this.scannedProduct.ecoScore,
+          emissionPerKg,
+        }]);
+        this.isFromOff = false;
+      }
+
       this.pendingProducts.push({
         barcode: this.scannedProduct.barcode,
         name: this.scannedProduct.name,
@@ -298,12 +385,16 @@ export class ShoppingComponent implements OnInit, OnDestroy {
         isCommunityNew: false,
       });
       this.scannedProduct = null;
+      this.needsCategorySelection = false;
     }
   }
 
   async addManualProduct() {
-    if (!this.manualProduct.name.trim() || this.manualProduct.weight <= 0)
-      return;
+    if (
+      !this.manualProduct.name.trim() ||
+      this.manualProduct.weight <= 0 ||
+      !this.manualProduct.category
+    ) return;
 
     const emission = this.calcService.calculateEmission(
       this.manualProduct.weight,
@@ -338,6 +429,8 @@ export class ShoppingComponent implements OnInit, OnDestroy {
 
   discardProduct() {
     this.scannedProduct = null;
+    this.isFromOff = false;
+    this.needsCategorySelection = false;
   }
 
   async saveActivity() {

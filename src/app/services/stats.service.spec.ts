@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { StatsService } from './stats.service';
 import { Activity } from '../models/activity.model';
 
-// Helper: create a minimal Activity with a plain Date timestamp
 function makeActivity(
   type: 'travel' | 'shopping' | 'energy',
   emission: number,
@@ -39,11 +38,10 @@ describe('StatsService', () => {
     service = TestBed.inject(StatsService);
   });
 
-  // --- getTodayMagnoliaState ---
 
   it('should return "bloom" when emission is well below the daily limit', () => {
     expect(service.getTodayMagnoliaState(0)).toBe('bloom');
-    expect(service.getTodayMagnoliaState(6)).toBe('bloom'); // 60% of 10 kg limit
+    expect(service.getTodayMagnoliaState(6)).toBe('bloom');
   });
 
   it('should return "fade" when emission is between 70% and 100% of limit', () => {
@@ -56,7 +54,6 @@ describe('StatsService', () => {
     expect(service.getTodayMagnoliaState(25)).toBe('wilt');
   });
 
-  // --- getTreeIcons ---
 
   it('should return 5 empty icons when treeCount is 0', () => {
     const icons = service.getTreeIcons(0);
@@ -77,7 +74,6 @@ describe('StatsService', () => {
     expect(icons[4]).toBe('empty');
   });
 
-  // --- computeTodayEmission ---
 
   it('should return 0 when there are no activities', () => {
     expect(service.computeTodayEmission([])).toBe(0);
@@ -87,12 +83,11 @@ describe('StatsService', () => {
     const acts: Activity[] = [
       makeActivity('travel', 5, today()),
       makeActivity('shopping', 3, today()),
-      makeActivity('travel', 7, daysAgo(2)), // outside today — must be ignored
+      makeActivity('travel', 7, daysAgo(2)),
     ];
     expect(service.computeTodayEmission(acts)).toBeCloseTo(8, 1);
   });
 
-  // --- getWeeklyStreak ---
 
   it('should return 0 streak when there are no activities', () => {
     expect(service.getWeeklyStreak([])).toBe(0);
@@ -103,7 +98,6 @@ describe('StatsService', () => {
       makeActivity('travel', 1, today()),
       makeActivity('travel', 1, daysAgo(1)),
       makeActivity('travel', 1, daysAgo(2)),
-      // gap: daysAgo(3) missing
       makeActivity('travel', 1, daysAgo(4)),
     ];
     expect(service.getWeeklyStreak(acts)).toBe(3);
@@ -114,11 +108,9 @@ describe('StatsService', () => {
       makeActivity('travel', 1, daysAgo(1)),
       makeActivity('travel', 1, daysAgo(2)),
     ];
-    // today is empty → loop skips i=0 and continues; streak = 2
     expect(service.getWeeklyStreak(acts)).toBe(2);
   });
 
-  // --- getTodayInsight ---
 
   it('should return a streak-based success insight when streak >= 3', () => {
     const insight = service.getTodayInsight([], 5);
@@ -136,10 +128,9 @@ describe('StatsService', () => {
     const acts: Activity[] = [makeActivity('shopping', 4, today())];
     const insight = service.getTodayInsight(acts, 0);
     expect(insight.type).toBe('success');
-    expect(insight.text).toContain('6.0'); // 10 - 4 = 6.0 remaining
+    expect(insight.text).toContain('6.0');
   });
 
-  // --- toDate helper ---
 
   it('should convert Firestore Timestamp-like object to Date', () => {
     const ts = { seconds: 1700000000, nanoseconds: 0 };

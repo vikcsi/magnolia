@@ -12,7 +12,6 @@ ion-content {
   --background: var(--ion-color-light);
 }
 
-// ── Section header (matches global .section-header icon style) ──
 .section-header {
   display: flex;
   align-items: center;
@@ -61,7 +60,6 @@ ion-content {
   }
 }
 
-// ── Card ──
 .settings-card {
   background: var(--ion-color-tertiary);
   border: 2px solid var(--ion-color-tertiary-shade);
@@ -137,7 +135,6 @@ ion-content {
   }
 }
 
-// ── Form inside card ──
 .form-body {
   padding: 0 16px 16px;
   border-top: 1px solid var(--ion-color-tertiary-shade);
@@ -200,7 +197,6 @@ ion-content {
   margin: 10px 0 0;
 }
 
-// ── Activity list ──
 .activities-body {
   padding: 0 16px 16px;
   border-top: 1px solid var(--ion-color-tertiary-shade);

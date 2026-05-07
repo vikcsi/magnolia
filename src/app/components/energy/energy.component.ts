@@ -19,6 +19,7 @@ import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline } from 'ionicons/icons';
 import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
+import { CarbonCalculatorService } from 'src/app/services/carbon-calculator.service';
 import { BadgeService } from 'src/app/services/badge.service';
 import { GamificationUiService } from 'src/app/services/gamification-ui.service';
 import {
@@ -47,6 +48,7 @@ import { Activity, Energy } from 'src/app/models/activity.model';
 export class EnergyComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private dataService = inject(DataService);
+  private calcService = inject(CarbonCalculatorService);
   private toastController = inject(ToastController);
   private gamificationUiService = inject(GamificationUiService);
 
@@ -62,12 +64,6 @@ export class EnergyComponent implements OnInit, OnDestroy {
   maxDate: string = new Date().toISOString();
 
   private sub?: Subscription;
-
-  private readonly EMISSION_FACTORS: Record<string, number> = {
-    electricity: 0.233,
-    gas: 2.0,
-    water: 0.149,
-  };
 
   readonly unitLabels: Record<string, string> = {
     electricity: 'kWh',
@@ -137,8 +133,10 @@ export class EnergyComponent implements OnInit, OnDestroy {
 
   calculateEmission(): void {
     if (this.amount > 0) {
-      const factor = this.EMISSION_FACTORS[this.typeEnergy];
-      this.calculatedEmission = Math.round(this.amount * factor * 10) / 10;
+      this.calculatedEmission = this.calcService.calculateEnergyEmission(
+        this.amount,
+        this.typeEnergy,
+      );
     }
   }
 

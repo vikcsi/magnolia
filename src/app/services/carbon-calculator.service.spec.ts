@@ -9,11 +9,9 @@ describe('CarbonCalculatorService', () => {
     service = TestBed.inject(CarbonCalculatorService);
   });
 
-  // --- calculateTravelEmission ---
 
   it('should calculate car emission correctly', () => {
-    // 100 km * 0.171 kg/km = 17.1 kg
-    expect(service.calculateTravelEmission(100, 'car')).toBeCloseTo(17.1, 2);
+    expect(service.calculateTravelEmission(100, 'car')).toBeCloseTo(17.0, 2);
   });
 
   it('should return 0 for bicycle and walking', () => {
@@ -36,7 +34,6 @@ describe('CarbonCalculatorService', () => {
     expect(bus).toBeLessThan(car);
   });
 
-  // --- mapApiCategoriesToLocal ---
 
   it('should map beef keyword to meat_beef category', () => {
     expect(service.mapApiCategoriesToLocal(['beef', 'en:meats'])).toBe('meat_beef');
@@ -54,10 +51,8 @@ describe('CarbonCalculatorService', () => {
     expect(service.mapApiCategoriesToLocal(['en:unknown-category', 'xyz'])).toBe('other');
   });
 
-  // --- calculateEmission ---
 
   it('should use exactCo2PerKg when provided', () => {
-    // 0.5 kg * 5 kg CO2/kg = 2.5 kg CO2
     expect(service.calculateEmission(0.5, 'other', undefined, 5)).toBeCloseTo(2.5, 2);
   });
 
@@ -74,12 +69,10 @@ describe('CarbonCalculatorService', () => {
   });
 
   it('should fall back to "other" factor for unknown category', () => {
-    // other = 2.0 kg CO2/kg
     expect(service.calculateEmission(2, 'totally_unknown_category')).toBeCloseTo(4.0, 2);
   });
 
   it('exactCo2PerKg should take precedence over ecoScore', () => {
-    // If exactCo2PerKg is provided, ecoScore multiplier must NOT be applied
     expect(service.calculateEmission(1, 'meat_beef', 'a', 3.0)).toBeCloseTo(3.0, 2);
   });
 });

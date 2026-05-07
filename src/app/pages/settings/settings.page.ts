@@ -75,19 +75,16 @@ export class SettingsPage implements OnInit, OnDestroy {
   private navCtrl = inject(NavController);
   private location = inject(Location);
 
-  // Form visibility flags
   showEmailForm = false;
   showPasswordForm = false;
   showActivities = false;
 
-  // Email form
   newEmail = '';
   emailPassword = '';
   emailLoading = false;
   emailError = '';
   emailSuccess = '';
 
-  // Password form
   currentPassword = '';
   newPassword = '';
   confirmPassword = '';
@@ -98,7 +95,6 @@ export class SettingsPage implements OnInit, OnDestroy {
   passwordError = '';
   passwordSuccess = '';
 
-  // Activities
   allActivities: Activity[] = [];
   selectedIds = new Set<string>();
   activitiesLoading = false;
@@ -154,7 +150,6 @@ export class SettingsPage implements OnInit, OnDestroy {
         this.allActivities = acts.sort(
           (a, b) => this.toMs(b.timestamp) - this.toMs(a.timestamp),
         );
-        // Ha törlés után az aktuális oldal üres lett, lépj vissza
         if (this.currentPage >= this.totalPages && this.totalPages > 0) {
           this.currentPage = this.totalPages - 1;
         }
@@ -173,8 +168,6 @@ export class SettingsPage implements OnInit, OnDestroy {
   get currentEmail(): string {
     return this.authService.currentUser?.email ?? '';
   }
-
-  // --- Email ---
 
   toggleEmailForm() {
     this.showEmailForm = !this.showEmailForm;
@@ -202,8 +195,6 @@ export class SettingsPage implements OnInit, OnDestroy {
       this.emailLoading = false;
     }
   }
-
-  // --- Password ---
 
   togglePasswordForm() {
     this.showPasswordForm = !this.showPasswordForm;
@@ -240,8 +231,6 @@ export class SettingsPage implements OnInit, OnDestroy {
       this.passwordLoading = false;
     }
   }
-
-  // --- Activities ---
 
   toggleActivities() {
     this.showActivities = !this.showActivities;
@@ -373,8 +362,6 @@ export class SettingsPage implements OnInit, OnDestroy {
   private toMs(value: any): number {
     return this.toDate(value).getTime();
   }
-
-  // --- Account ---
 
   async logout() {
     await this.authService.logout();

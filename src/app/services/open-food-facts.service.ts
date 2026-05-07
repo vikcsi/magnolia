@@ -32,7 +32,6 @@ export class OpenFoodFactsService {
         let co2Value: number | undefined = undefined;
         if (data.product.ecoscore_data && data.product.ecoscore_data.agribalyse) {
           const raw = data.product.ecoscore_data.agribalyse.co2_total;
-          // Csak reális értéket fogadunk el (0.01–50 kg CO₂/kg)
           if (typeof raw === 'number' && raw >= 0.01 && raw <= 50) {
             co2Value = raw;
           }

@@ -1,6 +1,6 @@
 {
   "appId": "com.magnolia.app",
-  "appName": "magnolia",
+  "appName": "Magnólia",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",

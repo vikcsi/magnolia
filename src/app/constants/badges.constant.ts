@@ -238,7 +238,7 @@ export const BADGES: BadgeDefinition[] = [
   },
   {
     id: 'level_max',
-    name: 'Gaia bajnoka',
+    name: 'Bolygólakó',
     description: 'Érd el a maximális szintet.',
     icon: 'planet',
     category: 'level',

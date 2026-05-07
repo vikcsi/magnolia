@@ -349,7 +349,7 @@ export class StatsService {
     if (todayEmission > this.DAILY_LIMIT_KG) {
       return {
         type: 'warning',
-        text: `Ma már ${todayEmission.toFixed(1)} kg – a napi ${this.DAILY_LIMIT_KG} kg limitet átlépted. Holnap újra!`,
+        text: `Ma már ${todayEmission.toFixed(1)} kg – a napi ${this.DAILY_LIMIT_KG} kg limitet átlépted. Holnap figyelj oda jobban!`,
       };
     }
     if (todayEmission > 0) {
@@ -470,10 +470,10 @@ export class StatsService {
     if (pct.travel > 65) {
       return {
         type: 'warning',
-        text: `Az utazásaid adják a lábnyomod ${pct.travel}%-át. Próbálj tömegközlekedést használni!`,
+        text: `Az utazásaid adják a lábnyomod ${pct.travel}%-át. Próbálj inkább tömegközlekedést használni, vagy biciklizni, gyalogolni!`,
       };
     }
-    if (pct.energy > 60) {
+    if (pct.energy > 65) {
       return {
         type: 'warning',
         text: `Az energia-felhasználásod adja a lábnyomod ${pct.energy}%-át. Érdemes átnézni az otthoni fogyasztásodat!`,
@@ -494,7 +494,7 @@ export class StatsService {
     if (total > limit) {
       return {
         type: 'warning',
-        text: 'Túllépted az időszaki limitet. Holnap egy tudatos döntés sokat számíthat!',
+        text: 'Túllépted az időszaki limitet. Legközelebb igyekezz jobban odafigyelni mindennapi döntéseidre!',
       };
     }
     return {

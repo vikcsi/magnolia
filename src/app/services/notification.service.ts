@@ -32,7 +32,6 @@ export class NotificationService {
     const toSchedule: any[] = [];
     const now = new Date();
 
-    // ── Célkitűzések ──
     const activeGoals = (goals ?? []).filter((g) => g.status === 'active');
     for (const goal of activeGoals) {
       const def = FIXED_GOALS.find((g) => g.id === goal.goalId);
@@ -41,7 +40,6 @@ export class NotificationService {
       this.collectNotifications(toSchedule, pendingIds, `g_${goal.id}`, def.title, 'célkitűzés', deadline, now);
     }
 
-    // ── Kihívások ──
     for (const uc of challenges ?? []) {
       const def = (globalChallenges ?? []).find((c: Challenge) => c.id === uc.challengeId);
       const name = def?.name ?? 'Kihívás';

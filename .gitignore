@@ -65,6 +65,8 @@ serive-account.json
 
 .md
 !README.md
+codebase.md
+.aidigestignore
 
 # System files
 .DS_Store
