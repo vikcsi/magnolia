@@ -1,3 +1,7 @@
+.app-logo {
+  display: none;
+}
+
 .tabs-container {
   background: linear-gradient(
     135deg,
@@ -61,6 +65,16 @@
 }
 
 @media (min-width: 768px) {
+  .app-logo {
+    display: block;
+    font-family: "abril", serif;
+    font-size: 1.8rem;
+    color: var(--ion-color-primary);
+    padding-bottom: 16px;
+    padding-left: 5px;
+    letter-spacing: 2px;
+  }
+
   .tabs-container {
     flex-direction: column;
     justify-content: flex-start;
