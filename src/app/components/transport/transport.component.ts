@@ -9,6 +9,7 @@ import {
   ToastController,
   ModalController,
 } from '@ionic/angular/standalone';
+import { Platform } from '@ionic/angular';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { getCurrentLevel } from 'src/app/constants/leveling.constant';
 import { addIcons } from 'ionicons';
@@ -46,6 +47,7 @@ export class TransportComponent implements OnInit, OnDestroy {
   private toastController = inject(ToastController);
   readonly trackingService = inject(TrackingService);
   private gamificationUiService = inject(GamificationUiService);
+  private platform = inject(Platform);
 
   activeTab: 'manual' | 'tracking' = 'tracking';
   manualMode: TransportMode = 'car';
@@ -103,6 +105,10 @@ export class TransportComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if (this.isDesktopWeb) {
+      this.activeTab = 'manual';
+    }
+
     this.trackingSub = this.trackingService.state$.subscribe((state) => {
       const wasStopped = this.trackingState.stopped;
       this.trackingState = state;
@@ -183,12 +189,20 @@ export class TransportComponent implements OnInit, OnDestroy {
       });
       await toast.present();
     } finally {
-      this.isSavingTrip = false;
+      this.isSavingManual = false;
     }
   }
 
   get isNative(): boolean {
     return Capacitor.isNativePlatform();
+  }
+
+  get isDesktopWeb(): boolean {
+    return (
+      !Capacitor.isNativePlatform() &&
+      !this.platform.is('mobileweb') &&
+      !this.platform.is('tablet')
+    );
   }
 
   async startTracking(): Promise<void> {

@@ -340,10 +340,14 @@ export class StatsService {
 
   getTodayInsight(activities: Activity[], streak: number): InsightCard {
     const todayEmission = this.computeTodayEmission(activities);
+    const today = new Date();
+    const hasTodayActivity = activities.some((a) =>
+      this.isSameDay(this.toDate(a.timestamp), today),
+    );
     if (streak >= 3) {
       return {
         type: 'success',
-        text: `Szuper széria! Zsinórban ${streak} napja a limit alatt vagy!`,
+        text: `Szuper széria! Zsinórban ${streak} napja aktívan rögzíted a tevékenységeid!`,
       };
     }
     if (todayEmission > this.DAILY_LIMIT_KG) {
@@ -357,6 +361,12 @@ export class StatsService {
       return {
         type: 'success',
         text: `Ma eddig ${todayEmission.toFixed(1)} kg – még ${remaining} kg maradt a napi limitből.`,
+      };
+    }
+    if (hasTodayActivity) {
+      return {
+        type: 'success',
+        text: `Ma  eddig 0 kg – valóban zöld nap! A ${this.DAILY_LIMIT_KG} kg-os napi limit érintetlen.`,
       };
     }
     return {

@@ -282,7 +282,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     const count = this.selectedIds.size;
     const confirm = await this.alertCtrl.create({
       header: 'Tevékenységek törlése',
-      message: `Biztosan törölni szeretnéd a kiválasztott ${count} tevékenységet? Ez visszavonhatatlan.`,
+      message: `Biztosan törölni szeretnéd a kiválasztott ${count} tevékenységet? A hozzájuk tartozó XP és emisszió levonódik. A megszerzett kitűzők és teljesített kihívások megmaradnak. Ez a művelet visszavonhatatlan.`,
       buttons: [
         { text: 'Mégse', role: 'cancel' },
         {

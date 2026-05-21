@@ -24,9 +24,7 @@ import {
   IonSelect,
   IonSelectOption,
 } from '@ionic/angular/standalone';
-import {
-  getCurrentLevel,
-} from 'src/app/constants/leveling.constant';
+import { getCurrentLevel } from 'src/app/constants/leveling.constant';
 import { CapacitorBarcodeScanner } from '@capacitor/barcode-scanner';
 import {
   OpenFoodFactsService,
@@ -88,6 +86,14 @@ export class ShoppingComponent implements OnInit, OnDestroy {
   private html5QrcodeScanner: Html5QrcodeScanner | null = null;
 
   activeMode: 'scan' | 'manual' = 'scan';
+
+  get isDesktopWeb(): boolean {
+    return (
+      !Capacitor.isNativePlatform() &&
+      !this.platform.is('mobileweb') &&
+      !this.platform.is('tablet')
+    );
+  }
   isLoading = false;
   isSaving = false;
   scannedProduct: OffProduct | null = null;
@@ -166,6 +172,10 @@ export class ShoppingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    if (this.isDesktopWeb) {
+      this.activeMode = 'manual';
+    }
+
     const user = this.authService.currentUser;
     if (user) {
       this.recentProducts$ = this.dataService.getUserActivities(user.uid).pipe(
@@ -362,14 +372,16 @@ export class ShoppingComponent implements OnInit, OnDestroy {
           this.scannedProduct.ecoScore,
           this.scannedProduct.exactCo2,
         );
-        this.dataService.saveCommunityProducts([{
-          barcode: this.scannedProduct.barcode,
-          name: this.scannedProduct.name,
-          brands: this.scannedProduct.brands || '',
-          category: this.scannedForm.category,
-          ecoScore: this.scannedProduct.ecoScore,
-          emissionPerKg,
-        }]);
+        this.dataService.saveCommunityProducts([
+          {
+            barcode: this.scannedProduct.barcode,
+            name: this.scannedProduct.name,
+            brands: this.scannedProduct.brands || '',
+            category: this.scannedForm.category,
+            ecoScore: this.scannedProduct.ecoScore,
+            emissionPerKg,
+          },
+        ]);
         this.isFromOff = false;
       }
 
@@ -394,7 +406,8 @@ export class ShoppingComponent implements OnInit, OnDestroy {
       !this.manualProduct.name.trim() ||
       this.manualProduct.weight <= 0 ||
       !this.manualProduct.category
-    ) return;
+    )
+      return;
 
     const emission = this.calcService.calculateEmission(
       this.manualProduct.weight,

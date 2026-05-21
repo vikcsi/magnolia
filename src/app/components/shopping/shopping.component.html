@@ -139,10 +139,17 @@
     }
 
     @if (!scannedProduct && !isLoading && !isWebScannerActive) {
-      <ion-button expand="block" class="scan-button" (click)="startSmartScan()">
-        <ion-icon name="camera-outline" slot="start"></ion-icon>
-        Vonalkód beolvasása
-      </ion-button>
+      @if (isDesktopWeb) {
+        <div class="tracking-unavailable">
+          <span class="tracking-unavailable-icon">📱</span>
+          <p>A vonalkód beolvasás csak mobilböngészőből vagy a mobilalkalmazásból érhető el.</p>
+        </div>
+      } @else {
+        <ion-button expand="block" class="scan-button" (click)="startSmartScan()">
+          <ion-icon name="camera-outline" slot="start"></ion-icon>
+          Vonalkód beolvasása
+        </ion-button>
+      }
     }
 
     @if (isWebScannerActive) {

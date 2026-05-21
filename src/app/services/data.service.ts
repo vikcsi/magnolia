@@ -414,12 +414,11 @@ export class DataService {
       allXP: increment(earnedXp),
     });
 
-    const periodDays = period === 'month' ? 30 : 365;
-    const dailyEmission = Math.round((emission / periodDays) * 10) / 10;
+    const monthlyEmission = period === 'month' ? emission : Math.round((emission / 12) * 10) / 10;
 
     await this.updateMonthlyStats(
       userId,
-      dailyEmission * 30,
+      monthlyEmission,
       'energy',
       billingDate,
     );
@@ -623,6 +622,7 @@ export class DataService {
     const batch = writeBatch(this.firestore);
     const completedGoals: Goal[] = [];
     const now = new Date();
+    let totalGoalXp = 0;
 
     snapshot.forEach((docSnap) => {
       const userGoal = docSnap.data() as UserGoal;
@@ -700,9 +700,7 @@ export class DataService {
             lastUpdatedDate: now,
           });
 
-          const userRef = doc(this.firestore, `users/${userId}`);
-          batch.update(userRef, { allXP: increment(goalDef.xpReward) });
-
+          totalGoalXp += goalDef.xpReward;
           completedGoals.push(goalDef);
         } else {
           batch.update(goalRef, {
@@ -712,6 +710,11 @@ export class DataService {
         }
       }
     });
+
+    if (totalGoalXp > 0) {
+      const userRef = doc(this.firestore, `users/${userId}`);
+      batch.update(userRef, { allXP: increment(totalGoalXp) });
+    }
 
     await batch.commit();
     return completedGoals;
@@ -745,6 +748,7 @@ export class DataService {
     const batch = writeBatch(this.firestore);
     const completedChallenges: Challenge[] = [];
     const now = new Date();
+    let totalChallengeXp = 0;
 
     snapshot.forEach((docSnap) => {
       const userChallenge = docSnap.data() as UserChallenge;
@@ -813,15 +817,18 @@ export class DataService {
             status: 'completed',
           });
 
-          const userRef = doc(this.firestore, `users/${userId}`);
-          batch.update(userRef, { allXP: increment(challengeDef.xpReward) });
-
+          totalChallengeXp += challengeDef.xpReward;
           completedChallenges.push(challengeDef);
         } else {
           batch.update(docSnap.ref, { progress: newProgress });
         }
       }
     });
+
+    if (totalChallengeXp > 0) {
+      const userRef = doc(this.firestore, `users/${userId}`);
+      batch.update(userRef, { allXP: increment(totalChallengeXp) });
+    }
 
     await batch.commit();
     return completedChallenges;
@@ -900,10 +907,35 @@ export class DataService {
 
   async deleteActivities(activityIds: string[]): Promise<void> {
     return runInInjectionContext(this.injector, async () => {
+      const snapshots = await Promise.all(
+        activityIds.map((id) => getDoc(doc(this.firestore, `activities/${id}`))),
+      );
+
+      let totalXp = 0;
+      let totalEmission = 0;
+      let userId: string | null = null;
+
+      for (const snap of snapshots) {
+        if (!snap.exists()) continue;
+        const data = snap.data() as { userId: string; xp: number; emission: number };
+        userId = data.userId;
+        totalXp += data.xp ?? 0;
+        totalEmission += data.emission ?? 0;
+      }
+
       const batch = writeBatch(this.firestore);
       activityIds.forEach((id) => {
         batch.delete(doc(this.firestore, `activities/${id}`));
       });
+
+      if (userId) {
+        const userRef = doc(this.firestore, `users/${userId}`);
+        const userUpdate: Record<string, any> = {};
+        if (totalXp > 0) userUpdate['allXP'] = increment(-totalXp);
+        if (totalEmission > 0) userUpdate['emission'] = increment(-totalEmission);
+        if (Object.keys(userUpdate).length > 0) batch.update(userRef, userUpdate);
+      }
+
       await batch.commit();
     });
   }
