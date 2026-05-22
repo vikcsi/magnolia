@@ -21,7 +21,14 @@ import {
   persistentLocalCache,
   persistentMultipleTabManager,
 } from '@angular/fire/firestore';
-import { provideAuth, getAuth } from '@angular/fire/auth';
+import {
+  provideAuth,
+  getAuth,
+  initializeAuth,
+  indexedDBLocalPersistence,
+} from '@angular/fire/auth';
+
+import { Capacitor } from '@capacitor/core';
 
 import { environment } from './environments/environment';
 
@@ -44,6 +51,13 @@ bootstrapApplication(AppComponent, {
       });
       return firestore;
     }),
-    provideAuth(() => getAuth()),
+    provideAuth(() => {
+      if (Capacitor.isNativePlatform()) {
+        return initializeAuth(getApp(), {
+          persistence: indexedDBLocalPersistence,
+        });
+      }
+      return getAuth();
+    }),
   ],
 }).catch((err) => console.error(err));
