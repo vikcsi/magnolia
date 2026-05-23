@@ -289,14 +289,12 @@ export class ShoppingComponent implements OnInit, OnDestroy {
 
       if (offProduct) {
         product = { ...offProduct };
-        // Prefer stored community category/factor over freshly derived values
         if (communityProd?.category && communityProd.category !== 'other') {
           (product as any).category = communityProd.category;
         }
         if (communityProd?.emissionPerKg) {
           product.exactCo2 = communityProd.emissionPerKg;
         }
-        // Only re-save to community if we don't yet have a complete record
         this.isFromOff = !communityProd?.emissionPerKg;
       } else if (communityProd) {
         product = {

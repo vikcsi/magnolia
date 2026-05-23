@@ -2,9 +2,7 @@ import { BadgeDefinition } from '../models/badge.model';
 
 export const BADGES: BadgeDefinition[] = [
 
-  // ═══════════════════════════════════════
   // ELSŐ ALKALMAK (common, 25 XP)
-  // ═══════════════════════════════════════
 
   {
     id: 'first_activity',
@@ -67,9 +65,7 @@ export const BADGES: BadgeDefinition[] = [
     condition: { type: 'first_challenge_completed' },
   },
 
-  // ═══════════════════════════════════════
   // CÉLKITŰZÉS BADGE-EK (rare, célonként)
-  // ═══════════════════════════════════════
 
   {
     id: 'goal_meatless_month',
@@ -132,9 +128,7 @@ export const BADGES: BadgeDefinition[] = [
     condition: { type: 'all_goals_completed' },
   },
 
-  // ═══════════════════════════════════════
   // KIHÍVÁS MÉRFÖLDKÖVEK
-  // ═══════════════════════════════════════
 
   {
     id: 'challenge_5',
@@ -177,9 +171,7 @@ export const BADGES: BadgeDefinition[] = [
     condition: { type: 'challenge_count', targetValue: 50 },
   },
 
-  // ═══════════════════════════════════════
   // TEVÉKENYSÉG MÉRFÖLDKÖVEK
-  // ═══════════════════════════════════════
 
   {
     id: 'activity_10',
@@ -222,9 +214,7 @@ export const BADGES: BadgeDefinition[] = [
     condition: { type: 'activity_count', targetValue: 500 },
   },
 
-  // ═══════════════════════════════════════
   // SZINT BADGE-EK
-  // ═══════════════════════════════════════
 
   {
     id: 'level_5',
@@ -247,9 +237,7 @@ export const BADGES: BadgeDefinition[] = [
     condition: { type: 'max_level' },
   },
 
-  // ═══════════════════════════════════════
   // STREAK BADGE-EK
-  // ═══════════════════════════════════════
 
   {
     id: 'streak_7',

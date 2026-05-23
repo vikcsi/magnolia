@@ -225,7 +225,6 @@ export class RoutePlannerPage implements OnInit, OnDestroy {
     const { Geolocation } = await import('@capacitor/geolocation');
 
     try {
-      // 1. lépés: alkalmazás-szintű engedély ellenőrzése és kérése
       let permStatus = await Geolocation.checkPermissions();
 
       if (permStatus.location === 'prompt' || permStatus.location === 'prompt-with-rationale') {
@@ -243,7 +242,6 @@ export class RoutePlannerPage implements OnInit, OnDestroy {
         return;
       }
 
-      // 2. lépés: rendszerszintű GPS ellenőrzése a Diagnostic pluginnal
       const isLocationEnabled: boolean = await this.diagnostic.isLocationEnabled();
 
       if (!isLocationEnabled) {
@@ -264,7 +262,6 @@ export class RoutePlannerPage implements OnInit, OnDestroy {
         return;
       }
 
-      // 3. lépés: pozíció lekérése
       const pos = await Geolocation.getCurrentPosition({ timeout: 10000 });
       this.fromCoords = `${pos.coords.latitude.toFixed(5)},${pos.coords.longitude.toFixed(5)}`;
       this.fromQuery = 'Jelenlegi helyzet';

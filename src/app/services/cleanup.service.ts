@@ -32,7 +32,6 @@ export class CleanupService {
         this.cleanupExpiredChallenges(userId),
         this.cleanupExpiredGoals(userId),
       ]);
-      if (!environment.production) console.log('[CleanupService] Lejárt elemek tisztítása kész.');
     } catch (error) {
       if (!environment.production) console.warn('[CleanupService] Cleanup hiba:', error);
     }
@@ -90,7 +89,6 @@ export class CleanupService {
 
       if (failedCount > 0) {
         await batch.commit();
-        if (!environment.production) console.log(`[CleanupService] ${failedCount} ${label}`);
       }
     });
   }
