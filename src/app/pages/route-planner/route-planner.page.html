@@ -1,11 +1,6 @@
 <ion-header class="ion-no-border">
   <ion-toolbar mode="md">
-    <ion-buttons slot="start">
-      <ion-button fill="clear" color="dark" (click)="goBack()">
-        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title>Útvonaltervezés</ion-title>
+    <div class="toolbar-heading">Útvonaltervezés</div>
   </ion-toolbar>
 </ion-header>
 
@@ -21,8 +16,8 @@
         (ionInput)="fromQuery = $any($event).detail.value; onFromInput($any($event).detail.value)"
         clearInput="true"
       ></ion-input>
-      <button class="location-btn" (click)="useCurrentLocation()">
-        <ion-icon name="location-outline"></ion-icon>
+      <button class="location-btn" (click)="useCurrentLocation()" aria-label="Jelenlegi helyzet használata">
+        <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
       </button>
     </div>
 
@@ -35,15 +30,15 @@
     @if (fromSuggestions.length > 0) {
       <div class="suggestions-dropdown">
         @for (suggestion of fromSuggestions; track suggestion.lat) {
-          <div class="suggestion-item" (click)="selectFrom(suggestion)">
+          <button class="suggestion-item" (click)="selectFrom(suggestion)">
             {{ suggestion.displayName }}
-          </div>
+          </button>
         }
       </div>
     }
 
-    <button class="swap-btn" (click)="swapAddresses()">
-      <ion-icon name="swap-vertical-outline"></ion-icon>
+    <button class="swap-btn" (click)="swapAddresses()" aria-label="Indulási és érkezési pont felcserélése">
+      <ion-icon name="swap-vertical-outline" aria-hidden="true"></ion-icon>
     </button>
 
     <div class="address-row">
@@ -66,9 +61,9 @@
     @if (toSuggestions.length > 0) {
       <div class="suggestions-dropdown">
         @for (suggestion of toSuggestions; track suggestion.lat) {
-          <div class="suggestion-item" (click)="selectTo(suggestion)">
+          <button class="suggestion-item" (click)="selectTo(suggestion)">
             {{ suggestion.displayName }}
-          </div>
+          </button>
         }
       </div>
     }
@@ -91,10 +86,12 @@
   @if (comparisonItems.length > 0) {
     <div class="comparison-list">
       @for (item of comparisonItems; track item.mode) {
-        <div
+        <button
           class="comparison-card"
           [class.selected]="selectedItem?.mode === item.mode"
           (click)="selectItem(item)"
+          [attr.aria-pressed]="selectedItem?.mode === item.mode"
+          [attr.aria-label]="item.label + ' kiválasztása'"
         >
           <div class="card-header">
             <span class="card-icon">{{ item.icon }}</span>
@@ -124,7 +121,7 @@
               <span class="stat-label">távolság</span>
             </div>
           </div>
-        </div>
+        </button>
       }
     </div>
 
@@ -142,13 +139,13 @@
       }
 
       @if (staticMapUrl) {
-        <div class="map-container" (click)="openInGoogleMaps()">
+        <button class="map-container" (click)="openInGoogleMaps()" aria-label="Útvonal megnyitása Google Mapsben">
           <img [src]="staticMapUrl" alt="Útvonal térkép" class="route-map-img" />
-          <div class="map-overlay">
+          <div class="map-overlay" aria-hidden="true">
             <ion-icon name="navigate-outline"></ion-icon>
             <span>Megnyitás Google Mapsben</span>
           </div>
-        </div>
+        </button>
       }
 
       <ion-button
@@ -166,3 +163,7 @@
   }
 
 </ion-content>
+
+<ion-footer class="ion-no-border">
+  <app-navigation></app-navigation>
+</ion-footer>

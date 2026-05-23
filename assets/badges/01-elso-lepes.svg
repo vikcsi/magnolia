@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <title>Első lépés</title>
+  <circle cx="60" cy="60" r="54" fill="none" stroke="#1B1110" stroke-width="2.5"/>
+  <circle cx="60" cy="60" r="46" fill="#FFFFF7"/>
+  <g stroke="#1B1110" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
+    <!-- Foot sole - viewed from below, right foot, vertical -->
+    <!-- Shape: top = toes area (ball of foot, wider), middle = arch (narrower), bottom = heel (round) -->
+    <path d="M 50 40
+             C 48 46, 47 52, 48 58
+             C 49 62, 51 64, 52 68
+             C 52 72, 51 76, 51 80
+             C 51 88, 56 92, 62 92
+             C 68 92, 72 88, 72 80
+             C 72 76, 71 72, 71 68
+             C 72 64, 74 62, 75 58
+             C 76 52, 75 46, 73 40
+             C 71 36, 67 34, 62 34
+             C 57 34, 53 36, 50 40 Z"
+          fill="#3E2723"/>
+    <!-- Toes arranged in a fan above the ball of foot -->
+    <!-- Big toe (left/inner) -->
+    <ellipse cx="52" cy="28" rx="4.5" ry="5.5" fill="#3E2723"/>
+    <!-- Second toe -->
+    <ellipse cx="59" cy="25" rx="3.8" ry="4.8" fill="#3E2723"/>
+    <!-- Third toe -->
+    <ellipse cx="65" cy="25" rx="3.4" ry="4.4" fill="#3E2723"/>
+    <!-- Fourth toe -->
+    <ellipse cx="71" cy="27" rx="3" ry="4" fill="#3E2723"/>
+    <!-- Pinky toe -->
+    <ellipse cx="76" cy="30" rx="2.6" ry="3.5" fill="#3E2723"/>
+  </g>
+</svg>

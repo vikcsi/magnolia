@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <title>Rutinosodó eco harcos</title>
+  <!-- Outer laurel wreath frame -->
+  <g stroke="none" fill="#1B1110">
+    <ellipse cx="60" cy="10" rx="2.5" ry="5"/>
+    <ellipse cx="95" cy="25" rx="2.5" ry="5" transform="rotate(45 95 25)"/>
+    <ellipse cx="110" cy="60" rx="2.5" ry="5" transform="rotate(90 110 60)"/>
+    <ellipse cx="95" cy="95" rx="2.5" ry="5" transform="rotate(135 95 95)"/>
+    <ellipse cx="60" cy="110" rx="2.5" ry="5"/>
+    <ellipse cx="25" cy="95" rx="2.5" ry="5" transform="rotate(45 25 95)"/>
+    <ellipse cx="10" cy="60" rx="2.5" ry="5" transform="rotate(90 10 60)"/>
+    <ellipse cx="25" cy="25" rx="2.5" ry="5" transform="rotate(135 25 25)"/>
+  </g>
+  <circle cx="60" cy="60" r="48" fill="none" stroke="#1B1110" stroke-width="2.5"/>
+  <circle cx="60" cy="60" r="40" fill="#FFE8DD"/>
+  <g stroke="#1B1110" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
+    <!-- Growing bar chart (5 bars, ascending) - represents growing routine -->
+    <rect x="38" y="74" width="8" height="10" rx="1" fill="#3E2723"/>
+    <rect x="48" y="68" width="8" height="16" rx="1" fill="#3E2723"/>
+    <rect x="58" y="60" width="8" height="24" rx="1" fill="#3E2723"/>
+    <rect x="68" y="50" width="8" height="34" rx="1" fill="#3E2723"/>
+    <rect x="78" y="40" width="8" height="44" rx="1" fill="#3E2723"/>
+    <!-- Trend arrow rising over the bars -->
+    <path d="M36 70 L48 60 L60 52 L72 42 L82 34" fill="none" stroke="#1B1110" stroke-width="2.5"/>
+    <!-- Arrowhead -->
+    <path d="M76 32 L82 34 L80 40" fill="none" stroke="#1B1110" stroke-width="2.5"/>
+  </g>
+</svg>

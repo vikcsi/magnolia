@@ -437,7 +437,9 @@ export class ShoppingComponent implements OnInit, OnDestroy {
       weight: 1,
       category: 'other',
     };
-    this.setMode('scan');
+    if (!this.isDesktopWeb) {
+      this.setMode('scan');
+    }
   }
 
   discardProduct() {

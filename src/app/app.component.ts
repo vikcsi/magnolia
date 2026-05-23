@@ -102,7 +102,7 @@ export class AppComponent {
     this.router.events
       .pipe(filter((e) => e instanceof NavigationEnd))
       .subscribe((e: NavigationEnd) => {
-        const authPages = ['/login', '/register'];
+        const authPages = ['/login', '/register', '/landing'];
         this.isMenuDisabled = authPages.some((p) =>
           e.urlAfterRedirects.startsWith(p),
         );
@@ -125,7 +125,7 @@ export class AppComponent {
           this.navCtrl.navigateRoot('/home');
         }
         if (this.previousUid !== null && currentUid === null) {
-          this.navCtrl.navigateRoot('/login');
+          this.navCtrl.navigateRoot('/landing');
         }
         this.previousUid = currentUid;
       });

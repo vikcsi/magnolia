@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <title>Kihívás harcos</title>
+  <!-- Outer laurel wreath frame -->
+  <g stroke="none" fill="#1B1110">
+    <ellipse cx="60" cy="10" rx="2.5" ry="5"/>
+    <ellipse cx="95" cy="25" rx="2.5" ry="5" transform="rotate(45 95 25)"/>
+    <ellipse cx="110" cy="60" rx="2.5" ry="5" transform="rotate(90 110 60)"/>
+    <ellipse cx="95" cy="95" rx="2.5" ry="5" transform="rotate(135 95 95)"/>
+    <ellipse cx="60" cy="110" rx="2.5" ry="5"/>
+    <ellipse cx="25" cy="95" rx="2.5" ry="5" transform="rotate(45 25 95)"/>
+    <ellipse cx="10" cy="60" rx="2.5" ry="5" transform="rotate(90 10 60)"/>
+    <ellipse cx="25" cy="25" rx="2.5" ry="5" transform="rotate(135 25 25)"/>
+  </g>
+  <circle cx="60" cy="60" r="48" fill="none" stroke="#1B1110" stroke-width="2.5"/>
+  <circle cx="60" cy="60" r="40" fill="#FFE8DD"/>
+  <g stroke="#1B1110" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
+    <!-- Medal ribbon left -->
+    <path d="M48 36 L42 56 L52 60 L58 50 Z" fill="#3E2723"/>
+    <!-- Medal ribbon right -->
+    <path d="M72 36 L78 56 L68 60 L62 50 Z" fill="#3E2723"/>
+    <!-- Medal disc -->
+    <circle cx="60" cy="72" r="14" fill="#3E2723"/>
+    <!-- Inner accent -->
+    <circle cx="60" cy="72" r="8" fill="#FFE8DD" stroke="none"/>
+    <!-- Star in center -->
+    <path d="M60 65 L62 70 L67 70 L63 73 L65 78 L60 75 L55 78 L57 73 L53 70 L58 70 Z" fill="#1B1110" stroke="none"/>
+  </g>
+</svg>

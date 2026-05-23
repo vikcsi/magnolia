@@ -1,8 +1,12 @@
 <div class="badge-modal-wrapper">
   <div class="modal-card">
-    <div class="icon-ring" [ngClass]="badge.rarity">
-      <ion-icon [name]="badge.icon"></ion-icon>
-    </div>
+
+    <app-badge-icon
+      [badgeId]="badge.id"
+      [rarity]="badge.rarity"
+      state="earned"
+      [size]="120"
+    ></app-badge-icon>
 
     <div class="rarity-label" [ngClass]="badge.rarity">
       {{ rarityLabel }}

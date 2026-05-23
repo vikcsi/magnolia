@@ -231,7 +231,17 @@
         &.you {
             background: var(--ion-color-primary);
             border-color: var(--ion-color-primary-shade);
-            margin-bottom: 40px;
+
+            .rank-badge.fourth,
+            .rank-badge.fifth,
+            .rank-badge.sixth {
+                background: var(--ion-color-tertiary);
+                color: var(--ion-color-primary);
+            }
+
+            .rank-info .rank-points {
+                color: var(--ion-color-tertiary);
+            }
         }
 
         .rank-badge {

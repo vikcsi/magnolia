@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <title>Fiatal fa</title>
+  <path d="M60 8 L104 32 L104 84 L60 108 L16 84 L16 32 Z" fill="#FFFFDD" stroke="#1B1110" stroke-width="2.5" stroke-linejoin="round"/>
+  <g stroke="#1B1110" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
+    <!-- Trunk -->
+    <line x1="60" y1="74" x2="60" y2="92" stroke-width="4"/>
+    <!-- Tree foliage - single rounded canopy with leaf indentations -->
+    <path d="M 60 32
+             C 48 32, 38 42, 38 54
+             C 38 58, 40 62, 42 64
+             C 40 66, 39 70, 41 73
+             C 44 76, 50 76, 54 74
+             C 56 76, 58 77, 60 77
+             C 62 77, 64 76, 66 74
+             C 70 76, 76 76, 79 73
+             C 81 70, 80 66, 78 64
+             C 80 62, 82 58, 82 54
+             C 82 42, 72 32, 60 32 Z"
+          fill="#3E2723"/>
+    <!-- Leaf vein lines (subtle) -->
+    <line x1="60" y1="40" x2="60" y2="74" stroke="#FFFFDD" stroke-width="1.5"/>
+    <path d="M 60 50 L 50 56" stroke="#FFFFDD" stroke-width="1.5" fill="none"/>
+    <path d="M 60 50 L 70 56" stroke="#FFFFDD" stroke-width="1.5" fill="none"/>
+    <path d="M 60 62 L 48 66" stroke="#FFFFDD" stroke-width="1.5" fill="none"/>
+    <path d="M 60 62 L 72 66" stroke="#FFFFDD" stroke-width="1.5" fill="none"/>
+  </g>
+</svg>

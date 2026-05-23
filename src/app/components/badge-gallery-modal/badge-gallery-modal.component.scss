@@ -53,76 +53,41 @@ ion-content {
     transition: all 0.3s ease;
 
     &.locked {
-      opacity: 0.6;
-      filter: grayscale(80%);
       background: var(--ion-color-light);
       border-color: var(--ion-color-light-shade);
-
-      .badge-icon-wrapper {
-        background: #f5f5f5 !important;
-        box-shadow: none !important;
-        ion-icon {
-          color: #bdbdbd !important;
-        }
-      }
     }
 
-    .badge-icon-wrapper {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    app-badge-icon {
       margin-bottom: 12px;
+    }
 
-      &.common {
-        background: linear-gradient(
-          135deg,
-          rgba(158, 158, 158, 0.2) 0%,
-          rgba(189, 189, 189, 0.5) 100%
-        );
-        box-shadow: 0 0 0 4px rgba(158, 158, 158, 0.1);
-        ion-icon {
-          color: #616161;
-        }
-      }
-      &.rare {
-        background: linear-gradient(
-          135deg,
-          rgba(0, 102, 255, 0.4) 0%,
-          #0077ff 100%
-        );
-        box-shadow: 0 0 0 4px rgba(158, 158, 158, 0.1);
-        ion-icon {
-          color: #0b5cb8;
-        }
-      }
-      &.epic {
-        background: linear-gradient(
-          135deg,
-          rgba(156, 39, 176, 0.2) 0%,
-          rgba(171, 71, 188, 0.4) 100%
-        );
-        box-shadow: 0 0 0 4px rgba(156, 39, 176, 0.1);
-        ion-icon {
-          color: #7b1fa2;
-        }
-      }
-      &.legendary {
-        background: linear-gradient(
-          135deg,
-          rgba(255, 215, 0, 0.3) 0%,
-          rgba(255, 215, 0, 0.6) 100%
-        );
-        box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.2);
-        ion-icon {
-          color: #b8860b;
+    .badge-progress {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 100%;
+      margin-top: 4px;
+
+      .progress-track {
+        width: 100%;
+        height: 5px;
+        background: var(--ion-color-light-shade);
+        border-radius: 4px;
+        overflow: hidden;
+
+        .progress-fill {
+          height: 100%;
+          background: var(--ion-color-primary);
+          border-radius: 4px;
+          transition: width 0.4s ease;
         }
       }
 
-      ion-icon {
-        font-size: 1.8rem;
+      .progress-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: var(--ion-color-primary);
       }
     }
 

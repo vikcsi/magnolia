@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <title>Kihívás kezdő</title>
+  <!-- Outer laurel wreath frame -->
+  <g stroke="none" fill="#1B1110">
+    <ellipse cx="60" cy="10" rx="2.5" ry="5"/>
+    <ellipse cx="95" cy="25" rx="2.5" ry="5" transform="rotate(45 95 25)"/>
+    <ellipse cx="110" cy="60" rx="2.5" ry="5" transform="rotate(90 110 60)"/>
+    <ellipse cx="95" cy="95" rx="2.5" ry="5" transform="rotate(135 95 95)"/>
+    <ellipse cx="60" cy="110" rx="2.5" ry="5"/>
+    <ellipse cx="25" cy="95" rx="2.5" ry="5" transform="rotate(45 25 95)"/>
+    <ellipse cx="10" cy="60" rx="2.5" ry="5" transform="rotate(90 10 60)"/>
+    <ellipse cx="25" cy="25" rx="2.5" ry="5" transform="rotate(135 25 25)"/>
+  </g>
+  <circle cx="60" cy="60" r="48" fill="none" stroke="#1B1110" stroke-width="2.5"/>
+  <circle cx="60" cy="60" r="40" fill="#FFFFF7"/>
+  <g stroke="#1B1110" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
+    <!-- Target outer ring (largest) -->
+    <circle cx="60" cy="60" r="24" fill="#3E2723"/>
+    <!-- Target middle ring -->
+    <circle cx="60" cy="60" r="17" fill="#FFFFF7"/>
+    <!-- Target inner ring -->
+    <circle cx="60" cy="60" r="10" fill="#3E2723"/>
+    <!-- Bullseye -->
+    <circle cx="60" cy="60" r="3.5" fill="#FFFFF7" stroke="none"/>
+    <!-- Arrow: shaft starts at upper-right OUTSIDE, tip points INWARD (down-left) at bullseye -->
+    <line x1="84" y1="36" x2="60" y2="60" stroke-width="3" stroke="#1B1110"/>
+    <!-- Arrowhead (pointing down-left into the bullseye) -->
+    <path d="M 60 60 L 68 56 L 64 64 Z" fill="#1B1110" stroke="#1B1110" stroke-width="2"/>
+    <!-- Arrow fletching at upper-right end -->
+    <path d="M 86 32 L 84 36 L 88 38" fill="none" stroke-width="2"/>
+    <path d="M 82 30 L 84 36 L 90 34" fill="none" stroke-width="2"/>
+  </g>
+</svg>

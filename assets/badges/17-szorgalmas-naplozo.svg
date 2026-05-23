@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <title>Szorgalmas naplózó</title>
+  <!-- Outer laurel wreath frame -->
+  <g stroke="none" fill="#1B1110">
+    <ellipse cx="60" cy="10" rx="2.5" ry="5"/>
+    <ellipse cx="95" cy="25" rx="2.5" ry="5" transform="rotate(45 95 25)"/>
+    <ellipse cx="110" cy="60" rx="2.5" ry="5" transform="rotate(90 110 60)"/>
+    <ellipse cx="95" cy="95" rx="2.5" ry="5" transform="rotate(135 95 95)"/>
+    <ellipse cx="60" cy="110" rx="2.5" ry="5"/>
+    <ellipse cx="25" cy="95" rx="2.5" ry="5" transform="rotate(45 25 95)"/>
+    <ellipse cx="10" cy="60" rx="2.5" ry="5" transform="rotate(90 10 60)"/>
+    <ellipse cx="25" cy="25" rx="2.5" ry="5" transform="rotate(135 25 25)"/>
+  </g>
+  <circle cx="60" cy="60" r="48" fill="none" stroke="#1B1110" stroke-width="2.5"/>
+  <circle cx="60" cy="60" r="40" fill="#FFFFF7"/>
+  <g stroke="#1B1110" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
+    <!-- Clipboard body -->
+    <rect x="42" y="40" width="36" height="44" rx="3" fill="#3E2723"/>
+    <!-- Clip on top -->
+    <rect x="52" y="34" width="16" height="10" rx="2" fill="#1B1110" stroke-width="2"/>
+    <!-- Lines on clipboard -->
+    <line x1="48" y1="56" x2="72" y2="56" stroke="#FFFFF7" stroke-width="2"/>
+    <line x1="48" y1="64" x2="72" y2="64" stroke="#FFFFF7" stroke-width="2"/>
+    <line x1="48" y1="72" x2="64" y2="72" stroke="#FFFFF7" stroke-width="2"/>
+  </g>
+</svg>

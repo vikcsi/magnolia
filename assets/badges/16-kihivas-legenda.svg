@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <title>Kihívás legenda</title>
+  <!-- Outer laurel wreath frame -->
+  <g stroke="none" fill="#1B1110">
+    <ellipse cx="60" cy="10" rx="2.5" ry="5"/>
+    <ellipse cx="95" cy="25" rx="2.5" ry="5" transform="rotate(45 95 25)"/>
+    <ellipse cx="110" cy="60" rx="2.5" ry="5" transform="rotate(90 110 60)"/>
+    <ellipse cx="95" cy="95" rx="2.5" ry="5" transform="rotate(135 95 95)"/>
+    <ellipse cx="60" cy="110" rx="2.5" ry="5"/>
+    <ellipse cx="25" cy="95" rx="2.5" ry="5" transform="rotate(45 25 95)"/>
+    <ellipse cx="10" cy="60" rx="2.5" ry="5" transform="rotate(90 10 60)"/>
+    <ellipse cx="25" cy="25" rx="2.5" ry="5" transform="rotate(135 25 25)"/>
+  </g>
+  <circle cx="60" cy="60" r="48" fill="none" stroke="#1B1110" stroke-width="2.5"/>
+  <circle cx="60" cy="60" r="40" fill="#FFD1DC"/>
+  <g stroke="#1B1110" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
+    <!-- Diamond top facets -->
+    <path d="M42 52 L78 52 L60 38 Z" fill="#3E2723"/>
+    <!-- Diamond bottom -->
+    <path d="M42 52 L78 52 L60 86 Z" fill="#3E2723"/>
+    <!-- Diamond facet lines -->
+    <path d="M50 52 L60 38 L60 86" fill="none" stroke="#FFD1DC" stroke-width="1.5"/>
+    <path d="M70 52 L60 38 L60 86" fill="none" stroke="#FFD1DC" stroke-width="1.5"/>
+    <path d="M50 52 L60 86" fill="none" stroke="#FFD1DC" stroke-width="1.5"/>
+    <path d="M70 52 L60 86" fill="none" stroke="#FFD1DC" stroke-width="1.5"/>
+  </g>
+</svg>

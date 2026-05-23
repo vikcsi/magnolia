@@ -1,4 +1,7 @@
 {
+  "functions": {
+    "source": "functions"
+  },
   "firestore": {
     "database": "(default)",
     "location": "eur3",
@@ -13,6 +16,11 @@
       "**/node_modules/**"
     ],
     "rewrites": [
+      {
+        "source": "/maps-api/**",
+        "function": "mapsProxy",
+        "region": "europe-west3"
+      },
       {
         "source": "**",
         "destination": "/index.html"

@@ -1,18 +1,20 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Diagnostic } from '@awesome-cordova-plugins/diagnostic/ngx';
 import { Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonHeader,
   IonToolbar,
-  IonTitle,
-  IonButtons,
   IonContent,
+  IonFooter,
   IonIcon,
   IonButton,
   IonSpinner,
   IonInput,
   ToastController,
+  AlertController,
 } from '@ionic/angular/standalone';
+import { NavigationComponent } from 'src/app/components/navigation/navigation.component';
 import { Subject, Subscription } from 'rxjs';
 import {
   debounceTime,
@@ -20,7 +22,6 @@ import {
   switchMap,
   tap,
 } from 'rxjs/operators';
-import { lastValueFrom } from 'rxjs';
 import { addIcons } from 'ionicons';
 import {
   locationOutline,
@@ -44,7 +45,7 @@ import { CarbonCalculatorService } from 'src/app/services/carbon-calculator.serv
 import { DataService } from 'src/app/services/data.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { GamificationUiService } from 'src/app/services/gamification-ui.service';
-import { firstValueFrom } from 'rxjs';
+import { lastValueFrom, firstValueFrom } from 'rxjs';
 import { ModalController } from '@ionic/angular/standalone';
 import {
   getCurrentLevel,
@@ -67,17 +68,18 @@ export interface ComparisonItem {
   selector: 'app-route-planner',
   templateUrl: './route-planner.page.html',
   styleUrls: ['./route-planner.page.scss'],
+  providers: [Diagnostic],
   imports: [
     IonHeader,
     IonToolbar,
-    IonTitle,
-    IonButtons,
     IonContent,
     IonIcon,
     IonButton,
     IonSpinner,
     IonInput,
+    IonFooter,
     FormsModule,
+    NavigationComponent,
   ],
 })
 export class RoutePlannerPage implements OnInit, OnDestroy {
@@ -88,6 +90,8 @@ export class RoutePlannerPage implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private gamificationUiService = inject(GamificationUiService);
   private toastController = inject(ToastController);
+  private alertController = inject(AlertController);
+  private diagnostic = inject(Diagnostic);
   private location = inject(Location);
 
   fromQuery = '';
@@ -213,17 +217,57 @@ export class RoutePlannerPage implements OnInit, OnDestroy {
       return;
     }
 
+    const { Geolocation } = await import('@capacitor/geolocation');
+
     try {
-      const { Geolocation } = await import('@capacitor/geolocation');
-      await Geolocation.requestPermissions();
+      // 1. lépés: alkalmazás-szintű engedély ellenőrzése és kérése
+      let permStatus = await Geolocation.checkPermissions();
+
+      if (permStatus.location === 'prompt' || permStatus.location === 'prompt-with-rationale') {
+        permStatus = await Geolocation.requestPermissions();
+      }
+
+      if (permStatus.location === 'denied') {
+        const toast = await this.toastController.create({
+          message: 'Engedélyezd a helymeghatározást az alkalmazás beállításaiban.',
+          duration: 3500,
+          color: 'warning',
+          position: 'top',
+        });
+        await toast.present();
+        return;
+      }
+
+      // 2. lépés: rendszerszintű GPS ellenőrzése a Diagnostic pluginnal
+      const isLocationEnabled: boolean = await this.diagnostic.isLocationEnabled();
+
+      if (!isLocationEnabled) {
+        const alert = await this.alertController.create({
+          header: 'Helymeghatározás kikapcsolva',
+          message: 'A jelenlegi helyzeted lekéréséhez kapcsold be a helymeghatározást.',
+          buttons: [
+            { text: 'Mégse', role: 'cancel' },
+            {
+              text: 'Bekapcsolás',
+              handler: () => {
+                this.diagnostic.switchToLocationSettings();
+              },
+            },
+          ],
+        });
+        await alert.present();
+        return;
+      }
+
+      // 3. lépés: pozíció lekérése
       const pos = await Geolocation.getCurrentPosition({ timeout: 10000 });
       this.fromCoords = `${pos.coords.latitude.toFixed(5)},${pos.coords.longitude.toFixed(5)}`;
       this.fromQuery = 'Jelenlegi helyzet';
       this.fromSuggestions = [];
-    } catch {
+    } catch (err: any) {
       const toast = await this.toastController.create({
-        message: 'Nem sikerült lekérni a helyzeted.',
-        duration: 2500,
+        message: 'Nem sikerült lekérni a helyzeted. Próbáld újra!',
+        duration: 3500,
         color: 'danger',
         position: 'top',
       });

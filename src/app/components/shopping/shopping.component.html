@@ -15,7 +15,7 @@
       [class.active]="activeMode === 'scan'"
       (click)="setMode('scan')"
     >
-      Termék beolvasás
+      Termékek beolvasása
     </button>
     <button
       class="toggle-btn"
@@ -107,6 +107,7 @@
           [(ngModel)]="scannedForm.weight"
           min="0.1"
           step="0.1"
+          aria-label="Mennyiség kilogrammban vagy literben"
         ></ion-input>
         <span class="unit-label">kg / l</span>
       </div>
@@ -169,6 +170,7 @@
         type="text"
         [(ngModel)]="manualProduct.name"
         placeholder="Pl. Tej 1L"
+        aria-label="Termék neve"
       ></ion-input>
     </div>
 
@@ -178,6 +180,7 @@
         type="text"
         [(ngModel)]="manualProduct.brands"
         placeholder="Pl. Mizo"
+        aria-label="Márka"
       ></ion-input>
     </div>
 
@@ -187,6 +190,7 @@
         type="text"
         [(ngModel)]="manualProduct.barcode"
         placeholder="Pl. 5991234..."
+        aria-label="Vonalkód"
       ></ion-input>
     </div>
 
@@ -197,6 +201,7 @@
         [(ngModel)]="manualProduct.weight"
         min="0.1"
         step="0.1"
+        aria-label="Súly kilogrammban vagy literben"
       ></ion-input>
       <span class="unit-label">kg/l</span>
     </div>

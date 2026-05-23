@@ -2,8 +2,8 @@
   <ion-toolbar mode="md">
     <ion-title>Profil</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="openSettings()">
-        <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
+      <ion-button (click)="openSettings()" aria-label="Beállítások">
+        <ion-icon slot="icon-only" name="settings-outline" aria-hidden="true"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -126,9 +126,12 @@
     <div class="badges-grid">
       @for (badge of recentBadges; track badge.id) {
       <div class="badge-item">
-        <div class="badge-icon" [ngClass]="badge.rarity">
-          <ion-icon [name]="badge.icon"></ion-icon>
-        </div>
+        <app-badge-icon
+          [badgeId]="badge.id"
+          [rarity]="badge.rarity"
+          state="idle"
+          [size]="52"
+        ></app-badge-icon>
         <p>{{ badge.name }}</p>
       </div>
       } @if (recentBadges.length === 0) {

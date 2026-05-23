@@ -9,27 +9,27 @@
     <h2 class="section-title">Kategóriák</h2>
 
     <div class="categories-container">
-      <div class="category-card" [class.active]="selectedCategory === 'transport'"
-        (click)="selectCategory('transport')">
+      <button class="category-card" [class.active]="selectedCategory === 'transport'"
+        (click)="selectCategory('transport')" [attr.aria-pressed]="selectedCategory === 'transport'">
         <div class="category-icon">
-          <ion-icon name="location-outline"></ion-icon>
+          <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
         </div>
         <ion-label>Közlekedés</ion-label>
-      </div>
+      </button>
 
-      <div class="category-card" [class.active]="selectedCategory === 'shopping'" (click)="selectCategory('shopping')">
+      <button class="category-card" [class.active]="selectedCategory === 'shopping'" (click)="selectCategory('shopping')" [attr.aria-pressed]="selectedCategory === 'shopping'">
         <div class="category-icon">
-          <ion-icon name="cart-outline"></ion-icon>
+          <ion-icon name="cart-outline" aria-hidden="true"></ion-icon>
         </div>
         <ion-label>Vásárlás</ion-label>
-      </div>
+      </button>
 
-      <div class="category-card" [class.active]="selectedCategory === 'energy'" (click)="selectCategory('energy')">
+      <button class="category-card" [class.active]="selectedCategory === 'energy'" (click)="selectCategory('energy')" [attr.aria-pressed]="selectedCategory === 'energy'">
         <div class="category-icon">
-          <ion-icon name="flash-outline"></ion-icon>
+          <ion-icon name="flash-outline" aria-hidden="true"></ion-icon>
         </div>
         <ion-label>Energia</ion-label>
-      </div>
+      </button>
     </div>
 
 

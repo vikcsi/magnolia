@@ -37,3 +37,10 @@ export interface UserBadge {
   id: string;
   earnedAt: Date;
 }
+
+export interface BadgeProgressStats {
+  totalActivities: number;
+  completedChallenges: number;
+  currentStreak: number;
+  currentLevel: number;
+}

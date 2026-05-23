@@ -46,6 +46,8 @@ import {
   LevelDefinition,
 } from 'src/app/constants/leveling.constant';
 import { BadgeGalleryModalComponent } from 'src/app/components/badge-gallery-modal/badge-gallery-modal.component';
+import { BadgeIconComponent } from 'src/app/components/badge-icon/badge-icon.component';
+import { BadgeService } from 'src/app/services/badge.service';
 import { BADGES } from 'src/app/constants/badges.constant';
 import { BadgeDefinition } from 'src/app/models/badge.model';
 import { firstValueFrom } from 'rxjs';
@@ -74,6 +76,7 @@ export interface UserViewData extends User {
     IonSkeletonText,
     NavigationComponent,
     CommonModule,
+    BadgeIconComponent,
   ],
 })
 export class ProfilePage
@@ -82,6 +85,7 @@ export class ProfilePage
   private dataService = inject(DataService);
   private authService = inject(AuthService);
   private statsService = inject(StatsService);
+  private badgeService = inject(BadgeService);
   private modalCtrl = inject(ModalController);
   private navCtrl = inject(NavController);
 
@@ -174,11 +178,21 @@ export class ProfilePage
     const user = await firstValueFrom(this.userData$);
     if (!user) return;
 
+    const uid = this.authService.currentUser?.uid;
+    let progressStats = null;
+    if (uid) {
+      try {
+        progressStats = await this.badgeService.getProgressStats(uid, user.currentLevel.level);
+      } catch {
+      }
+    }
+
     const routerOutlet = document.querySelector('ion-router-outlet');
     const modal = await this.modalCtrl.create({
       component: BadgeGalleryModalComponent,
       componentProps: {
         earnedBadgeIds: (user.badges || []).map((b) => b.id),
+        progressStats,
       },
       presentingElement: routerOutlet || undefined,
       canDismiss: true,
@@ -201,18 +215,15 @@ export class ProfilePage
           levelProgress = xpGainedInLevel / xpRange;
         }
 
+        const getBadgeTime = (ts: any): number => {
+          if (!ts) return 0;
+          if (ts instanceof Date) return ts.getTime();
+          if (typeof ts.toDate === 'function') return ts.toDate().getTime();
+          return 0;
+        };
+
         const earnedDefs = (user.badges || [])
-          .sort((a, b) => {
-            const timeA =
-              a.earnedAt instanceof Date
-                ? a.earnedAt.getTime()
-                : (a.earnedAt as any).toDate().getTime();
-            const timeB =
-              b.earnedAt instanceof Date
-                ? b.earnedAt.getTime()
-                : (b.earnedAt as any).toDate().getTime();
-            return timeB - timeA;
-          })
+          .sort((a, b) => getBadgeTime(b.earnedAt) - getBadgeTime(a.earnedAt))
           .slice(0, 4)
           .map((ub) => BADGES.find((b) => b.id === ub.id))
           .filter(Boolean) as BadgeDefinition[];
@@ -223,12 +234,13 @@ export class ProfilePage
       }),
     );
 
-    const currentUid = this.authService.currentUser?.uid;
-    if (currentUid) {
-      this.friendsCount$ = this.dataService
-        .getAcceptedFriends(currentUid)
-        .pipe(map((friendships) => friendships.length));
-    }
+    this.friendsCount$ = this.authService.user$.pipe(
+      switchMap((user) =>
+        user ? this.dataService.getAcceptedFriends(user.uid) : of([]),
+      ),
+      map((friendships) => friendships.length),
+      catchError(() => of(0)),
+    );
 
     this.activeGoalsDisplay$ = this.authService.user$.pipe(
       switchMap((firebaseUser) => {

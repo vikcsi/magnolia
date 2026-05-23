@@ -30,14 +30,16 @@
     <p class="subsection-title">Közlekedési mód</p>
     <div class="transport-options">
       @for (mode of manualModes; track mode) {
-        <div
+        <button
           class="transport-option"
           [class.active]="manualMode === mode"
           (click)="manualMode = mode; manualEmission = null"
+          [attr.aria-pressed]="manualMode === mode"
+          [attr.aria-label]="modeConfig[mode].label"
         >
-          <div class="transport-icon">{{ modeConfig[mode].icon }}</div>
+          <div class="transport-icon" aria-hidden="true">{{ modeConfig[mode].icon }}</div>
           <ion-label>{{ modeConfig[mode].label }}</ion-label>
-        </div>
+        </button>
       }
     </div>
 
@@ -50,6 +52,7 @@
         [(ngModel)]="manualDistanceKm"
         (ionChange)="manualEmission = null"
         min="0.1"
+        aria-label="Megtett távolság kilométerben"
       ></ion-input>
       <span class="unit-label">km</span>
     </div>
@@ -186,14 +189,16 @@
 
       <div class="transport-options">
         @for (mode of trackingModes; track mode) {
-          <div
+          <button
             class="transport-option"
             [class.active]="selectedTrackingMode === mode"
             (click)="selectedTrackingMode = mode"
+            [attr.aria-pressed]="selectedTrackingMode === mode"
+            [attr.aria-label]="modeConfig[mode].label"
           >
-            <div class="transport-icon">{{ modeConfig[mode].icon }}</div>
+            <div class="transport-icon" aria-hidden="true">{{ modeConfig[mode].icon }}</div>
             <ion-label>{{ modeConfig[mode].label }}</ion-label>
-          </div>
+          </button>
         }
       </div>
 

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <title>Tudatos vásárló</title>
+  <circle cx="60" cy="60" r="54" fill="none" stroke="#1B1110" stroke-width="2.5"/>
+  <circle cx="60" cy="60" r="46" fill="#FFFFF7"/>
+  <g stroke="#1B1110" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
+    <!-- Shopping bag body -->
+    <path d="M40 50 L80 50 L77 84 L43 84 Z" fill="#3E2723"/>
+    <!-- Bag handles -->
+    <path d="M50 50 C 50 40, 70 40, 70 50" fill="none" stroke-width="3"/>
+  </g>
+</svg>

@@ -5,6 +5,11 @@
     } @else {
       <ion-title><ion-skeleton-text animated="true" style="width:55%;height:1rem;border-radius:8px"></ion-skeleton-text></ion-title>
     }
+    <ion-buttons slot="end" class="profile-btn-mobile">
+      <ion-button (click)="openProfile()" aria-label="Profil">
+        <ion-icon slot="icon-only" name="person-outline" aria-hidden="true"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -72,28 +77,6 @@
       <div class="insight-body">
         <ion-icon [name]="insight.type === 'success' ? 'leaf-outline' : 'warning-outline'"></ion-icon>
         <p>{{ insight.text }}</p>
-      </div>
-    </div>
-
-    <h3 class="section-title">Eszközök</h3>
-    <div class="tools-container">
-      <div class="tool-item">
-        <ion-button class="tool-button" [routerLink]="['/route-planner']">
-          <ion-icon name="paper-plane-outline"></ion-icon>
-        </ion-button>
-        <ion-label>Útvonaltervezés</ion-label>
-      </div>
-      <div class="tool-item">
-        <ion-button class="tool-button" [routerLink]="['/activity']">
-          <ion-icon name="camera-outline"></ion-icon>
-        </ion-button>
-        <ion-label>Termék beolvasás</ion-label>
-      </div>
-      <div class="tool-item">
-        <ion-button class="tool-button" [routerLink]="['/profile']">
-          <ion-icon name="list-outline"></ion-icon>
-        </ion-button>
-        <ion-label>Új célkitűzés</ion-label>
       </div>
     </div>
 

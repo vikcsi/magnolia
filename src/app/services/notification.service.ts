@@ -94,7 +94,6 @@ export class NotificationService {
     return new Date(value);
   }
 
-  /** Determinisztikus, pozitív egész szám adott kulcshoz (notification ID-nak kell szám) */
   private stableId(str: string): number {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {

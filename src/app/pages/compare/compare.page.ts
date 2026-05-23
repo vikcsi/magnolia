@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { AlertController, IonicModule } from '@ionic/angular';
+import { firstValueFrom } from 'rxjs';
 import { addIcons } from 'ionicons';
 import {
   arrowBackOutline,
@@ -70,12 +71,8 @@ export class ComparePage implements OnInit {
     try {
       const [currentUserDoc, friendUserDoc, currentUserStats, friendUserStats] =
         await Promise.all([
-          new Promise<User>((resolve) =>
-            this.dataService.getUserData(currentId).subscribe(resolve),
-          ),
-          new Promise<User>((resolve) =>
-            this.dataService.getUserData(friendId).subscribe(resolve),
-          ),
+          firstValueFrom(this.dataService.getUserData(currentId)),
+          firstValueFrom(this.dataService.getUserData(friendId)),
           this.dataService.getUserComparisonStats(currentId, currentId),
           this.dataService.getUserComparisonStats(friendId, currentId),
         ]);

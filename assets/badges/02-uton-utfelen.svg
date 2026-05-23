@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <title>Úton-útfélen</title>
+  <circle cx="60" cy="60" r="54" fill="none" stroke="#1B1110" stroke-width="2.5"/>
+  <circle cx="60" cy="60" r="46" fill="#FFFFF7"/>
+  <g stroke="#1B1110" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
+    <!-- Road surface in perspective: narrow at top (horizon), wide at bottom -->
+    <path d="M 50 32
+             L 70 32
+             L 88 92
+             L 32 92 Z"
+          fill="#3E2723"/>
+    <!-- Center dashed lane markings -->
+    <line x1="60" y1="40" x2="60" y2="48" stroke="#FFFFF7" stroke-width="3"/>
+    <line x1="60" y1="56" x2="60" y2="66" stroke="#FFFFF7" stroke-width="3"/>
+    <line x1="60" y1="74" x2="60" y2="84" stroke="#FFFFF7" stroke-width="3.5"/>
+  </g>
+</svg>

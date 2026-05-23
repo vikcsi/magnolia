@@ -51,12 +51,16 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/register/register.page').then(m => m.RegisterPage)
   },
   {
+    path: 'landing',
+    loadComponent: () => import('./pages/landing/landing.page').then(m => m.LandingPage)
+  },
+  {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'landing',
     pathMatch: 'full'
   },
   {
     path: '**',
-    redirectTo: 'home'
+    redirectTo: 'landing'
   }
 ];

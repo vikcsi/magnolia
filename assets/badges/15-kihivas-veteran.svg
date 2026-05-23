@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <title>Kihívás veterán</title>
+  <!-- Outer laurel wreath frame -->
+  <g stroke="none" fill="#1B1110">
+    <ellipse cx="60" cy="10" rx="2.5" ry="5"/>
+    <ellipse cx="95" cy="25" rx="2.5" ry="5" transform="rotate(45 95 25)"/>
+    <ellipse cx="110" cy="60" rx="2.5" ry="5" transform="rotate(90 110 60)"/>
+    <ellipse cx="95" cy="95" rx="2.5" ry="5" transform="rotate(135 95 95)"/>
+    <ellipse cx="60" cy="110" rx="2.5" ry="5"/>
+    <ellipse cx="25" cy="95" rx="2.5" ry="5" transform="rotate(45 25 95)"/>
+    <ellipse cx="10" cy="60" rx="2.5" ry="5" transform="rotate(90 10 60)"/>
+    <ellipse cx="25" cy="25" rx="2.5" ry="5" transform="rotate(135 25 25)"/>
+  </g>
+  <circle cx="60" cy="60" r="48" fill="none" stroke="#1B1110" stroke-width="2.5"/>
+  <circle cx="60" cy="60" r="40" fill="#FFFFDD"/>
+  <g stroke="#1B1110" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
+    <!-- Trophy cup body -->
+    <path d="M48 36
+             L72 36
+             L70 60
+             C 70 66, 66 70, 60 70
+             C 54 70, 50 66, 50 60 Z" fill="#3E2723"/>
+    <!-- Left handle -->
+    <path d="M48 40
+             C 38 40, 36 50, 44 56" fill="none" stroke-width="3"/>
+    <!-- Right handle -->
+    <path d="M72 40
+             C 82 40, 84 50, 76 56" fill="none" stroke-width="3"/>
+    <!-- Trophy stem -->
+    <line x1="60" y1="70" x2="60" y2="78" stroke-width="4"/>
+    <!-- Trophy base top -->
+    <rect x="50" y="78" width="20" height="4" rx="1" fill="#3E2723"/>
+    <!-- Trophy base bottom -->
+    <rect x="46" y="82" width="28" height="5" rx="1" fill="#3E2723"/>
+    <!-- Star on cup -->
+    <path d="M60 44 L62 49 L67 49 L63 52 L65 57 L60 54 L55 57 L57 52 L53 49 L58 49 Z" fill="#FFFFDD" stroke="none"/>
+  </g>
+</svg>

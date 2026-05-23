@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <title>Célba értem</title>
+  <circle cx="60" cy="60" r="54" fill="none" stroke="#1B1110" stroke-width="2.5"/>
+  <circle cx="60" cy="60" r="46" fill="#FFFFF7"/>
+  <g stroke="#1B1110" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
+    <!-- Flag pole -->
+    <line x1="44" y1="36" x2="44" y2="88" stroke-width="3.5"/>
+    <!-- Flag (waving) -->
+    <path d="M44 38 L80 42 L72 52 L80 64 L44 60 Z" fill="#3E2723"/>
+    <!-- Base ground -->
+    <line x1="36" y1="88" x2="52" y2="88" stroke-width="3"/>
+  </g>
+</svg>

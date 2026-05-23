@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <title>Energia figyelő</title>
+  <circle cx="60" cy="60" r="54" fill="none" stroke="#1B1110" stroke-width="2.5"/>
+  <circle cx="60" cy="60" r="46" fill="#FFFFF7"/>
+  <g stroke="#1B1110" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
+    <!-- Lightning bolt -->
+    <path d="M64 32 L42 64 L58 64 L52 88 L78 54 L62 54 Z" fill="#3E2723"/>
+  </g>
+</svg>

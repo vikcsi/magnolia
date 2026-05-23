@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <title>Század vitéz</title>
+  <!-- Outer laurel wreath frame -->
+  <g stroke="none" fill="#1B1110">
+    <ellipse cx="60" cy="10" rx="2.5" ry="5"/>
+    <ellipse cx="95" cy="25" rx="2.5" ry="5" transform="rotate(45 95 25)"/>
+    <ellipse cx="110" cy="60" rx="2.5" ry="5" transform="rotate(90 110 60)"/>
+    <ellipse cx="95" cy="95" rx="2.5" ry="5" transform="rotate(135 95 95)"/>
+    <ellipse cx="60" cy="110" rx="2.5" ry="5"/>
+    <ellipse cx="25" cy="95" rx="2.5" ry="5" transform="rotate(45 25 95)"/>
+    <ellipse cx="10" cy="60" rx="2.5" ry="5" transform="rotate(90 10 60)"/>
+    <ellipse cx="25" cy="25" rx="2.5" ry="5" transform="rotate(135 25 25)"/>
+  </g>
+  <circle cx="60" cy="60" r="48" fill="none" stroke="#1B1110" stroke-width="2.5"/>
+  <circle cx="60" cy="60" r="40" fill="#FFFFDD"/>
+  <g stroke="#1B1110" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
+    <!-- "100" number as a centurion-style badge -->
+    <!-- "1" -->
+    <line x1="38" y1="46" x2="42" y2="42" stroke-width="3.5"/>
+    <line x1="42" y1="42" x2="42" y2="78" stroke-width="3.5"/>
+    <line x1="36" y1="78" x2="48" y2="78" stroke-width="3.5"/>
+    <!-- First "0" -->
+    <ellipse cx="60" cy="60" rx="6" ry="18" fill="none" stroke-width="3.5"/>
+    <!-- Second "0" -->
+    <ellipse cx="78" cy="60" rx="6" ry="18" fill="none" stroke-width="3.5"/>
+    <!-- Laurel branch under the number (left) -->
+    <path d="M40 86 Q 50 90, 60 88" fill="none" stroke-width="2"/>
+    <ellipse cx="45" cy="88" rx="3" ry="1.5" fill="#3E2723" stroke-width="1.5" transform="rotate(20 45 88)"/>
+    <ellipse cx="52" cy="89.5" rx="3" ry="1.5" fill="#3E2723" stroke-width="1.5" transform="rotate(10 52 89.5)"/>
+    <!-- Laurel branch under the number (right) -->
+    <path d="M80 86 Q 70 90, 60 88" fill="none" stroke-width="2"/>
+    <ellipse cx="75" cy="88" rx="3" ry="1.5" fill="#3E2723" stroke-width="1.5" transform="rotate(-20 75 88)"/>
+    <ellipse cx="68" cy="89.5" rx="3" ry="1.5" fill="#3E2723" stroke-width="1.5" transform="rotate(-10 68 89.5)"/>
+  </g>
+</svg>

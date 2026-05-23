@@ -1,9 +1,12 @@
 ion-header ion-toolbar {
   --background: var(--ion-color-light);
   --color: var(--ion-color-primary);
-  ion-title {
+
+  .toolbar-heading {
     font-size: 1.1rem;
     font-weight: 600;
+    color: var(--ion-color-primary);
+    overflow: visible;
   }
 }
 

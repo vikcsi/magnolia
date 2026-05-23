@@ -21,7 +21,7 @@ import {
   reauthenticateWithCredential,
   EmailAuthProvider,
 } from '@angular/fire/auth';
-import { Observable, of, BehaviorSubject } from 'rxjs';
+import { Observable, of, BehaviorSubject, Subscription } from 'rxjs';
 import { switchMap, filter, take } from 'rxjs/operators';
 import { DataService } from './data.service';
 import { User } from '../models/user.model';
@@ -35,6 +35,7 @@ export class AuthService {
   private injector = inject(Injector);
 
   private isAuthenticated$ = new BehaviorSubject<boolean>(true);
+  private emailSyncSub?: Subscription;
 
   public user$!: Observable<FirebaseUser | null>;
   public currentUserProfile$!: Observable<User | null>;
@@ -60,7 +61,7 @@ export class AuthService {
       }),
     );
 
-    this.user$.pipe(
+    this.emailSyncSub = this.user$.pipe(
       filter((u): u is FirebaseUser => !!u),
       switchMap((firebaseUser) =>
         this.dataService.getUserData(firebaseUser.uid).pipe(
@@ -74,6 +75,10 @@ export class AuthService {
         ),
       ),
     ).subscribe();
+  }
+
+  ngOnDestroy() {
+    this.emailSyncSub?.unsubscribe();
   }
 
   async login(email: string, password: string, rememberMe: boolean = false): Promise<void> {
@@ -135,14 +140,19 @@ export class AuthService {
     });
   }
 
-  async deleteAccount(): Promise<void> {
-    return runInInjectionContext(this.injector, async () => {
-      const user = this.auth.currentUser;
-      if (!user) return;
-      await this.dataService.deleteUserData(user.uid);
-      await deleteUser(user);
-      this.isAuthenticated$.next(false);
-    });
+  async deleteAccount(password: string): Promise<void> {
+    const user = this.auth.currentUser;
+    if (!user || !user.email) throw new Error('Nincs bejelentkezett felhasználó.');
+    const credential = EmailAuthProvider.credential(user.email, password);
+    await runInInjectionContext(this.injector, () =>
+      reauthenticateWithCredential(user, credential),
+    );
+    const uid = user.uid;
+    await this.dataService.deleteUserActivities(uid);
+    await this.dataService.deleteUserRelatedData(uid);
+    await this.dataService.deleteUserDocument(uid);
+    await runInInjectionContext(this.injector, () => deleteUser(user));
+    this.isAuthenticated$.next(false);
   }
 
   get currentUser(): FirebaseUser | null {

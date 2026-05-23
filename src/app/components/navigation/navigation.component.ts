@@ -3,12 +3,13 @@ import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
-import { 
-  homeOutline, 
-  barChartOutline, 
-  addOutline, 
-  ribbonOutline, 
-  personOutline 
+import {
+  homeOutline,
+  barChartOutline,
+  addOutline,
+  ribbonOutline,
+  personOutline,
+  paperPlaneOutline,
 } from 'ionicons/icons';
 
 @Component({
@@ -26,7 +27,8 @@ export class NavigationComponent  implements OnInit {
       barChartOutline,
       addOutline,
       ribbonOutline,
-      personOutline
+      personOutline,
+      paperPlaneOutline,
     });
   }
 

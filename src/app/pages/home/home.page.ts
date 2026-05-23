@@ -34,12 +34,14 @@ import {
   trainOutline,
   waterOutline,
   speedometerOutline,
+  personOutline,
 } from 'ionicons/icons';
 import {
   IonHeader,
   IonToolbar,
   IonTitle,
   IonButton,
+  IonButtons,
   IonIcon,
   IonContent,
   IonCard,
@@ -50,6 +52,7 @@ import {
   IonItem,
   IonFooter,
   IonSkeletonText,
+  NavController,
   ViewWillEnter,
   ViewWillLeave,
 } from '@ionic/angular/standalone';
@@ -76,6 +79,7 @@ export interface UserViewData extends User {
     IonToolbar,
     IonTitle,
     IonButton,
+    IonButtons,
     IonIcon,
     IonContent,
     IonCard,
@@ -89,7 +93,6 @@ export interface UserViewData extends User {
     NavigationComponent,
     CommonModule,
     FirestoreDatePipe,
-    RouterLink,
   ],
 })
 export class HomePage
@@ -98,6 +101,7 @@ export class HomePage
   private authService = inject(AuthService);
   private dataService = inject(DataService);
   private statsService = inject(StatsService);
+  private navCtrl = inject(NavController);
 
   private activitiesSub?: Subscription;
 
@@ -133,6 +137,7 @@ export class HomePage
       trainOutline,
       waterOutline,
       speedometerOutline,
+      personOutline,
     });
   }
 
@@ -225,6 +230,10 @@ export class HomePage
   private unsubscribeFromActivities() {
     this.activitiesSub?.unsubscribe();
     this.activitiesSub = undefined;
+  }
+
+  openProfile() {
+    this.navCtrl.navigateForward('/profile');
   }
 
   getDailyProgressValue(): number {

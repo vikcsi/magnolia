@@ -1,23 +1,27 @@
-<div class="tabs-container">
-  <div class="app-logo">Magnólia</div>
-  <div class="tab-button" [class.active]="isActive('/home')" (click)="navigate('/home')">
-    <ion-icon name="home-outline"></ion-icon>
+<nav class="tabs-container" aria-label="Főnavigáció">
+  <div class="app-logo" aria-hidden="true">Magnólia</div>
+  <button class="tab-button" [class.active]="isActive('/home')" (click)="navigate('/home')" aria-label="Főoldal" [attr.aria-current]="isActive('/home') ? 'page' : null">
+    <ion-icon name="home-outline" aria-hidden="true"></ion-icon>
     <span class="nav-label">Főoldal</span>
-  </div>
-  <div class="tab-button" [class.active]="isActive('/stats')" (click)="navigate('/stats')">
-    <ion-icon name="bar-chart-outline"></ion-icon>
+  </button>
+  <button class="tab-button" [class.active]="isActive('/stats')" (click)="navigate('/stats')" aria-label="Statisztika" [attr.aria-current]="isActive('/stats') ? 'page' : null">
+    <ion-icon name="bar-chart-outline" aria-hidden="true"></ion-icon>
     <span class="nav-label">Statisztika</span>
-  </div>
-  <div class="add-button" (click)="navigate('/activity')">
-    <ion-icon name="add-outline"></ion-icon>
+  </button>
+  <button class="add-button" (click)="navigate('/activity')" aria-label="Tevékenység hozzáadása">
+    <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
     <span class="nav-label">Tevékenység hozzáadása</span>
-  </div>
-  <div class="tab-button" [class.active]="isActive('/social')" (click)="navigate('/social')">
-    <ion-icon name="ribbon-outline"></ion-icon>
+  </button>
+  <button class="tab-button" [class.active]="isActive('/social')" (click)="navigate('/social')" aria-label="Közösség" [attr.aria-current]="isActive('/social') ? 'page' : null">
+    <ion-icon name="ribbon-outline" aria-hidden="true"></ion-icon>
     <span class="nav-label">Közösség</span>
-  </div>
-  <div class="tab-button" [class.active]="isActive('/profile')" (click)="navigate('/profile')">
-    <ion-icon name="person-outline"></ion-icon>
+  </button>
+  <button class="tab-button mobile-hidden" [class.active]="isActive('/profile')" (click)="navigate('/profile')" aria-label="Profil" [attr.aria-current]="isActive('/profile') ? 'page' : null">
+    <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
     <span class="nav-label">Profil</span>
-  </div>
-</div>
+  </button>
+  <button class="tab-button" [class.active]="isActive('/route-planner')" (click)="navigate('/route-planner')" aria-label="Útvonaltervezés" [attr.aria-current]="isActive('/route-planner') ? 'page' : null">
+    <ion-icon name="paper-plane-outline" aria-hidden="true"></ion-icon>
+    <span class="nav-label">Útvonaltervezés</span>
+  </button>
+</nav>

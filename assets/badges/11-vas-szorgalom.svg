@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <title>Vas szorgalom</title>
+  <circle cx="60" cy="60" r="55" fill="none" stroke="#1B1110" stroke-width="2"/>
+  <circle cx="60" cy="60" r="49" fill="none" stroke="#1B1110" stroke-width="2.5"/>
+  <circle cx="60" cy="60" r="42" fill="#FFE8DD"/>
+  <g stroke="#1B1110" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
+    <!-- Calendar body -->
+    <rect x="38" y="44" width="44" height="40" rx="3" fill="#3E2723"/>
+    <!-- Top binding bar -->
+    <rect x="38" y="44" width="44" height="9" rx="3" fill="#1B1110" stroke="none"/>
+    <!-- Rings on top -->
+    <line x1="48" y1="38" x2="48" y2="50" stroke-width="3"/>
+    <line x1="72" y1="38" x2="72" y2="50" stroke-width="3"/>
+    <!-- Calendar dots - rows of small marks indicating consistency -->
+    <g fill="#FFE8DD" stroke="none">
+      <circle cx="48" cy="62" r="2"/>
+      <circle cx="60" cy="62" r="2"/>
+      <circle cx="72" cy="62" r="2"/>
+      <circle cx="48" cy="72" r="2"/>
+      <circle cx="60" cy="72" r="2"/>
+      <circle cx="72" cy="72" r="2"/>
+    </g>
+  </g>
+</svg>

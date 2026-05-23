@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <title>Aktív mozgó</title>
+  <circle cx="60" cy="60" r="55" fill="none" stroke="#1B1110" stroke-width="2"/>
+  <circle cx="60" cy="60" r="49" fill="none" stroke="#1B1110" stroke-width="2.5"/>
+  <circle cx="60" cy="60" r="42" fill="#FFE8DD"/>
+  <g stroke="#1B1110" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Rear wheel -->
+    <circle cx="38" cy="74" r="12" stroke-width="3" fill="#FFE8DD"/>
+    <!-- Front wheel -->
+    <circle cx="82" cy="74" r="12" stroke-width="3" fill="#FFE8DD"/>
+    <!-- Wheel hubs -->
+    <circle cx="38" cy="74" r="2" fill="#1B1110" stroke="none"/>
+    <circle cx="82" cy="74" r="2" fill="#1B1110" stroke="none"/>
+    <!-- Wheel spokes (4 per wheel, simple) -->
+    <line x1="38" y1="62" x2="38" y2="86" stroke-width="1"/>
+    <line x1="26" y1="74" x2="50" y2="74" stroke-width="1"/>
+    <line x1="29.5" y1="65.5" x2="46.5" y2="82.5" stroke-width="1"/>
+    <line x1="29.5" y1="82.5" x2="46.5" y2="65.5" stroke-width="1"/>
+    <line x1="82" y1="62" x2="82" y2="86" stroke-width="1"/>
+    <line x1="70" y1="74" x2="94" y2="74" stroke-width="1"/>
+    <line x1="73.5" y1="65.5" x2="90.5" y2="82.5" stroke-width="1"/>
+    <line x1="73.5" y1="82.5" x2="90.5" y2="65.5" stroke-width="1"/>
+    <!-- Frame: diamond shape (triangle from bottom bracket) -->
+    <!-- Bottom bracket (pedal axle) -->
+    <circle cx="60" cy="74" r="3" fill="#1B1110" stroke="none"/>
+    <!-- Top tube (saddle to handlebar) -->
+    <line x1="50" y1="52" x2="72" y2="52" stroke-width="3.5" stroke="#3E2723"/>
+    <!-- Seat tube (saddle area down to bottom bracket) -->
+    <line x1="50" y1="52" x2="60" y2="74" stroke-width="3.5" stroke="#3E2723"/>
+    <!-- Down tube (bottom bracket to head tube) -->
+    <line x1="60" y1="74" x2="72" y2="52" stroke-width="3.5" stroke="#3E2723"/>
+    <!-- Chainstay (bottom bracket to rear hub) -->
+    <line x1="60" y1="74" x2="38" y2="74" stroke-width="3.5" stroke="#3E2723"/>
+    <!-- Fork (head tube to front hub) -->
+    <line x1="72" y1="52" x2="82" y2="74" stroke-width="3.5" stroke="#3E2723"/>
+    <!-- Seat post -->
+    <line x1="50" y1="52" x2="48" y2="44" stroke-width="3" stroke="#3E2723"/>
+    <!-- Saddle (horizontal) -->
+    <line x1="42" y1="44" x2="54" y2="44" stroke-width="4" stroke="#3E2723" stroke-linecap="round"/>
+    <!-- Handlebar stem -->
+    <line x1="72" y1="52" x2="74" y2="44" stroke-width="3" stroke="#3E2723"/>
+    <!-- Handlebar (horizontal) -->
+    <line x1="68" y1="44" x2="80" y2="44" stroke-width="4" stroke="#3E2723" stroke-linecap="round"/>
+  </g>
+</svg>

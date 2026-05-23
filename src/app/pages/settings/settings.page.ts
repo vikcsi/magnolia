@@ -44,6 +44,7 @@ import {
   IonSpinner,
   AlertController,
   NavController,
+  ToastController,
 } from '@ionic/angular/standalone';
 import { AuthService } from '../../services/auth.service';
 import { DataService } from '../../services/data.service';
@@ -72,6 +73,7 @@ export class SettingsPage implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private dataService = inject(DataService);
   private alertCtrl = inject(AlertController);
+  private toastCtrl = inject(ToastController);
   private navCtrl = inject(NavController);
   private location = inject(Location);
 
@@ -365,30 +367,54 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   async logout() {
     await this.authService.logout();
-    this.navCtrl.navigateRoot('/login', { animated: true, animationDirection: 'back' });
+    this.navCtrl.navigateRoot('/landing', { animated: true, animationDirection: 'back' });
   }
 
   async deleteAccount() {
     const confirm = await this.alertCtrl.create({
       header: 'Fiók törlése',
       message: 'Biztosan törölni szeretnéd a fiókodat? Ez a művelet visszavonhatatlan — minden adatod véglegesen törlődik.',
+      inputs: [
+        {
+          name: 'password',
+          type: 'password',
+          placeholder: 'Jelszó megerősítés',
+        },
+      ],
       buttons: [
         { text: 'Mégse', role: 'cancel' },
         {
           text: 'Törlés',
           role: 'destructive',
-          handler: async () => {
-            try {
-              await this.authService.deleteAccount();
-              this.navCtrl.navigateRoot('/login', { animated: true, animationDirection: 'back' });
-            } catch {
-              const err = await this.alertCtrl.create({
-                header: 'Hiba',
-                message: 'A fiók törlése nem sikerült. Lehet, hogy újra be kell jelentkezned a művelet elvégzéséhez.',
+          handler: async (data) => {
+            if (!data.password) {
+              const warn = await this.alertCtrl.create({
+                header: 'Hiányzó jelszó',
+                message: 'A fiók törléséhez meg kell adnod a jelszavadat.',
                 buttons: ['OK'],
               });
-              await err.present();
+              await warn.present();
+              return false;
             }
+            try {
+              await this.authService.deleteAccount(data.password);
+              const toast = await this.toastCtrl.create({
+                message: 'Sikeresen töröltük a felhasználót és a hozzá tartozó minden adatot!',
+                duration: 3000,
+                position: 'bottom',
+                color: 'success',
+              });
+              await toast.present();
+              this.navCtrl.navigateRoot('/landing', { animated: true, animationDirection: 'back' });
+            } catch (err: any) {
+              const errorAlert = await this.alertCtrl.create({
+                header: 'Hiba',
+                message: this.mapAuthError(err.code),
+                buttons: ['OK'],
+              });
+              await errorAlert.present();
+            }
+            return true;
           },
         },
       ],

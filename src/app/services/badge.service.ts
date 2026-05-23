@@ -15,7 +15,7 @@ import {
   getDocs,
   getDoc,
 } from '@angular/fire/firestore';
-import { BadgeDefinition, UserBadge } from '../models/badge.model';
+import { BadgeDefinition, BadgeProgressStats, UserBadge } from '../models/badge.model';
 import { BADGES } from '../constants/badges.constant';
 import { FIXED_GOALS } from '../constants/goals.constant';
 import { LEVELS } from '../constants/leveling.constant';
@@ -172,6 +172,16 @@ export class BadgeService {
       default:
         return false;
     }
+  }
+
+  async getProgressStats(userId: string, currentLevel: number): Promise<BadgeProgressStats> {
+    const stats = await this.gatherUserStats(userId);
+    return {
+      totalActivities: stats.totalActivities,
+      completedChallenges: stats.completedChallengesCount,
+      currentStreak: stats.currentStreak,
+      currentLevel,
+    };
   }
 
   private async gatherUserStats(userId: string): Promise<UserStats> {

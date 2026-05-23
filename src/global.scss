@@ -37,7 +37,7 @@
 /* @import "@ionic/angular/css/palettes/dark.system.css"; */
 
 :root {
-  color-scheme: light;
+  color-scheme: only light;
 }
 
 * {
@@ -48,7 +48,7 @@
   font-family: "josefin";
   src: url("assets/fonts/Josefin_Sans/JosefinSans-VariableFont_wght.ttf")
     format("truetype");
-  font-weight: normal;
+  font-weight: 100 700;
   font-style: normal;
 }
 
@@ -61,12 +61,30 @@
 }
 
 ion-header {
+  overflow: visible;
+
+  ion-toolbar {
+    overflow: visible;
+  }
+
   ion-title {
+    overflow: visible;
     -webkit-padding-start: 16px;
     padding-inline-start: 16px;
     -webkit-padding-end: 16px;
     padding-inline-end: 16px;
   }
+}
+
+ion-title::part(native) {
+  overflow: visible;
+  padding-top: 4px;
+}
+
+ion-input::part(native) {
+  line-height: 1.6;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 // Activity cards global styling
@@ -184,6 +202,14 @@ ion-header {
 
 ion-footer {
   background: transparent;
+
+  app-navigation {
+    display: block;
+  }
+}
+
+ion-content {
+  --padding-bottom: 80px;
 }
 
 .rounded-card-modal {

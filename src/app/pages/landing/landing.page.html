@@ -1,0 +1,104 @@
+<ion-content [fullscreen]="true" class="landing-content">
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="logo-wrap">
+        <span class="logo-icon">🌸</span>
+        <span class="logo-text">Magnólia</span>
+      </div>
+      <h1 class="hero-title">Tudd meg.<br>Csökkentsd.<br>Változtass.</h1>
+      <p class="hero-sub">
+        Kövesd nyomon karbonlábnyomod, fedezd fel szokásaid hatásait,
+        és tegyél apró lépéseket egy fenntarthatóbb életért.
+      </p>
+      <div class="hero-ctas">
+        <ion-button class="cta-primary" routerLink="/register" expand="block">
+          Csatlakozz közösségünkhöz!
+        </ion-button>
+        <ion-button class="cta-outline" routerLink="/login" expand="block" fill="outline">
+          Van már fiókod? Jelentkezz be!
+        </ion-button>
+      </div>
+    </div>
+    <div class="hero-scroll-hint">↓</div>
+  </section>
+
+  <section class="facts-section">
+    <p class="section-label">Tudtad, hogy…</p>
+    <h2 class="section-title">Meglepő tények a karbonlábnyomról</h2>
+
+    <div class="carousel">
+      <button class="carousel-arrow left" (click)="prev()" aria-label="Előző">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+
+      <div class="carousel-viewport">
+        @for (fact of facts; track fact.title; let i = $index) {
+          <div class="fact-card" [class.active]="i === currentIndex">
+            <span class="fact-emoji">{{ fact.emoji }}</span>
+            <h3 class="fact-title">{{ fact.title }}</h3>
+            <p class="fact-text">{{ fact.text }}</p>
+          </div>
+        }
+      </div>
+
+      <button class="carousel-arrow right" (click)="next()" aria-label="Következő">
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </button>
+    </div>
+
+    <div class="carousel-dots">
+      @for (fact of facts; track fact.title; let i = $index) {
+        <button
+          class="dot"
+          [class.active]="i === currentIndex"
+          (click)="goTo(i)"
+          [attr.aria-label]="'Tény ' + (i + 1)"
+        ></button>
+      }
+    </div>
+  </section>
+
+  <section class="features-section">
+    <p class="section-label">Mit kínál az app?</p>
+    <h2 class="section-title">Minden eszköz a kezedben</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🚗</div>
+        <h3>Közlekedési napló</h3>
+        <p>Rögzítsd utazásaid és hasonlítsd össze, melyik mód a legkörnyezetbarátabb.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛒</div>
+        <h3>Vásárlás nyomon követése</h3>
+        <p>Tudd meg, hogy ami a kosárba kerül, az mennyibe kerül a Földnek.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Részletes statisztikák</h3>
+        <p>Vizuális grafikonok és trendek, amelyek megmutatják fejlődésed.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🏆</div>
+        <h3>Célok és kihívások</h3>
+        <p>Tűzz ki célokat, fogadj el kihívásokat, és gyűjts kitűzőket a haladásért.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="cta-inner">
+      <span class="cta-emoji">🌍</span>
+      <h2>Felkeltettük az érdeklődésed?</h2>
+      <p>Csatlakozz a Magnólia közösséghez – ingyenes, és az első lépés a változás felé.</p>
+      <ion-button class="cta-primary big" routerLink="/register" expand="block">
+        Regisztrálok most
+      </ion-button>
+      <p class="login-hint">
+        Van már fiókod?
+        <a routerLink="/login" class="login-link">Jelentkezz be!</a>
+      </p>
+    </div>
+  </section>
+
+</ion-content>

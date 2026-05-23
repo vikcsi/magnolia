@@ -12,7 +12,9 @@
     "lint": "ng lint",
     "buildweb": "ionic build --configuration=development",
     "deployweb": "firebase deploy --only hosting",
-    "buildanddeploy": "ionic build --configuration=development && firebase deploy --only hosting"
+    "buildanddeploy": "ionic build --configuration=development && firebase deploy --only hosting",
+    "ios": "ionic cap build ios && ionic cap open ios",
+    "android": "ionic cap build android && ionic cap open android"
   },
   "private": true,
   "dependencies": {
@@ -25,6 +27,7 @@
     "@angular/platform-browser": "^20.0.0",
     "@angular/platform-browser-dynamic": "^20.0.0",
     "@angular/router": "^20.0.0",
+    "@awesome-cordova-plugins/diagnostic": "^9.2.0",
     "@capacitor-community/background-geolocation": "^1.2.26",
     "@capacitor/android": "^8.0.0",
     "@capacitor/app": "^8.0.0",
@@ -37,6 +40,7 @@
     "@capacitor/local-notifications": "^8.0.2",
     "@capacitor/status-bar": "^8.0.0",
     "@ionic/angular": "^8.0.0",
+    "cordova.plugins.diagnostic": "^7.3.0",
     "firebase": "^12.9.0",
     "firebase-admin": "^13.6.1",
     "html5-qrcode": "^2.3.8",

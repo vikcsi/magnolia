@@ -2,8 +2,8 @@
   <ion-toolbar mode="md">
     <ion-title>Kitűző Galéria</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="close()">
-        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      <ion-button (click)="close()" aria-label="Bezárás">
+        <ion-icon name="close-outline" slot="icon-only" aria-hidden="true"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -24,17 +24,30 @@
       <div class="badges-grid">
         @for (badge of group.badges; track badge.id) {
           <div class="badge-card" [class.locked]="!badge.isEarned">
-            <div class="badge-icon-wrapper" [ngClass]="badge.rarity">
-              @if (badge.isEarned) {
-                <ion-icon [name]="badge.icon"></ion-icon>
-              } @else {
-                <ion-icon name="lock-closed"></ion-icon>
-              }
-            </div>
+            <app-badge-icon
+              [badgeId]="badge.id"
+              [rarity]="badge.rarity"
+              [state]="badge.isEarned ? 'idle' : 'locked'"
+              [size]="72"
+            ></app-badge-icon>
             <div class="badge-info">
               <h4>{{ badge.name }}</h4>
               <p>{{ badge.description }}</p>
-              @if (!badge.isEarned) {
+
+              @if (badge.progress) {
+                <!-- Következő tier haladás -->
+                <div class="badge-progress">
+                  <div class="progress-track">
+                    <div
+                      class="progress-fill"
+                      [style.width.%]="progressPercent(badge.progress)"
+                    ></div>
+                  </div>
+                  <span class="progress-label">
+                    {{ badge.progress.current }} / {{ badge.progress.target }}
+                  </span>
+                </div>
+              } @else if (!badge.isEarned) {
                 <span class="xp-reward">+{{ badge.xpReward }} XP</span>
               }
             </div>

@@ -311,7 +311,12 @@ export class DataService {
       completedChallenges,
     );
 
-    return { completedGoals, completedChallenges, earnedXp, earnedBadges };
+    const totalEarnedXp =
+      earnedXp +
+      completedGoals.reduce((s, g) => s + (g.xpReward ?? 0), 0) +
+      completedChallenges.reduce((s, c) => s + (c.xpReward ?? 0), 0) +
+      earnedBadges.reduce((s, b) => s + (b.xpReward ?? 0), 0);
+    return { completedGoals, completedChallenges, earnedXp: totalEarnedXp, earnedBadges };
   }
 
   async saveTravelActivity(
@@ -384,7 +389,12 @@ export class DataService {
       completedChallenges,
     );
 
-    return { completedGoals, completedChallenges, earnedXp, earnedBadges };
+    const totalEarnedXp =
+      earnedXp +
+      completedGoals.reduce((s, g) => s + (g.xpReward ?? 0), 0) +
+      completedChallenges.reduce((s, c) => s + (c.xpReward ?? 0), 0) +
+      earnedBadges.reduce((s, b) => s + (b.xpReward ?? 0), 0);
+    return { completedGoals, completedChallenges, earnedXp: totalEarnedXp, earnedBadges };
   }
 
   async saveEnergyActivity(
@@ -443,7 +453,12 @@ export class DataService {
       completedChallenges,
     );
 
-    return { completedGoals, completedChallenges, earnedXp, earnedBadges };
+    const totalEarnedXp =
+      earnedXp +
+      completedGoals.reduce((s, g) => s + (g.xpReward ?? 0), 0) +
+      completedChallenges.reduce((s, c) => s + (c.xpReward ?? 0), 0) +
+      earnedBadges.reduce((s, b) => s + (b.xpReward ?? 0), 0);
+    return { completedGoals, completedChallenges, earnedXp: totalEarnedXp, earnedBadges };
   }
 
   async saveCommunityProducts(products: any[]): Promise<void> {
@@ -940,42 +955,54 @@ export class DataService {
     });
   }
 
-  async deleteUserData(uid: string): Promise<void> {
-    return runInInjectionContext(this.injector, async () => {
-      const batch = writeBatch(this.firestore);
+  async deleteUserActivities(uid: string): Promise<void> {
+    const snap = await runInInjectionContext(this.injector, () =>
+      getDocs(query(collection(this.firestore, 'activities'), where('userId', '==', uid))),
+    );
+    if (snap.empty) return;
+    const batch = writeBatch(this.firestore);
+    snap.forEach((d) => batch.delete(d.ref));
+    await runInInjectionContext(this.injector, () => batch.commit());
+  }
 
-      const activitiesSnap = await getDocs(
-        query(collection(this.firestore, 'activities'), where('userId', '==', uid)),
-      );
-      activitiesSnap.forEach((d) => batch.delete(d.ref));
-
-      const goalsSnap = await getDocs(
-        query(collection(this.firestore, 'user_goals'), where('userId', '==', uid)),
-      );
-      goalsSnap.forEach((d) => batch.delete(d.ref));
-
-      const challengesSnap = await getDocs(
-        query(collection(this.firestore, 'user_challenges'), where('userId', '==', uid)),
-      );
-      challengesSnap.forEach((d) => batch.delete(d.ref));
-
-      const statsSnap = await getDocs(
-        query(collection(this.firestore, 'monthly_stats'), where('userId', '==', uid)),
-      );
-      statsSnap.forEach((d) => batch.delete(d.ref));
-
-      const friendshipsSnap = await getDocs(
-        query(
-          collection(this.firestore, 'friendships'),
-          or(where('user1', '==', uid), where('user2', '==', uid)),
+  async deleteUserRelatedData(uid: string): Promise<void> {
+    const [goalsSnap, challengesSnap, statsSnap, friendshipsSnap] = await Promise.all([
+      runInInjectionContext(this.injector, () =>
+        getDocs(query(collection(this.firestore, 'user_goals'), where('userId', '==', uid))),
+      ),
+      runInInjectionContext(this.injector, () =>
+        getDocs(query(collection(this.firestore, 'user_challenges'), where('userId', '==', uid))),
+      ),
+      runInInjectionContext(this.injector, () =>
+        getDocs(collection(this.firestore, `users/${uid}/stats`)),
+      ),
+      runInInjectionContext(this.injector, () =>
+        getDocs(
+          query(
+            collection(this.firestore, 'friendships'),
+            or(where('user1', '==', uid), where('user2', '==', uid)),
+          ),
         ),
-      );
-      friendshipsSnap.forEach((d) => batch.delete(d.ref));
+      ),
+    ]);
+    const batch = writeBatch(this.firestore);
+    goalsSnap.forEach((d) => batch.delete(d.ref));
+    challengesSnap.forEach((d) => batch.delete(d.ref));
+    statsSnap.forEach((d) => batch.delete(d.ref));
+    friendshipsSnap.forEach((d) => batch.delete(d.ref));
+    await runInInjectionContext(this.injector, () => batch.commit());
+  }
 
-      batch.delete(doc(this.firestore, `users/${uid}`));
+  async deleteUserDocument(uid: string): Promise<void> {
+    await runInInjectionContext(this.injector, () =>
+      deleteDoc(doc(this.firestore, `users/${uid}`)),
+    );
+  }
 
-      await batch.commit();
-    });
+  async deleteUserData(uid: string): Promise<void> {
+    await this.deleteUserActivities(uid);
+    await this.deleteUserRelatedData(uid);
+    await this.deleteUserDocument(uid);
   }
 
   searchUsersByUsername(searchTerm: string): Observable<User[]> {

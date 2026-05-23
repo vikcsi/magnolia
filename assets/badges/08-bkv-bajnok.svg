@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <title>BKV bajnok</title>
+  <circle cx="60" cy="60" r="55" fill="none" stroke="#1B1110" stroke-width="2"/>
+  <circle cx="60" cy="60" r="49" fill="none" stroke="#1B1110" stroke-width="2.5"/>
+  <circle cx="60" cy="60" r="42" fill="#FFE8DD"/>
+  <g stroke="#1B1110" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
+    <!-- Bus body - rounded rectangle -->
+    <rect x="34" y="42" width="52" height="38" rx="6" fill="#3E2723"/>
+    <!-- Top destination strip (single dark band) -->
+    <rect x="38" y="46" width="44" height="4" rx="1" fill="#FFE8DD" stroke="none"/>
+    <!-- Windows row - 3 clean windows -->
+    <rect x="38" y="54" width="13" height="11" rx="1.5" fill="#FFE8DD" stroke-width="2"/>
+    <rect x="53.5" y="54" width="13" height="11" rx="1.5" fill="#FFE8DD" stroke-width="2"/>
+    <rect x="69" y="54" width="13" height="11" rx="1.5" fill="#FFE8DD" stroke-width="2"/>
+    <!-- Door (vertical split below windows on the side) -->
+    <line x1="60" y1="68" x2="60" y2="80" stroke-width="2"/>
+    <!-- Headlights (small circles at bottom corners) -->
+    <circle cx="40" cy="74" r="2" fill="#FFE8DD" stroke="none"/>
+    <circle cx="80" cy="74" r="2" fill="#FFE8DD" stroke="none"/>
+    <!-- Wheels (below the body) -->
+    <circle cx="44" cy="84" r="6" fill="#1B1110" stroke="#1B1110" stroke-width="2"/>
+    <circle cx="44" cy="84" r="2" fill="#FFE8DD" stroke="none"/>
+    <circle cx="76" cy="84" r="6" fill="#1B1110" stroke="#1B1110" stroke-width="2"/>
+    <circle cx="76" cy="84" r="2" fill="#FFE8DD" stroke="none"/>
+  </g>
+</svg>

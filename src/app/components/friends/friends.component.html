@@ -6,9 +6,10 @@
         placeholder="Barát keresése felhasználónév alapján..."
         [(ngModel)]="searchUsername"
         (keyup.enter)="handleSearch()"
+        aria-label="Felhasználónév keresése"
       ></ion-input>
-      <ion-button fill="clear" (click)="handleSearch()">
-        <ion-icon name="search-outline" slot="icon-only"></ion-icon>
+      <ion-button fill="clear" (click)="handleSearch()" aria-label="Keresés">
+        <ion-icon name="search-outline" slot="icon-only" aria-hidden="true"></ion-icon>
       </ion-button>
     </div>
   </div>

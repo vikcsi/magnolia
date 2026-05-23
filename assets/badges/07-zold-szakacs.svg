@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <title>Zöld szakács</title>
+  <circle cx="60" cy="60" r="55" fill="none" stroke="#1B1110" stroke-width="2"/>
+  <circle cx="60" cy="60" r="49" fill="none" stroke="#1B1110" stroke-width="2.5"/>
+  <circle cx="60" cy="60" r="42" fill="#FFE8DD"/>
+  <g stroke="#1B1110" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
+    <!-- Bowl - half-circle / arc shape -->
+    <path d="M 32 64
+             L 88 64
+             C 88 80, 76 90, 60 90
+             C 44 90, 32 80, 32 64 Z"
+          fill="#3E2723"/>
+    <!-- Bowl rim highlight (top edge) -->
+    <line x1="32" y1="64" x2="88" y2="64" stroke-width="3.5"/>
+    <!-- Carrot body (orange/dark triangle) sitting in the bowl, tip pointing down-right -->
+    <path d="M 44 52
+             L 56 38
+             L 60 42
+             L 52 60
+             Z"
+          fill="#FFE8DD" stroke-width="2.5"/>
+    <!-- Carrot ridges (small horizontal lines) -->
+    <line x1="48" y1="50" x2="52" y2="48" stroke-width="1.5"/>
+    <line x1="50" y1="55" x2="55" y2="53" stroke-width="1.5"/>
+    <!-- Carrot greens/leaves on top -->
+    <path d="M 56 38 L 52 28" stroke-width="2.5"/>
+    <path d="M 56 38 L 60 28" stroke-width="2.5"/>
+    <path d="M 56 38 L 56 26" stroke-width="2.5"/>
+    <ellipse cx="52" cy="28" rx="2" ry="3" fill="#3E2723" stroke-width="2" transform="rotate(-20 52 28)"/>
+    <ellipse cx="60" cy="28" rx="2" ry="3" fill="#3E2723" stroke-width="2" transform="rotate(20 60 28)"/>
+    <ellipse cx="56" cy="25" rx="2" ry="3" fill="#3E2723" stroke-width="2"/>
+    <!-- Steam wisps rising from bowl (chef vibe) -->
+    <path d="M 68 50 Q 72 46, 70 42 Q 68 38, 72 34" fill="none" stroke-width="2"/>
+    <path d="M 76 52 Q 80 48, 78 44 Q 76 40, 80 36" fill="none" stroke-width="2"/>
+  </g>
+</svg>
