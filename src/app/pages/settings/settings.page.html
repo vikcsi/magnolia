@@ -156,10 +156,10 @@
                 <div class="activity-item" [class.selected]="selectedIds.has(activity.id)" (click)="toggleSelect(activity.id)">
                   <ion-icon [name]="selectedIds.has(activity.id) ? 'checkbox-outline' : 'square-outline'" class="check-icon"></ion-icon>
                   <div class="activity-icon-wrap">
-                    <ion-icon [name]="getActivityIcon(activity)"></ion-icon>
+                    <ion-icon [name]="activityDisplay.getIcon(activity)"></ion-icon>
                   </div>
                   <div class="activity-info">
-                    <span class="activity-type">{{ getActivityLabel(activity) }}</span>
+                    <span class="activity-type">{{ activityDisplay.getLabel(activity) }}</span>
                     <span class="activity-date">{{ getActivityDate(activity) | date:'yyyy. MM. dd.' }}</span>
                   </div>
                   <span class="activity-emission">{{ activity.emission | number:'1.1-1' }} kg</span>

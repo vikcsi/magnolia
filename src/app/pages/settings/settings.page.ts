@@ -48,7 +48,10 @@ import {
 } from '@ionic/angular/standalone';
 import { AuthService } from '../../services/auth.service';
 import { DataService } from '../../services/data.service';
-import { Activity, Travel, Energy } from '../../models/activity.model';
+import { Activity } from '../../models/activity.model';
+import { ActivityDisplayService } from '../../services/activity-display.service';
+import { toDate } from '../../utils/date.util';
+import { mapAuthError } from '../../utils/firebase-error.util';
 
 @Component({
   selector: 'app-settings',
@@ -76,6 +79,7 @@ export class SettingsPage implements OnInit, OnDestroy {
   private toastCtrl = inject(ToastController);
   private navCtrl = inject(NavController);
   private location = inject(Location);
+  activityDisplay = inject(ActivityDisplayService);
 
   showEmailForm = false;
   showPasswordForm = false;
@@ -192,7 +196,7 @@ export class SettingsPage implements OnInit, OnDestroy {
       this.emailPassword = '';
       setTimeout(() => { this.showEmailForm = false; this.emailSuccess = ''; }, 2000);
     } catch (err: any) {
-      this.emailError = this.mapAuthError(err.code);
+      this.emailError = mapAuthError(err.code);
     } finally {
       this.emailLoading = false;
     }
@@ -228,7 +232,7 @@ export class SettingsPage implements OnInit, OnDestroy {
       this.confirmPassword = '';
       setTimeout(() => { this.showPasswordForm = false; this.passwordSuccess = ''; }, 2000);
     } catch (err: any) {
-      this.passwordError = this.mapAuthError(err.code);
+      this.passwordError = mapAuthError(err.code);
     } finally {
       this.passwordLoading = false;
     }
@@ -305,64 +309,12 @@ export class SettingsPage implements OnInit, OnDestroy {
     await confirm.present();
   }
 
-  getActivityIcon(activity: Activity): string {
-    if (activity.type === 'travel') {
-      const icons: Record<string, string> = {
-        car: 'car-outline',
-        motorbike: 'speedometer-outline',
-        bus: 'bus-outline',
-        train: 'train-outline',
-        bicycling: 'bicycle-outline',
-        walking: 'walk-outline',
-      };
-      return icons[(activity.details as Travel).mode] ?? 'bus-outline';
-    }
-    if (activity.type === 'energy') {
-      const icons: Record<string, string> = {
-        electricity: 'flash-outline',
-        gas: 'flame-outline',
-        water: 'water-outline',
-      };
-      return icons[(activity.details as Energy).typeEnergy] ?? 'flash-outline';
-    }
-    return 'cart-outline';
-  }
-
-  getActivityLabel(activity: Activity): string {
-    if (activity.type === 'travel') {
-      const labels: Record<string, string> = {
-        car: 'Autó',
-        motorbike: 'Motor',
-        bus: 'Tömegközlekedés',
-        train: 'Vonat',
-        bicycling: 'Bicikli',
-        walking: 'Gyalog',
-      };
-      return labels[(activity.details as Travel).mode] ?? 'Utazás';
-    }
-    if (activity.type === 'energy') {
-      const labels: Record<string, string> = {
-        electricity: 'Villanyáram',
-        gas: 'Gáz',
-        water: 'Víz',
-      };
-      return labels[(activity.details as Energy).typeEnergy] ?? 'Energia';
-    }
-    return 'Bevásárlás';
-  }
-
   getActivityDate(activity: Activity): Date {
-    return this.toDate(activity.timestamp);
-  }
-
-  private toDate(value: any): Date {
-    if (value instanceof Date) return value;
-    if (typeof value?.toDate === 'function') return value.toDate();
-    return new Date(value);
+    return toDate(activity.timestamp);
   }
 
   private toMs(value: any): number {
-    return this.toDate(value).getTime();
+    return toDate(value).getTime();
   }
 
   async logout() {
@@ -409,7 +361,7 @@ export class SettingsPage implements OnInit, OnDestroy {
             } catch (err: any) {
               const errorAlert = await this.alertCtrl.create({
                 header: 'Hiba',
-                message: this.mapAuthError(err.code),
+                message: mapAuthError(err.code),
                 buttons: ['OK'],
               });
               await errorAlert.present();
@@ -422,23 +374,4 @@ export class SettingsPage implements OnInit, OnDestroy {
     await confirm.present();
   }
 
-  private mapAuthError(code: string): string {
-    switch (code) {
-      case 'auth/wrong-password':
-      case 'auth/invalid-credential':
-        return 'Helytelen jelszó!';
-      case 'auth/email-already-in-use':
-        return 'Ez az e-mail cím már foglalt!';
-      case 'auth/invalid-email':
-        return 'Érvénytelen e-mail cím formátum!';
-      case 'auth/weak-password':
-        return 'A jelszó túl gyenge! Legalább 6 karakter szükséges.';
-      case 'auth/requires-recent-login':
-        return 'A művelethez újra be kell jelentkezned!';
-      case 'auth/network-request-failed':
-        return 'Hálózati hiba. Ellenőrizd az internetkapcsolatod!';
-      default:
-        return 'Váratlan hiba történt. Kérlek, próbáld újra!';
-    }
-  }
 }

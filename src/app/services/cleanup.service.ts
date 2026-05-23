@@ -11,11 +11,11 @@ import {
   where,
   getDocs,
   writeBatch,
-  doc,
 } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 import { FIXED_GOALS } from '../constants/goals.constant';
 import { environment } from '../../environments/environment';
+import { toDate } from '../utils/date.util';
 
 @Injectable({ providedIn: 'root' })
 export class CleanupService {
@@ -38,51 +38,41 @@ export class CleanupService {
     }
   }
 
-  private async cleanupExpiredChallenges(userId: string): Promise<void> {
-    return runInInjectionContext(this.injector, async () => {
-      const challengesRef = collection(this.firestore, 'user_challenges');
-      const q = query(
-        challengesRef,
-        where('userId', '==', userId),
-        where('status', '==', 'active'),
-      );
-
-      const snapshot = await getDocs(q);
-      if (snapshot.empty) return;
-
-      const batch = writeBatch(this.firestore);
-      const now = new Date();
-      let failedCount = 0;
-
-      snapshot.forEach((docSnap) => {
-        const data = docSnap.data();
-        const expiresAt =
-          data['expiresAt'] instanceof Date
-            ? data['expiresAt']
-            : data['expiresAt']?.toDate?.();
-
-        if (expiresAt && now > expiresAt) {
-          batch.update(docSnap.ref, { status: 'failed' });
-          failedCount++;
-        }
-      });
-
-      if (failedCount > 0) {
-        await batch.commit();
-        if (!environment.production) console.log(`[CleanupService] ${failedCount} lejárt kihívás lezárva.`);
-      }
-    });
+  private cleanupExpiredChallenges(userId: string): Promise<void> {
+    return this.cleanupExpired(
+      userId,
+      'user_challenges',
+      (data) => toDate(data['expiresAt']),
+      'lejárt kihívás lezárva.',
+    );
   }
 
-  private async cleanupExpiredGoals(userId: string): Promise<void> {
-    return runInInjectionContext(this.injector, async () => {
-      const goalsRef = collection(this.firestore, 'user_goals');
-      const q = query(
-        goalsRef,
-        where('userId', '==', userId),
-        where('status', '==', 'active'),
-      );
+  private cleanupExpiredGoals(userId: string): Promise<void> {
+    return this.cleanupExpired(
+      userId,
+      'user_goals',
+      (data) => {
+        const startDate = toDate(data['startDate']);
+        if (!startDate) return null;
+        const goalDef = FIXED_GOALS.find((g) => g.id === data['goalId']);
+        if (!goalDef) return null;
+        return new Date(startDate.getTime() + goalDef.durationDays * 24 * 60 * 60 * 1000);
+      },
+      'lejárt célkitűzés lezárva.',
+      (now) => ({ failedAt: now }),
+    );
+  }
 
+  private async cleanupExpired<T extends Record<string, any>>(
+    userId: string,
+    collectionName: string,
+    deadlineFn: (data: T) => Date | null,
+    label: string,
+    extraUpdate: (now: Date) => Record<string, any> = () => ({}),
+  ): Promise<void> {
+    return runInInjectionContext(this.injector, async () => {
+      const ref = collection(this.firestore, collectionName);
+      const q = query(ref, where('userId', '==', userId), where('status', '==', 'active'));
       const snapshot = await getDocs(q);
       if (snapshot.empty) return;
 
@@ -91,34 +81,16 @@ export class CleanupService {
       let failedCount = 0;
 
       snapshot.forEach((docSnap) => {
-        const data = docSnap.data();
-
-        const startDate =
-          data['startDate'] instanceof Date
-            ? data['startDate']
-            : data['startDate']?.toDate?.();
-
-        if (!startDate) return;
-
-        const goalDef = FIXED_GOALS.find((g) => g.id === data['goalId']);
-        if (!goalDef) return;
-
-        const deadlineMs =
-          startDate.getTime() + goalDef.durationDays * 24 * 60 * 60 * 1000;
-        const deadline = new Date(deadlineMs);
-
-        if (now > deadline) {
-          batch.update(docSnap.ref, {
-            status: 'failed',
-            failedAt: now,
-          });
+        const deadline = deadlineFn(docSnap.data() as T);
+        if (deadline && now > deadline) {
+          batch.update(docSnap.ref, { status: 'failed', ...extraUpdate(now) });
           failedCount++;
         }
       });
 
       if (failedCount > 0) {
         await batch.commit();
-        if (!environment.production) console.log(`[CleanupService] ${failedCount} lejárt célkitűzés lezárva.`);
+        if (!environment.production) console.log(`[CleanupService] ${failedCount} ${label}`);
       }
     });
   }

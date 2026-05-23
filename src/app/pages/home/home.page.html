@@ -84,9 +84,9 @@
     <ion-list lines="none">
       @for (activity of recentActivities; track activity.id) {
       <ion-item class="activity-item">
-        <ion-icon [name]="getActivityIcon(activity)" slot="start"></ion-icon>
+        <ion-icon [name]="activityDisplay.getIcon(activity)" slot="start"></ion-icon>
         <ion-label>
-          <h2>{{ getActivityLabel(activity) }}</h2>
+          <h2>{{ activityDisplay.getLabel(activity) }}</h2>
           <p>{{ activity.timestamp | firestoreDate | date:'short' }}</p>
         </ion-label>
         <div class="activity-value">+{{ activity.emission | number:'1.0-2' }} kg</div>

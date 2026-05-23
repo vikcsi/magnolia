@@ -137,7 +137,7 @@
           <div class="tracking-stats">
             <div class="tracking-stat">
               <span class="tracking-stat-value">{{
-                formatDuration(trackingState.elapsedSeconds)
+                trackingState.elapsedSeconds | secondsDuration
               }}</span>
               <span class="tracking-stat-label">eltelt idő</span>
             </div>
@@ -164,55 +164,3 @@
     }
   }
 </div>
-
-@if (showModeModal) {
-  <div class="modal-backdrop">
-    <div class="modal-sheet">
-      <div class="modal-handle"></div>
-
-      <h3 class="modal-title">Milyen eszközzel utaztál?</h3>
-
-      <div class="modal-stats">
-        <div class="modal-stat">
-          <span class="modal-stat-value">{{
-            formatDuration(trackingState.elapsedSeconds)
-          }}</span>
-          <span class="modal-stat-label">idő</span>
-        </div>
-        <div class="modal-stat">
-          <span class="modal-stat-value"
-            >{{ trackingState.distanceKm }} km</span
-          >
-          <span class="modal-stat-label">távolság</span>
-        </div>
-      </div>
-
-      <div class="transport-options">
-        @for (mode of trackingModes; track mode) {
-          <button
-            class="transport-option"
-            [class.active]="selectedTrackingMode === mode"
-            (click)="selectedTrackingMode = mode"
-            [attr.aria-pressed]="selectedTrackingMode === mode"
-            [attr.aria-label]="modeConfig[mode].label"
-          >
-            <div class="transport-icon" aria-hidden="true">{{ modeConfig[mode].icon }}</div>
-            <ion-label>{{ modeConfig[mode].label }}</ion-label>
-          </button>
-        }
-      </div>
-
-      <ion-button
-        expand="block"
-        class="save-button"
-        [disabled]="isSavingTrip"
-        (click)="saveTrip()"
-      >
-        @if (isSavingTrip) {
-          <ion-spinner name="crescent" slot="start"></ion-spinner>
-        }
-        <span>{{ isSavingTrip ? "Mentés..." : "Mentés a naplóba" }}</span>
-      </ion-button>
-    </div>
-  </div>
-}

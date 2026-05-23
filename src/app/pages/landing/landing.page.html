@@ -1,5 +1,6 @@
 <ion-content [fullscreen]="true" class="landing-content">
 
+  @if (!isLoading) {
   <section class="hero">
     <div class="hero-inner">
       <div class="logo-wrap">
@@ -100,5 +101,6 @@
       </p>
     </div>
   </section>
+  } <!-- @if (!isLoading) -->
 
 </ion-content>

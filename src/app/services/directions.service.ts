@@ -20,9 +20,6 @@ export interface RouteComparison {
   polyline?: string;
 }
 
-const USE_MOCK = false;
-
-const MOCK_RESULT: RouteResult = { distanceKm: 5.2, durationMin: 18 };
 
 @Injectable({ providedIn: 'root' })
 export class DirectionsService {
@@ -32,9 +29,6 @@ export class DirectionsService {
   private readonly browserApiUrl = '/maps-api/maps/api/directions/json';
 
   getDirections(origin: string, destination: string, mode: TransportMode): Observable<RouteResult | null> {
-    if (USE_MOCK) {
-      return of(MOCK_RESULT);
-    }
 
     const googleMode = this.toGoogleMode(mode);
     const params: Record<string, string> = {
@@ -74,17 +68,6 @@ export class DirectionsService {
   }
 
   compareAllModes(origin: string, destination: string): Observable<RouteComparison[]> {
-    if (USE_MOCK) {
-      const mockItems: RouteComparison[] = [
-        { mode: 'car', distanceKm: 12.4, durationMin: 22 },
-        { mode: 'motorbike', distanceKm: 12.4, durationMin: 20 },
-        { mode: 'bus', distanceKm: 14.1, durationMin: 38 },
-        { mode: 'bicycling', distanceKm: 11.8, durationMin: 52 },
-        { mode: 'walking', distanceKm: 11.5, durationMin: 138 },
-      ];
-      return of(mockItems);
-    }
-
     return forkJoin([
       this.getDirections(origin, destination, 'car'),
       this.getDirections(origin, destination, 'bus'),

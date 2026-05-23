@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { mapAuthError } from '../../utils/firebase-error.util';
 import { addIcons } from 'ionicons';
 import {
   checkmark,
@@ -119,24 +120,7 @@ export class LoginPage {
       await this.authService.login(email, password, this.rememberMe);
       this.navCtrl.navigateRoot('/home', { animated: true, animationDirection: 'forward' });
     } catch (error: any) {
-      switch (error.code) {
-        case 'auth/invalid-email':
-          this.errorMessage = 'Érvénytelen e-mail cím formátum!';
-          break;
-        case 'auth/user-not-found':
-        case 'auth/wrong-password':
-        case 'auth/invalid-credential':
-          this.errorMessage = 'Hibás e-mail cím vagy jelszó!';
-          break;
-        case 'auth/too-many-requests':
-          this.errorMessage = 'Túl sok sikertelen kísérlet. Próbáld újra később!';
-          break;
-        case 'auth/network-request-failed':
-          this.errorMessage = 'Hálózati hiba. Ellenőrizd az internetkapcsolatod!';
-          break;
-        default:
-          this.errorMessage = 'Váratlan hiba történt. Kérlek, próbáld újra!';
-      }
+      this.errorMessage = mapAuthError(error);
     } finally {
       this.isLoading = false;
     }

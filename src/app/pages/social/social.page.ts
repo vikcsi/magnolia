@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavigationComponent } from 'src/app/components/navigation/navigation.component';
@@ -17,6 +17,7 @@ import {
   radioButtonOn,
   people,
   flash,
+  personOutline,
 } from 'ionicons/icons';
 import {
   IonHeader,
@@ -24,6 +25,10 @@ import {
   IonTitle,
   IonContent,
   IonFooter,
+  IonButtons,
+  IonButton,
+  IonIcon,
+  NavController,
 } from '@ionic/angular/standalone';
 
 @Component({
@@ -37,6 +42,9 @@ import {
     IonTitle,
     IonContent,
     IonFooter,
+    IonButtons,
+    IonButton,
+    IonIcon,
     NavigationComponent,
     LeaderboardComponent,
     FriendsComponent,
@@ -47,6 +55,7 @@ import {
 })
 export class SocialPage implements OnInit {
   selectedTab: string = 'leaderboard';
+  private navCtrl = inject(NavController);
 
   constructor() {
     addIcons({
@@ -60,6 +69,7 @@ export class SocialPage implements OnInit {
       radioButtonOn,
       people,
       flash,
+      personOutline,
     });
   }
 
@@ -67,5 +77,9 @@ export class SocialPage implements OnInit {
 
   selectTab(tab: string) {
     this.selectedTab = tab;
+  }
+
+  openProfile(): void {
+    this.navCtrl.navigateForward('/profile');
   }
 }

@@ -62,6 +62,7 @@ export class LandingPage implements OnInit, OnDestroy {
     },
   ];
 
+  isLoading = true;
   currentIndex = 0;
   animating = false;
   private timer: any;
@@ -84,6 +85,8 @@ export class LandingPage implements OnInit, OnDestroy {
     this.authService.user$.pipe(take(1)).subscribe(user => {
       if (user) {
         this.router.navigate(['/home'], { replaceUrl: true });
+      } else {
+        this.isLoading = false;
       }
     });
     this.startTimer();
@@ -114,7 +117,7 @@ export class LandingPage implements OnInit, OnDestroy {
   private startTimer(): void {
     this.timer = setInterval(() => {
       this.currentIndex = (this.currentIndex + 1) % this.facts.length;
-    }, 4500);
+    }, 16000);
   }
 
   private resetTimer(): void {

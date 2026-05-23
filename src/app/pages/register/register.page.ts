@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { mapAuthError } from '../../utils/firebase-error.util';
 import { DataService } from '../../services/data.service';
 import { FIXED_GOALS } from '../../constants/goals.constant';
 import { Goal } from '../../models/goal.model';
@@ -85,22 +86,7 @@ export class RegisterPage implements OnInit {
       await this.dataService.createUserProfile(user.uid, username, email, this.selectedGoalIds);
       this.navCtrl.navigateRoot('/home', { animated: true, animationDirection: 'forward' });
     } catch (error: any) {
-      switch (error.code) {
-        case 'auth/email-already-in-use':
-          this.errorMessage = 'Ezzel az e-mail címmel már regisztráltak!';
-          break;
-        case 'auth/invalid-email':
-          this.errorMessage = 'Érvénytelen e-mail cím formátum!';
-          break;
-        case 'auth/weak-password':
-          this.errorMessage = 'A jelszó túl gyenge! Legalább 6 karaktert adj meg.';
-          break;
-        case 'auth/network-request-failed':
-          this.errorMessage = 'Hálózati hiba. Ellenőrizd az internetkapcsolatod!';
-          break;
-        default:
-          this.errorMessage = 'Váratlan hiba történt. Kérlek, próbáld újra!';
-      }
+      this.errorMessage = mapAuthError(error);
     } finally {
       this.isLoading = false;
     }

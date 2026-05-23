@@ -140,7 +140,7 @@
     }
 
     @if (!scannedProduct && !isLoading && !isWebScannerActive) {
-      @if (isDesktopWeb) {
+      @if (platformHelper.isDesktopWeb) {
         <div class="tracking-unavailable">
           <span class="tracking-unavailable-icon">📱</span>
           <p>A vonalkód beolvasás csak mobilböngészőből vagy a mobilalkalmazásból érhető el.</p>

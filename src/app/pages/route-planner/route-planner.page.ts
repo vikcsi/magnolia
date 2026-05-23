@@ -9,10 +9,12 @@ import {
   IonFooter,
   IonIcon,
   IonButton,
+  IonButtons,
   IonSpinner,
   IonInput,
   ToastController,
   AlertController,
+  NavController,
 } from '@ionic/angular/standalone';
 import { NavigationComponent } from 'src/app/components/navigation/navigation.component';
 import { Subject, Subscription } from 'rxjs';
@@ -29,6 +31,7 @@ import {
   checkmarkCircleOutline,
   swapVerticalOutline,
   arrowBackOutline,
+  personOutline,
 } from 'ionicons/icons';
 import { Capacitor } from '@capacitor/core';
 import { environment } from 'src/environments/environment';
@@ -50,7 +53,6 @@ import { ModalController } from '@ionic/angular/standalone';
 import {
   getCurrentLevel,
 } from 'src/app/constants/leveling.constant';
-import { BadgeService } from 'src/app/services/badge.service';
 
 export interface ComparisonItem {
   mode: TransportMode;
@@ -75,6 +77,7 @@ export interface ComparisonItem {
     IonContent,
     IonIcon,
     IonButton,
+    IonButtons,
     IonSpinner,
     IonInput,
     IonFooter,
@@ -93,6 +96,7 @@ export class RoutePlannerPage implements OnInit, OnDestroy {
   private alertController = inject(AlertController);
   private diagnostic = inject(Diagnostic);
   private location = inject(Location);
+  private navCtrl = inject(NavController);
 
   fromQuery = '';
   toQuery = '';
@@ -130,6 +134,7 @@ export class RoutePlannerPage implements OnInit, OnDestroy {
       checkmarkCircleOutline,
       swapVerticalOutline,
       arrowBackOutline,
+      personOutline,
     });
   }
 
@@ -465,5 +470,9 @@ export class RoutePlannerPage implements OnInit, OnDestroy {
     const h = Math.floor(minutes / 60);
     const m = minutes % 60;
     return m > 0 ? `${h} ó ${m} perc` : `${h} óra`;
+  }
+
+  openProfile(): void {
+    this.navCtrl.navigateForward('/profile');
   }
 }

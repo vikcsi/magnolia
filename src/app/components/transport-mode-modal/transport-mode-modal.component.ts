@@ -14,9 +14,8 @@ import {
 } from '@ionic/angular/standalone';
 import { TransportMode } from 'src/app/services/directions.service';
 import { addIcons } from 'ionicons';
-import {
-  closeOutline
-} from 'ionicons/icons';
+import { closeOutline } from 'ionicons/icons';
+import { SecondsDurationPipe } from 'src/app/pipes/seconds-duration.pipe';
 
 @Component({
   selector: 'app-transport-mode-modal',
@@ -34,6 +33,7 @@ import {
     IonToolbar,
     IonTitle,
     IonButtons,
+    SecondsDurationPipe,
   ],
 })
 export class TransportModeModalComponent {
@@ -70,14 +70,6 @@ export class TransportModeModalComponent {
       walking: { label: 'Gyalog', icon: '🚶' },
     };
 
-  formatDuration(seconds: number): string {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
-    if (h > 0)
-      return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-  }
 
   cancel() {
     this.modalCtrl.dismiss(null, 'cancel');

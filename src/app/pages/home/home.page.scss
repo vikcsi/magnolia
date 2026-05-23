@@ -245,6 +245,3 @@ ion-footer { background: transparent; }
   .summary-container { grid-template-columns: repeat(1, 1fr); }
 }
 
-@media (min-width: 768px) {
-  .profile-btn-mobile { display: none; }
-}

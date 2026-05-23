@@ -32,6 +32,7 @@ import { User } from '../models/user.model';
 import { Goal, UserGoal } from '../models/goal.model';
 import { Activity } from '../models/activity.model';
 import { Challenge, UserChallenge } from '../models/challenge.model';
+import { toDate, isSameDay } from '../utils/date.util';
 import { Friendship } from '../models/friendship.model';
 import { FIXED_GOALS } from '../constants/goals.constant';
 import { BadgeDefinition } from '../models/badge.model';
@@ -598,14 +599,6 @@ export class DataService {
     });
   }
 
-  private isSameDay(date1: Date, date2: Date): boolean {
-    return (
-      date1.getFullYear() === date2.getFullYear() &&
-      date1.getMonth() === date2.getMonth() &&
-      date1.getDate() === date2.getDate()
-    );
-  }
-
   private async getTodayTotalEmission(userId: string): Promise<number> {
     return runInInjectionContext(this.injector, async () => {
       const activitiesRef = collection(this.firestore, 'activities');
@@ -644,10 +637,7 @@ export class DataService {
       const goalDef = FIXED_GOALS.find((g) => g.id === userGoal.goalId);
       if (!goalDef) return;
 
-      const goalStartDate =
-        userGoal.startDate instanceof Date
-          ? userGoal.startDate
-          : (userGoal.startDate as any)?.toDate?.();
+      const goalStartDate = toDate(userGoal.startDate);
 
       if (goalStartDate) {
         const goalDeadline =
@@ -660,16 +650,12 @@ export class DataService {
         }
       }
 
-      let lastUpdate: Date | null = null;
-      if (userGoal.lastUpdatedDate) {
-        lastUpdate =
-          userGoal.lastUpdatedDate instanceof Date
-            ? userGoal.lastUpdatedDate
-            : (userGoal.lastUpdatedDate as any).toDate();
-      }
+      const lastUpdate = userGoal.lastUpdatedDate
+        ? toDate(userGoal.lastUpdatedDate)
+        : null;
 
       const alreadyUpdatedToday = lastUpdate
-        ? this.isSameDay(lastUpdate, now)
+        ? isSameDay(lastUpdate, now)
         : false;
       let progressIncrement = 0;
 
@@ -767,10 +753,7 @@ export class DataService {
 
     snapshot.forEach((docSnap) => {
       const userChallenge = docSnap.data() as UserChallenge;
-      const expiresAt =
-        userChallenge.expiresAt instanceof Date
-          ? userChallenge.expiresAt
-          : (userChallenge.expiresAt as any).toDate();
+      const expiresAt = toDate(userChallenge.expiresAt);
 
       if (now > expiresAt) {
         batch.update(docSnap.ref, { status: 'failed' });

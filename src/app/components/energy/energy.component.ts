@@ -20,7 +20,6 @@ import { checkmarkCircleOutline } from 'ionicons/icons';
 import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
 import { CarbonCalculatorService } from 'src/app/services/carbon-calculator.service';
-import { BadgeService } from 'src/app/services/badge.service';
 import { GamificationUiService } from 'src/app/services/gamification-ui.service';
 import {
   getCurrentLevel

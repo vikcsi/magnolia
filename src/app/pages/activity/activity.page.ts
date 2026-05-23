@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavigationComponent } from 'src/app/components/navigation/navigation.component';
@@ -11,6 +11,7 @@ import {
   cartOutline,
   flashOutline,
   cameraOutline,
+  personOutline,
 } from 'ionicons/icons';
 import {
   IonHeader,
@@ -20,6 +21,9 @@ import {
   IonLabel,
   IonIcon,
   IonFooter,
+  IonButtons,
+  IonButton,
+  NavController,
 } from '@ionic/angular/standalone';
 
 @Component({
@@ -35,6 +39,8 @@ import {
     IonLabel,
     IonIcon,
     IonFooter,
+    IonButtons,
+    IonButton,
     NavigationComponent,
     EnergyComponent,
     ShoppingComponent,
@@ -43,8 +49,9 @@ import {
     FormsModule,
   ],
 })
-export class ActivityPage implements OnInit {
+export class ActivityPage {
   selectedCategory: string = 'transport';
+  private navCtrl = inject(NavController);
 
   constructor() {
     addIcons({
@@ -52,12 +59,15 @@ export class ActivityPage implements OnInit {
       cartOutline,
       flashOutline,
       cameraOutline,
+      personOutline,
     });
   }
 
-  ngOnInit() {}
-
   selectCategory(segment: string) {
     this.selectedCategory = segment;
+  }
+
+  openProfile(): void {
+    this.navCtrl.navigateForward('/profile');
   }
 }

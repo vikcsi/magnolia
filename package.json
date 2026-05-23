@@ -42,7 +42,6 @@
     "@ionic/angular": "^8.0.0",
     "cordova.plugins.diagnostic": "^7.3.0",
     "firebase": "^12.9.0",
-    "firebase-admin": "^13.6.1",
     "html5-qrcode": "^2.3.8",
     "ionicons": "^7.0.0",
     "rxjs": "~7.8.0",

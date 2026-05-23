@@ -1,4 +1,4 @@
-import { Component, inject, Injector, OnInit } from '@angular/core';
+import { Component, inject, Injector } from '@angular/core';
 import { runInInjectionContext } from '@angular/core';
 import {
   IonApp,
@@ -10,38 +10,8 @@ import {
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { addIcons } from 'ionicons';
 import { CleanupService } from './services/cleanup.service';
 import { NotificationService } from './services/notification.service';
-import {
-  footsteps,
-  navigate,
-  cart,
-  flash,
-  flag,
-  flame,
-  nutrition,
-  bus,
-  batteryCharging,
-  storefront,
-  bicycle,
-  trashBin,
-  earth,
-  calendar,
-  shieldCheckmark,
-  ribbon,
-  medal,
-  trophy,
-  diamond,
-  clipboard,
-  statsChart,
-  star,
-  rocket,
-  leaf,
-  planet,
-  bonfire,
-  infinite,
-} from 'ionicons/icons';
 import { NavController } from '@ionic/angular/standalone';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 
@@ -69,35 +39,6 @@ export class AppComponent {
   isMenuDisabled = true; 
 
   constructor() {
-    addIcons({
-      footsteps,
-      navigate,
-      cart,
-      flash,
-      flag,
-      flame,
-      nutrition,
-      bus,
-      batteryCharging,
-      storefront,
-      bicycle,
-      trashBin,
-      earth,
-      calendar,
-      shieldCheckmark,
-      ribbon,
-      medal,
-      trophy,
-      diamond,
-      clipboard,
-      statsChart,
-      star,
-      rocket,
-      leaf,
-      planet,
-      bonfire,
-      infinite,
-    });
 
     this.router.events
       .pipe(filter((e) => e instanceof NavigationEnd))
@@ -113,9 +54,9 @@ export class AppComponent {
     runInInjectionContext(this.injector, () => {
       onAuthStateChanged(this.auth, (user) => {
         const currentUid = user?.uid ?? null;
-        if (user) {
+        if (this.previousUid === null && currentUid !== null) {
           this.cleanupService.cleanupExpiredItems();
-          this.notificationService.scheduleExpiryNotifications(user.uid);
+          this.notificationService.scheduleExpiryNotifications(currentUid);
         }
         if (
           this.previousUid !== null &&

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavigationComponent } from 'src/app/components/navigation/navigation.component';
 import { addIcons } from 'ionicons';
@@ -80,7 +80,8 @@ export interface UserViewData extends User {
   ],
 })
 export class ProfilePage
-  implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave
+  implements 
+  OnDestroy, ViewWillEnter, ViewWillLeave
 {
   private dataService = inject(DataService);
   private authService = inject(AuthService);
@@ -113,10 +114,6 @@ export class ProfilePage
       playForward,
       timeOutline,
     });
-  }
-
-  ngOnInit() {
-    this.initProfileData();
   }
 
   ionViewWillEnter() {

@@ -33,7 +33,6 @@ import {
 import { CarbonCalculatorService } from 'src/app/services/carbon-calculator.service';
 import { DataService } from 'src/app/services/data.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { BadgeService } from 'src/app/services/badge.service';
 import { GamificationUiService } from 'src/app/services/gamification-ui.service';
 import {
   alertCircleOutline,
@@ -43,6 +42,7 @@ import {
   trophyOutline,
 } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
+import { PlatformHelperService } from 'src/app/services/platform-helper.service';
 
 export interface ShoppingItem {
   barcode: string;
@@ -81,19 +81,13 @@ export class ShoppingComponent implements OnInit, OnDestroy {
   private toastController = inject(ToastController);
   private platform = inject(Platform);
   private gamificationUiService = inject(GamificationUiService);
+  platformHelper = inject(PlatformHelperService);
 
   isWebScannerActive = false;
   private html5QrcodeScanner: Html5QrcodeScanner | null = null;
 
   activeMode: 'scan' | 'manual' = 'scan';
 
-  get isDesktopWeb(): boolean {
-    return (
-      !Capacitor.isNativePlatform() &&
-      !this.platform.is('mobileweb') &&
-      !this.platform.is('tablet')
-    );
-  }
   isLoading = false;
   isSaving = false;
   scannedProduct: OffProduct | null = null;
@@ -172,7 +166,7 @@ export class ShoppingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    if (this.isDesktopWeb) {
+    if (this.platformHelper.isDesktopWeb) {
       this.activeMode = 'manual';
     }
 
@@ -437,7 +431,7 @@ export class ShoppingComponent implements OnInit, OnDestroy {
       weight: 1,
       category: 'other',
     };
-    if (!this.isDesktopWeb) {
+    if (!this.platformHelper.isDesktopWeb) {
       this.setMode('scan');
     }
   }

@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
 import {
@@ -11,13 +10,14 @@ import {
   personOutline,
   paperPlaneOutline,
 } from 'ionicons/icons';
+import { IonIcon } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-navigation',
   templateUrl: './navigation.component.html',
   styleUrls: ['./navigation.component.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule]
+  imports: [CommonModule, IonIcon]
 })
 export class NavigationComponent  implements OnInit {
 

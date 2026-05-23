@@ -9,7 +9,6 @@ import {
   ToastController,
   ModalController,
 } from '@ionic/angular/standalone';
-import { Platform } from '@ionic/angular';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { getCurrentLevel } from 'src/app/constants/leveling.constant';
 import { addIcons } from 'ionicons';
@@ -24,7 +23,6 @@ import { TransportMode } from 'src/app/services/directions.service';
 import { CarbonCalculatorService } from 'src/app/services/carbon-calculator.service';
 import { DataService } from 'src/app/services/data.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { BadgeService } from 'src/app/services/badge.service';
 import { GamificationUiService } from 'src/app/services/gamification-ui.service';
 import {
   TrackingService,
@@ -32,12 +30,14 @@ import {
 } from 'src/app/services/tracking.service';
 import { Capacitor } from '@capacitor/core';
 import { TransportModeModalComponent } from '../transport-mode-modal/transport-mode-modal.component';
+import { PlatformHelperService } from 'src/app/services/platform-helper.service';
+import { SecondsDurationPipe } from 'src/app/pipes/seconds-duration.pipe';
 
 @Component({
   selector: 'app-transport',
   templateUrl: './transport.component.html',
   styleUrls: ['./transport.component.scss'],
-  imports: [IonIcon, IonLabel, IonButton, IonSpinner, IonInput, FormsModule],
+  imports: [IonIcon, IonLabel, IonButton, IonSpinner, IonInput, FormsModule, SecondsDurationPipe],
 })
 export class TransportComponent implements OnInit, OnDestroy {
   private calcService = inject(CarbonCalculatorService);
@@ -47,7 +47,7 @@ export class TransportComponent implements OnInit, OnDestroy {
   private toastController = inject(ToastController);
   readonly trackingService = inject(TrackingService);
   private gamificationUiService = inject(GamificationUiService);
-  private platform = inject(Platform);
+  platformHelper = inject(PlatformHelperService);
 
   activeTab: 'manual' | 'tracking' = 'tracking';
   manualMode: TransportMode = 'car';
@@ -61,7 +61,6 @@ export class TransportComponent implements OnInit, OnDestroy {
     elapsedSeconds: 0,
     stopped: false,
   };
-  showModeModal = false;
   selectedTrackingMode: TransportMode = 'car';
   isSavingTrip = false;
 
@@ -105,7 +104,7 @@ export class TransportComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if (this.isDesktopWeb) {
+    if (this.platformHelper.isDesktopWeb) {
       this.activeTab = 'manual';
     }
 
@@ -113,7 +112,7 @@ export class TransportComponent implements OnInit, OnDestroy {
       const wasStopped = this.trackingState.stopped;
       this.trackingState = state;
       if (!wasStopped && state.stopped) {
-        this.showModeModal = true;
+        setTimeout(() => this.openTransportModeModal());
       }
     });
   }
@@ -197,14 +196,6 @@ export class TransportComponent implements OnInit, OnDestroy {
     return Capacitor.isNativePlatform();
   }
 
-  get isDesktopWeb(): boolean {
-    return (
-      !Capacitor.isNativePlatform() &&
-      !this.platform.is('mobileweb') &&
-      !this.platform.is('tablet')
-    );
-  }
-
   async startTracking(): Promise<void> {
     await this.trackingService.start();
   }
@@ -248,8 +239,6 @@ export class TransportComponent implements OnInit, OnDestroy {
       const { completedGoals, completedChallenges, earnedXp, earnedBadges } =
         await this.trackingService.saveTrip(this.selectedTrackingMode);
 
-      this.showModeModal = false;
-
       const toast = await this.toastController.create({
         message: `Utazás rögzítve! +${earnedXp} XP szerzett.`,
         duration: 3000,
@@ -284,15 +273,6 @@ export class TransportComponent implements OnInit, OnDestroy {
 
   discardTrip(): void {
     this.trackingService.discardTrip();
-    this.showModeModal = false;
   }
 
-  formatDuration(seconds: number): string {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
-    if (h > 0)
-      return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-  }
 }

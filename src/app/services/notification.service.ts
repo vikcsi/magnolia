@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { toDate } from '../utils/date.util';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Capacitor } from '@capacitor/core';
 import { firstValueFrom } from 'rxjs';
@@ -43,7 +44,7 @@ export class NotificationService {
     for (const uc of challenges ?? []) {
       const def = (globalChallenges ?? []).find((c: Challenge) => c.id === uc.challengeId);
       const name = def?.name ?? 'Kihívás';
-      const deadline = this.toDate(uc.expiresAt);
+      const deadline = toDate(uc.expiresAt);
       this.collectNotifications(toSchedule, pendingIds, `c_${uc.id}`, name, 'kihívás', deadline, now);
     }
 
@@ -84,14 +85,8 @@ export class NotificationService {
   }
 
   private goalDeadline(goal: UserGoal, durationDays: number): Date {
-    const start = this.toDate(goal.startDate);
+    const start = toDate(goal.startDate);
     return new Date(start.getTime() + durationDays * DAY_MS);
-  }
-
-  private toDate(value: any): Date {
-    if (value instanceof Date) return value;
-    if (typeof value?.toDate === 'function') return value.toDate();
-    return new Date(value);
   }
 
   private stableId(str: string): number {

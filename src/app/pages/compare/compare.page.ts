@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { AlertController, IonicModule } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
 import { firstValueFrom } from 'rxjs';
 import { addIcons } from 'ionicons';
 import {
@@ -17,6 +17,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { DataService } from 'src/app/services/data.service';
 import { User } from 'src/app/models/user.model';
 import { getCurrentLevel } from 'src/app/constants/leveling.constant';
+import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonSpinner, IonToolbar } from '@ionic/angular/standalone';
 
 interface CompareStats {
   emission: number;
@@ -31,7 +32,8 @@ interface CompareStats {
   templateUrl: './compare.page.html',
   styleUrls: ['./compare.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonIcon, IonContent, IonSpinner, IonButton, IonButtons, IonToolbar, IonHeader
+  ],
 })
 export class ComparePage implements OnInit {
   private route = inject(ActivatedRoute);

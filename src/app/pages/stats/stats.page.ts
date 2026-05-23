@@ -8,11 +8,12 @@ import { StatsService, PeriodStats, DayBar, MagnoliaState } from 'src/app/servic
 import { NavigationComponent } from 'src/app/components/navigation/navigation.component';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonFooter, IonIcon, IonSkeletonText,
+  IonButtons, IonButton, NavController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   leafOutline, leaf, flameOutline, trophyOutline, warningOutline,
-  trendingDownOutline, trendingUpOutline, calendarOutline,
+  trendingDownOutline, trendingUpOutline, calendarOutline, personOutline,
 } from 'ionicons/icons';
 
 export type Period = 'week' | 'month' | 'year';
@@ -26,12 +27,14 @@ export type Period = 'week' | 'month' | 'year';
     CommonModule,
     NavigationComponent,
     IonHeader, IonToolbar, IonTitle, IonContent, IonFooter, IonIcon, IonSkeletonText,
+    IonButtons, IonButton,
   ],
 })
 export class StatsPage implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private dataService = inject(DataService);
   statsService = inject(StatsService);
+  private navCtrl = inject(NavController);
 
   readonly Math = Math;
 
@@ -49,7 +52,7 @@ export class StatsPage implements OnInit, OnDestroy {
   constructor() {
     addIcons({
       leafOutline, leaf, flameOutline, trophyOutline, warningOutline,
-      trendingDownOutline, trendingUpOutline, calendarOutline,
+      trendingDownOutline, trendingUpOutline, calendarOutline, personOutline,
     });
   }
 
@@ -127,14 +130,6 @@ export class StatsPage implements OnInit, OnDestroy {
     return Math.min(1, this.stats.totalEmission / this.stats.periodLimitKg);
   }
 
-  getDayCount(): number {
-    switch (this.selectedPeriod) {
-      case 'week':  return 7;
-      case 'month': return 28;
-      case 'year':  return 365;
-    }
-  }
-
   getDailyAvg(): number {
     if (!this.stats || this.stats.totalEmission === 0) return 0;
     const days = this.getActualPeriodDays();
@@ -158,5 +153,9 @@ export class StatsPage implements OnInit, OnDestroy {
       return `Még ${remaining.toFixed(1)} kg maradt a limitből`;
     }
     return `${Math.abs(remaining).toFixed(1)} kg-ot lépted túl`;
+  }
+
+  openProfile(): void {
+    this.navCtrl.navigateForward('/profile');
   }
 }

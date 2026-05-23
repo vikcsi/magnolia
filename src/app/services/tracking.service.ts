@@ -24,7 +24,7 @@ export interface TrackingState {
 }
 
 const STOP_SPEED_THRESHOLD_KMH = 2;
-const STOP_DURATION_MS = 5 * 60 * 1000;
+const STOP_DURATION_MS = 10 * 60 * 1000;
 
 @Injectable({ providedIn: 'root' })
 export class TrackingService {

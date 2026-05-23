@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Activity, Energy } from '../models/activity.model';
+import { toDate, isSameDay } from '../utils/date.util';
 
 export type MagnoliaState = 'bloom' | 'fade' | 'wilt';
 export type InsightType = 'success' | 'warning';
@@ -56,7 +57,7 @@ export class StatsService {
 
   private getEnergyForDay(activity: Activity, day: Date): number {
     const details = activity.details as Energy;
-    const billingDate = this.toDate(details.billingDate ?? activity.timestamp);
+    const billingDate = toDate(details.billingDate ?? activity.timestamp);
     if (details.period === 'month') {
       if (
         billingDate.getFullYear() === day.getFullYear() &&
@@ -79,7 +80,7 @@ export class StatsService {
 
   private getEnergyForMonth(activity: Activity, year: number, month: number): number {
     const details = activity.details as Energy;
-    const billingDate = this.toDate(details.billingDate ?? activity.timestamp);
+    const billingDate = toDate(details.billingDate ?? activity.timestamp);
     if (details.period === 'month') {
       if (billingDate.getFullYear() === year && billingDate.getMonth() === month) {
         return activity.emission;
@@ -103,7 +104,7 @@ export class StatsService {
       const d = new Date(monday);
       d.setDate(monday.getDate() + i);
       const dayActs = activities.filter((a) =>
-        this.isSameDay(this.toDate(a.timestamp), d),
+        isSameDay(toDate(a.timestamp), d),
       );
       const travel = this.sumCat(dayActs, 'travel');
       const shopping = this.sumCat(dayActs, 'shopping');
@@ -116,7 +117,7 @@ export class StatsService {
         shopping,
         energy,
         total: travel + shopping + energy,
-        isToday: this.isSameDay(d, today),
+        isToday: isSameDay(d, today),
       });
     }
 
@@ -134,7 +135,7 @@ export class StatsService {
       const d = new Date(prevMonday);
       d.setDate(prevMonday.getDate() + i);
       const dayActs = activities.filter((a) =>
-        this.isSameDay(this.toDate(a.timestamp), d),
+        isSameDay(toDate(a.timestamp), d),
       );
       prevTotal += this.sumCat(dayActs, 'travel') + this.sumCat(dayActs, 'shopping');
       prevTotal += activities
@@ -169,7 +170,7 @@ export class StatsService {
         d.setDate(weekStart.getDate() + i);
         if (d < firstDay || d > lastDay) continue;
         const dayActs = activities.filter((a) =>
-          this.isSameDay(this.toDate(a.timestamp), d),
+          isSameDay(toDate(a.timestamp), d),
         );
         travel += this.sumCat(dayActs, 'travel');
         shopping += this.sumCat(dayActs, 'shopping');
@@ -207,7 +208,7 @@ export class StatsService {
     while (d <= prevLastDay) {
       const dayD = new Date(d);
       const dayActs = activities.filter((a) =>
-        this.isSameDay(this.toDate(a.timestamp), dayD),
+        isSameDay(toDate(a.timestamp), dayD),
       );
       prevTotal += this.sumCat(dayActs, 'travel') + this.sumCat(dayActs, 'shopping');
       prevTotal += activities
@@ -228,7 +229,7 @@ export class StatsService {
     const bars: DayBar[] = [];
     for (let m = 0; m < 12; m++) {
       const monthActs = activities.filter((a) => {
-        const ad = this.toDate(a.timestamp);
+        const ad = toDate(a.timestamp);
         return ad.getFullYear() === year && ad.getMonth() === m;
       });
       const travel = this.sumCat(monthActs, 'travel');
@@ -257,7 +258,7 @@ export class StatsService {
     let prevTotal = 0;
     for (let m = 0; m < 12; m++) {
       const monthActs = activities.filter((a) => {
-        const ad = this.toDate(a.timestamp);
+        const ad = toDate(a.timestamp);
         return ad.getFullYear() === prevYear && ad.getMonth() === m;
       });
       prevTotal += this.sumCat(monthActs, 'travel') + this.sumCat(monthActs, 'shopping');
@@ -272,7 +273,7 @@ export class StatsService {
   computeTodayEmission(activities: Activity[]): number {
     const today = new Date();
     return activities
-      .filter((a) => this.isSameDay(this.toDate(a.timestamp), today))
+      .filter((a) => isSameDay(toDate(a.timestamp), today))
       .reduce((s, a) => {
         if (a.type === 'energy') return s + this.getDailyEmission(a);
         return s + (a.emission || 0);
@@ -292,7 +293,7 @@ export class StatsService {
       const d = new Date(today);
       d.setDate(today.getDate() - i);
       const dayActs = activities.filter((a) =>
-        this.isSameDay(this.toDate(a.timestamp), d),
+        isSameDay(toDate(a.timestamp), d),
       );
 
       if (dayActs.length === 0) {
@@ -324,7 +325,7 @@ export class StatsService {
     while (d <= today) {
       const dayD = new Date(d);
       const dayActs = activities.filter((a) =>
-        this.isSameDay(this.toDate(a.timestamp), dayD),
+        isSameDay(toDate(a.timestamp), dayD),
       );
       const dayTotal = this.sumAll(dayActs);
       if (dayActs.length > 0 && dayTotal <= this.DAILY_LIMIT_KG) {
@@ -342,7 +343,7 @@ export class StatsService {
     const todayEmission = this.computeTodayEmission(activities);
     const today = new Date();
     const hasTodayActivity = activities.some((a) =>
-      this.isSameDay(this.toDate(a.timestamp), today),
+      isSameDay(toDate(a.timestamp), today),
     );
     if (streak >= 3) {
       return {
@@ -511,21 +512,6 @@ export class StatsService {
       type: 'success',
       text: 'Jó úton jársz! A kibocsátásod a fenntartható limit közelében van.',
     };
-  }
-
-  private isSameDay(a: Date, b: Date): boolean {
-    return (
-      a.getFullYear() === b.getFullYear() &&
-      a.getMonth() === b.getMonth() &&
-      a.getDate() === b.getDate()
-    );
-  }
-
-  toDate(ts: any): Date {
-    if (ts instanceof Date) return ts;
-    if (ts?.toMillis) return new Date(ts.toMillis());
-    if (ts?.seconds) return new Date(ts.seconds * 1000);
-    return new Date(ts);
   }
 
   private sumCat(acts: Activity[], type: string): number {
